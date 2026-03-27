@@ -1,20 +1,110 @@
 @startuml
 'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
 
-Aircraft <<entity>>
-Airport <<entity>>
-Route <<entity>>
-MaintenanceRecord <<entity>>
+package "Aircraft Agreggate" {
+    class Aircraft <<entity>> <<root>> {
+        - manufactor
+        - model
+        - number_of_seats
+        - fuel_capacity
+        - max_range
+        - cruising_speed
+        - manufactoring_date
+        - image
+    }
+    Aircraft o--> AircraftRegistration
+    Aircraft o--> AircraftStatus
 
-PositiveInt <<value object>>
-AircraftRegistration <<value object>>
-AircraftStatus <<value object>>/<<enum>>
-LocationIdentifier <<value object>>
-Coordinates <<value object>>
-RunwayInfo <<value object>>
-AirportStatus <<value object>>/<<enum>>
-RouteID <<value object>>
-PositiveDouble <<value object>>
-MaintenanceTemplate <<entity>>/<<value object>>
+    class AircraftRegistration <<vo>> {
+        - registration_number
+    }
+    class AircraftStatus <<enum>> {
+        - AVAILABLE
+        - IN_FLIGHT
+        - INACTIVE
+        - UNDER_MAINTENANCE
+    }
+}
+
+package "Airport Aggregate" {
+    class Airport <<entity>> <<root>> {
+        - name
+        - city
+        - country
+        - timezone ???
+    }
+    Airport o--> LocationIdentifier
+    Airport o--> Coordinates
+    Airport o--> RunwayInfo
+    Airport o--> AirportStatus
+
+    class LocationIdentifier <<vo>> {
+        - iata_code
+    }
+    class Coordinates <<vo>> {
+        - longitude
+        - longitude_direction
+        - latitude
+        - latitude_direction
+    }
+    class RunwayInfo <<entity>> {
+        - name
+        - length
+        - orientation
+    }
+    class AirportStatus <<enum>> {
+        - OPERATIONAL
+        - CLOSED
+        - UNDER_MAINTENANCE
+    }
+}
+
+package "Route Aggregate" {
+    class Route <<entity>> {
+        - active
+    }
+    Route o--> RouteID
+    Route o--> PositiveDouble
+
+    class RouteID <<vo>> {
+        - id
+    }
+    class PositiveDouble <<vo>> {
+        - number
+    }
+}
+
+package "Maintenance Aggregate" {
+    class MaintenanceTemplateType <<enum>> {
+        - INSPECTION
+        - SCHEDULED_MAINTENANCE
+        - OVERHAUL
+        - MODIFICATION
+    }
+    class MaintenanceTemplate <<entity>> {
+        - name
+        - applicable_models
+        - checklist
+    }
+    MaintenanceTemplate o--> MaintenanceTemplateType
+
+    class MaintenanceRecord <<entity>> extends MaintenanceTemplate {
+        - description
+        - start_date
+        - expected_duration
+        - end_date <<calculated>>
+        - completed
+    }
+    MaintenanceRecord --> MaintenanceCompletionNotes
+    class MaintenanceCompletionNotes <<vo>> {
+        - completion_notes
+    }
+}
+
+Airport -up> "N" Aircraft
+Route -> "2" Airport
+Aircraft --> "N" MaintenanceRecord
 
 @enduml
