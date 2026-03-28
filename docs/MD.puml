@@ -4,18 +4,25 @@ hide circle
 skinparam classAttributeIconSize 0
 
 package "Aircraft Agreggate" {
+    class NonEmptyString <<vo>> {
+        - string
+    }
+    class PositiveDouble <<vo>> {
+        - number
+    }
     class Aircraft <<entity>> <<root>> {
-        - manufactor
-        - model
         - number_of_seats
-        - fuel_capacity
-        - max_range
-        - cruising_speed
         - manufactoring_date
         - image
+        - last_maintenance
+        - days_since_last_maintenance
+        - max_flight_hours_until_maintenance
+        - max_days_until_maintenance
     }
     Aircraft o--> AircraftRegistration
     Aircraft o--> AircraftStatus
+    Aircraft o--> "3" PositiveDouble
+    Aircraft o--> "2" NonEmptyString
 
     class AircraftRegistration <<vo>> {
         - registration_number
@@ -29,19 +36,38 @@ package "Aircraft Agreggate" {
 }
 
 package "Airport Aggregate" {
+    class NonEmptyString <<vo>> {
+        - string
+    }
+    class PositiveDouble <<vo>> {
+        - number
+    }
     class Airport <<entity>> <<root>> {
-        - name
-        - city
-        - country
-        - timezone ???
+        - images
     }
     Airport o--> LocationIdentifier
     Airport o--> Coordinates
-    Airport o--> RunwayInfo
+    Airport o--> "N" RunwayInfo
     Airport o--> AirportStatus
+    Airport o--> TimeZone
+    Airport o--> "3" NonEmptyString
+    Airport o--> OperationalHours
+    Airport o--> ContactInfo
 
     class LocationIdentifier <<vo>> {
         - iata_code
+    }
+    class TimeZone <<entity>> {
+        - abbreviation
+        - utc_offset_minutes
+        - gmt_offset_minutes
+    }
+    class OperationalHours <<vo>> {
+        - opening_hours
+        - closing_hours
+    }
+    class ContactInfo <<vo>> {
+        - phone_number
     }
     class Coordinates <<vo>> {
         - longitude
@@ -50,10 +76,10 @@ package "Airport Aggregate" {
         - latitude_direction
     }
     class RunwayInfo <<entity>> {
-        - name
-        - length
         - orientation
     }
+    RunwayInfo o--> NonEmptyString
+    RunwayInfo o--> PositiveDouble
     class AirportStatus <<enum>> {
         - OPERATIONAL
         - CLOSED
@@ -62,42 +88,63 @@ package "Airport Aggregate" {
 }
 
 package "Route Aggregate" {
+    class PositiveDouble <<vo>> {
+        - number
+    }
     class Route <<entity>> {
         - active
     }
     Route o--> RouteID
-    Route o--> PositiveDouble
+    Route o--> "4" PositiveDouble
 
     class RouteID <<vo>> {
         - id
     }
-    class PositiveDouble <<vo>> {
-        - number
-    }
 }
 
 package "Maintenance Aggregate" {
+    class NonEmptyString <<vo>> {
+        - string
+    }
+    class PositiveDouble <<vo>> {
+        - number
+    }
     class MaintenanceTemplateType <<enum>> {
         - INSPECTION
         - SCHEDULED_MAINTENANCE
         - OVERHAUL
         - MODIFICATION
     }
-    class MaintenanceTemplate <<entity>> {
-        - name
-        - applicable_models
+    class NumberedItem <<entity>> {
+        - id
         - checklist
     }
-    MaintenanceTemplate o--> MaintenanceTemplateType
 
-    class MaintenanceRecord <<entity>> extends MaintenanceTemplate {
-        - description
+    class MaintenanceTemplate <<entity>> {
+        - applicable_models
+    }
+    MaintenanceTemplate o--> MaintenanceTemplateType
+    MaintenanceTemplate o--> NonEmptyString
+    MaintenanceTemplate o--> "N" NumberedItem
+    MaintenanceTemplate o--> MaintenanceComponent
+    MaintenanceTemplate o--> PositiveDouble
+
+    class MaintenanceComponent <<enum>> {
+        - ENGINE
+        - AIRFRAME
+        - AVIONICS
+        - INTERIOR
+        - EXTERIOR
+    }
+
+    class MaintenanceRecord <<entity>> <<root>> extends MaintenanceTemplate {
         - start_date
-        - expected_duration
         - end_date <<calculated>>
         - completed
     }
-    MaintenanceRecord --> MaintenanceCompletionNotes
+    MaintenanceRecord ---> MaintenanceCompletionNotes
+    MaintenanceRecord o--> NonEmptyString
+    MaintenanceRecord o--> PositiveDouble
     class MaintenanceCompletionNotes <<vo>> {
         - completion_notes
     }
@@ -105,6 +152,6 @@ package "Maintenance Aggregate" {
 
 Airport -up> "N" Aircraft
 Route -> "2" Airport
-Aircraft --> "N" MaintenanceRecord
+MaintenanceRecord --> Aircraft
 
 @enduml
