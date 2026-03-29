@@ -5,6 +5,7 @@ import com.marslps.AISafeFMS.model.vo.*;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Set;
 
 public class Airport {
     private LocationIdentifier iata_code;
@@ -18,5 +19,8 @@ public class Airport {
     private OperationalHours operational_hours;
     private ContactInfo contact_info;
     private AirportStatus status;
-    private List<Aircraft> aircrafts;
+    private Set<Aircraft> aircrafts;
+    private Set<NonEmptyString> terminals;
+    private Set<NonEmptyString> gates;
+    private Set<NonEmptyString> services;
 }

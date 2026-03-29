@@ -2,12 +2,13 @@
 'https://plantuml.com/class-diagram
 hide circle
 skinparam classAttributeIconSize 0
+hide methods
 
 package "Aircraft Agreggate" {
-    class NonEmptyString <<vo>> {
+    class NonEmptyString <<value object>> {
         - string
     }
-    class PositiveDouble <<vo>> {
+    class PositiveDouble <<value object>> {
         - number
     }
     class Aircraft <<entity>> <<root>> {
@@ -22,9 +23,9 @@ package "Aircraft Agreggate" {
     Aircraft o--> AircraftRegistration
     Aircraft o--> AircraftStatus
     Aircraft o--> "3" PositiveDouble
-    Aircraft o--> "2" NonEmptyString
+    Aircraft o--> "N" NonEmptyString
 
-    class AircraftRegistration <<vo>> {
+    class AircraftRegistration <<value object>> {
         - registration_number
     }
     class AircraftStatus <<enum>> {
@@ -36,10 +37,10 @@ package "Aircraft Agreggate" {
 }
 
 package "Airport Aggregate" {
-    class NonEmptyString <<vo>> {
+    class NonEmptyString <<value object>> {
         - string
     }
-    class PositiveDouble <<vo>> {
+    class PositiveDouble <<value object>> {
         - number
     }
     class Airport <<entity>> <<root>> {
@@ -50,11 +51,11 @@ package "Airport Aggregate" {
     Airport o--> "N" RunwayInfo
     Airport o--> AirportStatus
     Airport o--> TimeZone
-    Airport o--> "3" NonEmptyString
+    Airport o--> "N" NonEmptyString
     Airport o--> OperationalHours
     Airport o--> ContactInfo
 
-    class LocationIdentifier <<vo>> {
+    class LocationIdentifier <<value object>> {
         - iata_code
     }
     class TimeZone <<entity>> {
@@ -62,14 +63,14 @@ package "Airport Aggregate" {
         - utc_offset_minutes
         - gmt_offset_minutes
     }
-    class OperationalHours <<vo>> {
+    class OperationalHours <<value object>> {
         - opening_hours
         - closing_hours
     }
-    class ContactInfo <<vo>> {
+    class ContactInfo <<value object>> {
         - phone_number
     }
-    class Coordinates <<vo>> {
+    class Coordinates <<value object>> {
         - longitude
         - longitude_direction
         - latitude
@@ -88,7 +89,7 @@ package "Airport Aggregate" {
 }
 
 package "Route Aggregate" {
-    class PositiveDouble <<vo>> {
+    class PositiveDouble <<value object>> {
         - number
     }
     class Route <<entity>> {
@@ -97,16 +98,36 @@ package "Route Aggregate" {
     Route o--> RouteID
     Route o--> "4" PositiveDouble
 
-    class RouteID <<vo>> {
+    class RouteID <<value object>> {
+        - id
+    }
+}
+
+package "Flight Aggregate" {
+    class Flight <<entity>> <<root>> {
+        - scheduled_datetime
+        - delayed_hours
+    }
+    Flight o--> FlightStatus
+    Flight o--> FlightID
+
+    class FlightStatus <<enum>> {
+        - SCHEDULED
+        - OCCURING
+        - DELAYED
+        - COMPLETED
+        - CANCELED
+    }
+    class FlightID <<value object>> {
         - id
     }
 }
 
 package "Maintenance Aggregate" {
-    class NonEmptyString <<vo>> {
+    class NonEmptyString <<value object>> {
         - string
     }
-    class PositiveDouble <<vo>> {
+    class PositiveDouble <<value object>> {
         - number
     }
     class MaintenanceTemplateType <<enum>> {
@@ -145,13 +166,15 @@ package "Maintenance Aggregate" {
     MaintenanceRecord ---> MaintenanceCompletionNotes
     MaintenanceRecord o--> NonEmptyString
     MaintenanceRecord o--> PositiveDouble
-    class MaintenanceCompletionNotes <<vo>> {
+    class MaintenanceCompletionNotes <<value object>> {
         - completion_notes
     }
 }
 
 Airport -up> "N" Aircraft
-Route -> "2" Airport
+Route --> "2" Airport
 MaintenanceRecord --> Aircraft
+Flight --> Route
+Flight --> Aircraft
 
 @enduml

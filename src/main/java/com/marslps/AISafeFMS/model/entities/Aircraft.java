@@ -8,6 +8,7 @@ import org.apache.axis.types.PositiveInteger;
 
 import java.awt.image.BufferedImage;
 import java.util.Date;
+import java.util.Set;
 
 public class Aircraft {
     private AircraftRegistration registration_number;
@@ -24,5 +25,6 @@ public class Aircraft {
     private PositiveInteger max_flight_hours_until_maintenance;
     private PositiveInteger max_days_until_maintenance;
     private AircraftStatus status;
+    private Set<NonEmptyString> features;
 
 }
