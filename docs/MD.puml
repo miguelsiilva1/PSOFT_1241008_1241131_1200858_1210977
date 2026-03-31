@@ -130,6 +130,9 @@ package "Maintenance Aggregate" {
     class PositiveDouble <<value object>> {
         - number
     }
+    class PartNumber <<value object>> {
+        - part_number
+    }
     class MaintenanceTemplateType <<enum>> {
         - INSPECTION
         - SCHEDULED_MAINTENANCE
@@ -157,6 +160,15 @@ package "Maintenance Aggregate" {
         - INTERIOR
         - EXTERIOR
     }
+
+    class MaintenancePart <<entity>> {
+        - description
+        - stock_quantity
+        - part_number
+    }
+    MaintenancePart o--> MaintenanceComponent
+    MaintenancePart o--> NonEmptyString
+    MaintenancePart o--> PartNumber
 
     class MaintenanceRecord <<entity>> <<root>> extends MaintenanceTemplate {
         - start_date
