@@ -4,21 +4,21 @@ hide circle
 skinparam classAttributeIconSize 0
 hide methods
 
-package "Aircraft Agreggate" {
+package "Aircraft Aggregate" {
     class NonEmptyString <<value object>> {
-        - string
+        - string: String
     }
     class PositiveDouble <<value object>> {
-        - number
+        - number: double
     }
     class Aircraft <<entity>> <<root>> {
-        - number_of_seats
-        - manufactoring_date
-        - image
-        - last_maintenance
-        - days_since_last_maintenance
-        - max_flight_hours_until_maintenance
-        - max_days_until_maintenance
+        - number_of_seats: PositiveInteger
+        - manufacturing_date: Date
+        - image: BufferedImage
+        - last_maintenance: Date
+        - days_since_last_maintenance <<calculated>>: PositiveInteger
+        - max_flight_hours_until_maintenance: PositiveInteger
+        - max_days_until_maintenance: PositiveInteger
     }
     Aircraft o--> AircraftRegistration
     Aircraft o--> AircraftStatus
@@ -26,25 +26,25 @@ package "Aircraft Agreggate" {
     Aircraft o--> "N" NonEmptyString
 
     class AircraftRegistration <<value object>> {
-        - registration_number
+        - registration_number: String
     }
     class AircraftStatus <<enum>> {
-        - AVAILABLE
-        - IN_FLIGHT
-        - INACTIVE
-        - UNDER_MAINTENANCE
+        - AVAILABLE: int
+        - IN_FLIGHT: int
+        - INACTIVE: int
+        - UNDER_MAINTENANCE: int
     }
 }
 
 package "Airport Aggregate" {
     class NonEmptyString <<value object>> {
-        - string
+        - string: String
     }
     class PositiveDouble <<value object>> {
-        - number
+        - number: double
     }
     class Airport <<entity>> <<root>> {
-        - images
+        - images: List<BufferedImage>
     }
     Airport o--> LocationIdentifier
     Airport o--> Coordinates
@@ -53,99 +53,105 @@ package "Airport Aggregate" {
     Airport o--> TimeZone
     Airport o--> "N" NonEmptyString
     Airport o--> OperationalHours
-    Airport o--> ContactInfo
+    Airport o--> "N" ContactInfo
 
     class LocationIdentifier <<value object>> {
-        - iata_code
+        - iata_code: String
     }
     class TimeZone <<entity>> {
-        - abbreviation
-        - utc_offset_minutes
-        - gmt_offset_minutes
+        - abbreviation: NonEmptyString
+        - utc_offset_minutes: PositiveInteger
+        - gmt_offset_minutes: PositiveInteger
     }
     class OperationalHours <<value object>> {
-        - opening_hours
-        - closing_hours
+        - opening_hours: PositiveInteger
+        - closing_hours: PositiveInteger
     }
     class ContactInfo <<value object>> {
-        - phone_number
+        - type: String
+        - contact: String
+        - description: String
     }
     class Coordinates <<value object>> {
-        - longitude
-        - longitude_direction
-        - latitude
-        - latitude_direction
+        - longitude: double
+        - longitude_direction: char
+        - latitude: double
+        - latitude_direction: char
+    }
+    class Orientation <<value object>> {
+        - orientation: String
     }
     class RunwayInfo <<entity>> {
-        - orientation
+
     }
     RunwayInfo o--> NonEmptyString
     RunwayInfo o--> PositiveDouble
+    RunwayInfo o--> Orientation
     class AirportStatus <<enum>> {
-        - OPERATIONAL
-        - CLOSED
-        - UNDER_MAINTENANCE
+        - OPERATIONAL: int
+        - CLOSED: int
+        - UNDER_MAINTENANCE: int
     }
 }
 
 package "Route Aggregate" {
     class PositiveDouble <<value object>> {
-        - number
+        - number: double
     }
     class Route <<entity>> {
-        - active
+        - active: boolean
     }
     Route o--> RouteID
     Route o--> "4" PositiveDouble
 
     class RouteID <<value object>> {
-        - id
+        - id: String
     }
 }
 
 package "Flight Aggregate" {
     class Flight <<entity>> <<root>> {
-        - scheduled_datetime
-        - delayed_hours
+        - scheduled_datetime: Date
+        - delayed_hours: PositiveDouble
     }
     Flight o--> FlightStatus
     Flight o--> FlightID
 
     class FlightStatus <<enum>> {
-        - SCHEDULED
-        - OCCURING
-        - DELAYED
-        - COMPLETED
-        - CANCELED
+        - SCHEDULED: int
+        - OCCURRING: int
+        - DELAYED: int
+        - COMPLETED: int
+        - CANCELED: int
     }
     class FlightID <<value object>> {
-        - id
+        - id: String
     }
 }
 
 package "Maintenance Aggregate" {
     class NonEmptyString <<value object>> {
-        - string
+        - string: String
     }
     class PositiveDouble <<value object>> {
-        - number
+        - number: double
     }
     class PartNumber <<value object>> {
-        - part_number
+        - part_number: String
     }
     class MaintenanceTemplateType <<enum>> {
-        - INSPECTION
-        - SCHEDULED_MAINTENANCE
-        - OVERHAUL
-        - MODIFICATION
+        - INSPECTION: int
+        - SCHEDULED_MAINTENANCE: int
+        - OVERHAUL: int
+        - MODIFICATION: int
     }
     class NumberedItem <<entity>> {
-        - id
-        - checklist
+        - id: PositiveInteger
     }
+    NumberedItem o--> NonEmptyString
 
     class MaintenanceTemplate <<entity>> {
-        - applicable_models
+        - applicable_models: Set<String>
     }
     MaintenanceTemplate o--> MaintenanceTemplateType
     MaintenanceTemplate o--> NonEmptyString
@@ -154,32 +160,31 @@ package "Maintenance Aggregate" {
     MaintenanceTemplate o--> PositiveDouble
 
     class MaintenanceComponent <<enum>> {
-        - ENGINE
-        - AIRFRAME
-        - AVIONICS
-        - INTERIOR
-        - EXTERIOR
+        - ENGINE: int
+        - AIRFRAME: int
+        - AVIONICS: int
+        - INTERIOR: int
+        - EXTERIOR: int
     }
 
     class MaintenancePart <<entity>> {
-        - description
-        - stock_quantity
-        - part_number
+        - description: String
+        - stock_quantity: PositiveInteger
     }
     MaintenancePart o--> MaintenanceComponent
     MaintenancePart o--> NonEmptyString
     MaintenancePart o--> PartNumber
 
     class MaintenanceRecord <<entity>> <<root>> extends MaintenanceTemplate {
-        - start_date
-        - end_date <<calculated>>
-        - completed
+        - start_date: Date
+        - end_date <<calculated>>: Date
+        - completed: boolean
     }
     MaintenanceRecord ---> MaintenanceCompletionNotes
     MaintenanceRecord o--> NonEmptyString
     MaintenanceRecord o--> PositiveDouble
     class MaintenanceCompletionNotes <<value object>> {
-        - completion_notes
+        - completion_notes: String
     }
 }
 

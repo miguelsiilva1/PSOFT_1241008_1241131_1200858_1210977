@@ -1,8 +1,16 @@
 package com.marslps.AISafeFMS.model.vo;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public class Coordinates {
-    private long longitude;
+    @Column
+    private double longitude;
+    @Column(length = 1)
     private char longitude_direction;
-    private long latitude;
+    @Column
+    private double latitude;
+    @Column(length = 1)
     private char latitude_direction;
 }

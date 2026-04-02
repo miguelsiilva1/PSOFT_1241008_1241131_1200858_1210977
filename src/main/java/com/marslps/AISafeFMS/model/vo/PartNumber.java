@@ -2,9 +2,17 @@ package com.marslps.AISafeFMS.model.vo;
 
 import com.marslps.AISafeFMS.exceptions.EmptyStringException;
 import com.marslps.AISafeFMS.exceptions.IllegalPartNumber;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
+@Embeddable
 public class PartNumber {
+    @Column
     private String part_number;
+
+    public PartNumber() {
+        this.part_number = "";
+    }
 
     public PartNumber(String part_number) {
         if(part_number == null || part_number.trim().isEmpty()) {

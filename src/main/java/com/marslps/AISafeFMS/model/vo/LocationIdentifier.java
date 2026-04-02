@@ -2,9 +2,17 @@ package com.marslps.AISafeFMS.model.vo;
 
 import com.marslps.AISafeFMS.exceptions.EmptyStringException;
 import com.marslps.AISafeFMS.exceptions.IllegalIataCodeException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
+@Embeddable
 public class LocationIdentifier {
+    @Column(length = 3)
     private String iata_code;
+
+    public LocationIdentifier() {
+        this.iata_code = "";
+    }
 
     public LocationIdentifier(String iata_code) {
         if(iata_code == null || iata_code.trim().isEmpty()) {
