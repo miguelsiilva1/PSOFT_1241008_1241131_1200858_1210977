@@ -95,10 +95,10 @@ package "Airport Aggregate" {
 }
 
 package "Route Aggregate" {
-    class PositiveDouble <<value object>> {
+    class PositiveDouble <<value object>>  {
         - number: double
     }
-    class Route <<entity>> {
+    class Route <<entity>> <<root>>{
         - active: boolean
     }
     Route o--> RouteID
