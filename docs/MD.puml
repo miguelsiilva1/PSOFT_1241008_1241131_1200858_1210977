@@ -44,7 +44,7 @@ package "Airport Aggregate" {
         - number: double
     }
     class Airport <<entity>> <<root>> {
-        - images: List<BufferedImage>
+        - images: List<String>
     }
     Airport o--> LocationIdentifier
     Airport o--> Coordinates
@@ -67,11 +67,19 @@ package "Airport Aggregate" {
         - opening_hours: PositiveInteger
         - closing_hours: PositiveInteger
     }
+    class ContactInfoType <<enum>> {
+        - EMAIL: int
+        - PHONE_NUMBER: int
+        - FAX_NUMBER: int
+        - WEBSITE: int
+        - MAILING_ADDRESS: int
+    }
     class ContactInfo <<value object>> {
         - type: String
         - contact: String
         - description: String
     }
+    ContactInfo o--> ContactInfoType
     class Coordinates <<value object>> {
         - longitude: double
         - longitude_direction: char

@@ -16,7 +16,7 @@ public class Airport {
     private LocationIdentifier iata_code;
     @Embedded
     private Coordinates coordinates;
-    @ElementCollection
+    @OneToMany
     private List<RunwayInfo> runway_info;
     @Embedded
     private NonEmptyString name;
@@ -26,9 +26,9 @@ public class Airport {
     private NonEmptyString country;
     @Embedded
     private NonEmptyString region;
-    @ElementCollection
-    private List<BufferedImage> images;
-    @Embedded
+    @ElementCollection(fetch = FetchType.LAZY) @Column(name = "images_base64", columnDefinition = "TEXT")
+    private List<String> images;
+    @JoinColumn @ManyToOne
     private TimeZone time_zone;
     @Embedded
     private OperationalHours operational_hours;
@@ -36,7 +36,7 @@ public class Airport {
     private ContactInfo contact_info;
     @Column
     private AirportStatus status;
-    @ElementCollection
+    @OneToMany // não será que é @ManyToMany
     private Set<Aircraft> aircrafts;
     @ElementCollection
     private Set<NonEmptyString> terminals;

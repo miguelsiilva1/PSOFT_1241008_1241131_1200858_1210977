@@ -13,7 +13,7 @@ public class Flight {
     private Long db_id;
     @Column(unique = true)
     private FlightID id;
-    @Column
+    @JoinColumn @ManyToOne
     private Route route;
     @Temporal(TemporalType.DATE)
     private Date scheduled_datetime;

@@ -2,34 +2,68 @@ package com.marslps.AISafeFMS.model.vo;
 
 
 import com.marslps.AISafeFMS.exceptions.EmptyStringException;
-import com.marslps.AISafeFMS.exceptions.IllegalPhoneNumberException;
+import com.marslps.AISafeFMS.exceptions.IllegalContactException;
+import com.marslps.AISafeFMS.model.enums.ContactInfoType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Embeddable
 public class ContactInfo {
-    @Column
-    private String type;
+    @Enumerated(value = EnumType.STRING)
+    private ContactInfoType type;
     @Column
     private String contact;
     @Column
     private String description;
 
     public ContactInfo() {
-        this.type = "";
+        this.type = ContactInfoType.EMAIL;
         this.contact = "";
         this.description = "";
     }
 
-    // é necessário atualizar o construtor
-    public ContactInfo(String phone_number) {
-        if(phone_number == null || phone_number.trim().isEmpty()) {
-            throw new EmptyStringException("We're sorry, but the phone number cannot be empty!");
+    public ContactInfo(ContactInfoType type, String contact, String description) {
+        if(type == null || type.toString().trim().isEmpty()) {
+            throw new EmptyStringException("We're sorry, but the contact type cannot be empty!");
         }
-        String clean_contact = phone_number.trim();
-        if(!clean_contact.matches("^\\+(?:[0-9] ?){6,14}[0-9]$")) {
-            throw new IllegalPhoneNumberException("We're sorry, but that phone number format is invalid in our system.");
+        if(contact == null || contact.trim().isEmpty()) {
+            throw new EmptyStringException("We're sorry, but the contact cannot be empty!");
         }
+        String clean_contact = contact.trim();
+
+        switch(type) {
+            case ContactInfoType.EMAIL:
+                if(!clean_contact.matches("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$")) {
+                    throw new IllegalContactException("We're sorry, but that email format is invalid in our system.");
+                }
+                break;
+            case ContactInfoType.PHONE_NUMBER, ContactInfoType.FAX_NUMBER:
+                if(!clean_contact.matches("^\\+(?:[0-9] ?){6,14}[0-9]$")) {
+                    if(type == ContactInfoType.PHONE_NUMBER) {
+                        throw new IllegalContactException("We're sorry, but that phone number format is invalid in our system.");
+                    }
+                    if(type == ContactInfoType.FAX_NUMBER) {
+                        throw new IllegalContactException("We're sorry, but that fax number format is invalid in our system.");
+                    }
+                }
+                break;
+            case ContactInfoType.WEBSITE:
+                if(!clean_contact.matches("^(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$")) {
+                    throw new IllegalContactException("We're sorry, but that website format is invalid in our system.");
+                }
+                break;
+            case ContactInfoType.MAILING_ADDRESS:
+                if(!clean_contact.matches("^[a-zA-Z0-9\\s,.'\\-ºªÀ-ÿ]{5,150}$")) {
+                    throw new IllegalContactException("We're sorry, but that mailing address format is invalid in our system.");
+                }
+                break;
+        }
+
+        this.type = type;
         this.contact = clean_contact;
+        this.description = description.trim();
     }
 }
+

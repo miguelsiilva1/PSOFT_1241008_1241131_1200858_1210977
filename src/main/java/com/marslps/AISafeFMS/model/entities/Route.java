@@ -10,9 +10,9 @@ public class Route {
     private Long db_id;
     @Embedded
     private RouteID id;
-    @Column
+    @JoinColumn @ManyToOne
     private Airport departure;
-    @Column
+    @JoinColumn @ManyToOne
     private Airport destination;
     @Embedded
     private PositiveDouble flight_time;

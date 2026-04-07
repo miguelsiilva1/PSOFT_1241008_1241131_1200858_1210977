@@ -3,7 +3,6 @@ package com.marslps.AISafeFMS.model.entities;
 import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import jakarta.persistence.*;
-import org.apache.axis.types.PositiveInteger;
 
 import java.util.Date;
 
@@ -11,7 +10,7 @@ import java.util.Date;
 public class MaintenanceRecord extends MaintenanceTemplate {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "maintenance_record_db_id")
     private Long db_id;
-    @JoinColumn
+    @JoinColumn @ManyToOne
     private Aircraft aircraft;
     @Embedded
     private NonEmptyString description;
