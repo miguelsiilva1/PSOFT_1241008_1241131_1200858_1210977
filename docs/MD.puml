@@ -22,9 +22,13 @@ package "Aircraft Aggregate" {
     }
     Aircraft o--> AircraftRegistration
     Aircraft o--> AircraftStatus
+    Aircraft o--> AircraftManufacturer
     Aircraft o--> "3" PositiveDouble
     Aircraft o--> "N" NonEmptyString
 
+    class AircraftManufacturer <<value object>> {
+        - manufacturer: String
+    }
     class AircraftRegistration <<value object>> {
         - registration_number: String
     }
@@ -54,7 +58,12 @@ package "Airport Aggregate" {
     Airport o--> "N" NonEmptyString
     Airport o--> OperationalHours
     Airport o--> "N" ContactInfo
+    Airport o--> AirportType
 
+    class AirportType <<value object>> {
+        - name: String
+        - description: String
+    }
     class LocationIdentifier <<value object>> {
         - iata_code: String
     }
