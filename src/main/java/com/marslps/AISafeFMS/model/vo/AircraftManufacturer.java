@@ -1,5 +1,6 @@
 package com.marslps.AISafeFMS.model.vo;
 
+import com.marslps.AISafeFMS.exceptions.EmptyStringException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
@@ -12,6 +13,11 @@ public class AircraftManufacturer {
         this.manufacturer = "";
     }
 
-
-
+    public AircraftManufacturer(String manufacturer) {
+        if(manufacturer == null || manufacturer.trim().isEmpty()) {
+            throw new EmptyStringException("Manufacturer name cannot be empty!");
+        }
+        String clean_manufacturer = manufacturer.trim();
+        this.manufacturer = clean_manufacturer;
+    }
 }

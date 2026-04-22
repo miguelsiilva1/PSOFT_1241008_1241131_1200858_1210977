@@ -6,6 +6,8 @@ import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,4 +28,27 @@ public class MaintenanceTemplate {
     private MaintenanceComponent component;
     @Embedded
     private PositiveDouble cost;
+
+    public MaintenanceTemplate() {
+        this.type = MaintenanceTemplateType.OVERHAUL;
+        this.name = new NonEmptyString();
+        this.applicable_models = new HashSet<>();
+        this.checklist = new ArrayList<>();
+        this.component = MaintenanceComponent.EXTERIOR;
+        this.cost = new PositiveDouble(30.9);
+    }
+
+    public MaintenanceTemplate(MaintenanceTemplateType type,
+                               NonEmptyString name,
+                               Set<NonEmptyString> applicable_models,
+                               List<NumberedItem> checklist,
+                               MaintenanceComponent component,
+                               PositiveDouble cost) {
+        this.type = type;
+        this.name = name;
+        this.applicable_models = applicable_models;
+        this.checklist = checklist;
+        this.component = component;
+        this.cost = cost;
+    }
 }
