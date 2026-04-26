@@ -1,13 +1,12 @@
 package com.marslps.AISafeFMS.components;
 
 import com.marslps.AISafeFMS.model.entities.MaintenanceTemplate;
-import com.marslps.AISafeFMS.model.entities.NumberedItem;
+import com.marslps.AISafeFMS.model.vo.NumberedItem;
 import com.marslps.AISafeFMS.model.enums.MaintenanceComponent;
 import com.marslps.AISafeFMS.model.enums.MaintenanceTemplateType;
 import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import com.marslps.AISafeFMS.repository.MaintenanceTemplateRepository;
-import com.sun.tools.javac.Main;
 import org.apache.axis.types.PositiveInteger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

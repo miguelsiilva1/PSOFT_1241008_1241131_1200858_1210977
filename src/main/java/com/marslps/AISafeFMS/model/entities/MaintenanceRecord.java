@@ -3,6 +3,8 @@ package com.marslps.AISafeFMS.model.entities;
 import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 import java.util.Date;
 
@@ -12,12 +14,12 @@ public class MaintenanceRecord extends MaintenanceTemplate {
     private Long db_id;
     @JoinColumn @ManyToOne
     private Aircraft aircraft;
-    @Embedded
-    private NonEmptyString description;
+    @Column @NotBlank
+    private String description;
     @Temporal(TemporalType.DATE)
     private Date start_date;
-    @Embedded
-    private PositiveDouble expected_duration;
+    @Column @Positive
+    private double expected_duration;
     @Temporal(TemporalType.DATE)
     private Date end_date;
     @Column

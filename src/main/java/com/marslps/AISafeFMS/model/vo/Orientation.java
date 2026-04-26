@@ -4,22 +4,13 @@ import com.marslps.AISafeFMS.exceptions.EmptyStringException;
 import com.marslps.AISafeFMS.exceptions.IllegalOrientationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.*;
 
 @Embeddable
-public class Orientation {
-    @Column(length = 3)
-    private String orientation;
-
-    public Orientation() {
-        this.orientation = "";
-    }
-
-    public Orientation(String orientation) {
-        if(orientation == null || orientation.trim().isEmpty()) {
-            throw new EmptyStringException("We're sorry, but the orientation cannot be empty!");
-        }
+public record Orientation(@NotBlank String orientation) {
+    public Orientation(@NotBlank String orientation) {
         String clean_orientation = orientation.trim();
         if(!clean_orientation.matches("^(N|S|E|W|NNE|ENE|ESE|SSE|SSW|WSW|WNW|NNW)$")) {
             throw new IllegalOrientationException("We're sorry, but that orientation is invalid in our system!");

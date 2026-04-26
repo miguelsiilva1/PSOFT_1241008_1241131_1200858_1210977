@@ -2,15 +2,14 @@ package com.marslps.AISafeFMS.model.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.Positive;
 
 @Embeddable
-public class Coordinates {
-    @Column
-    private double longitude;
-    @Column(length = 1)
-    private char longitude_direction;
-    @Column
-    private double latitude;
-    @Column(length = 1)
-    private char latitude_direction;
+public record Coordinates(@Positive double longitude, @Positive double longitude_direction, @Positive double latitude, @Positive double latitude_direction) {
+    public Coordinates(@Positive double longitude, @Positive double longitude_direction, @Positive double latitude, @Positive double latitude_direction) {
+        this.longitude = longitude;
+        this.longitude_direction = longitude_direction;
+        this.latitude = latitude;
+        this.latitude_direction = latitude_direction;
+    }
 }

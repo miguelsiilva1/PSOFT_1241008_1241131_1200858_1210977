@@ -4,6 +4,7 @@ import com.marslps.AISafeFMS.model.enums.FlightStatus;
 import com.marslps.AISafeFMS.model.vo.FlightID;
 import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 
 import java.util.Date;
 
@@ -17,8 +18,8 @@ public class Flight {
     private Route route;
     @Temporal(TemporalType.DATE)
     private Date scheduled_datetime;
-    @Embedded
-    private PositiveDouble delayed_hours;
+    @Positive
+    private double delayed_hours;
     @ManyToOne
     private Aircraft aircraft;
     @Enumerated

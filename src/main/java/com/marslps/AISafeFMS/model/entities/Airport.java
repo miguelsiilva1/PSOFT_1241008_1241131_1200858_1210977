@@ -3,6 +3,7 @@ package com.marslps.AISafeFMS.model.entities;
 import com.marslps.AISafeFMS.model.enums.AirportStatus;
 import com.marslps.AISafeFMS.model.vo.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -18,14 +19,8 @@ public class Airport {
     private Coordinates coordinates;
     @OneToMany
     private List<RunwayInfo> runway_info;
-    @Embedded
-    private NonEmptyString name;
-    @Embedded
-    private NonEmptyString city;
-    @Embedded
-    private NonEmptyString country;
-    @Embedded
-    private NonEmptyString region;
+    @NotBlank
+    private String region;
     @ElementCollection(fetch = FetchType.LAZY) @Column(name = "images_base64", columnDefinition = "TEXT")
     private List<String> images;
     @JoinColumn @ManyToOne
@@ -36,7 +31,7 @@ public class Airport {
     private ContactInfo contact_info;
     @Column
     private AirportStatus status;
-    @OneToMany // não será que é @ManyToMany
+    @OneToMany
     private Set<Aircraft> aircrafts;
     @ElementCollection
     private Set<NonEmptyString> terminals;

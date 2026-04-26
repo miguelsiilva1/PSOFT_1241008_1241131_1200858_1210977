@@ -8,31 +8,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
 
 @Embeddable
-public class ContactInfo {
-    @Enumerated(value = EnumType.STRING)
-    private ContactInfoType type;
-    @Column
-    private String contact;
-    @Column
-    private String description;
-
-    public ContactInfo() {
-        this.type = ContactInfoType.EMAIL;
-        this.contact = "";
-        this.description = "";
-    }
-
-    public ContactInfo(ContactInfoType type, String contact, String description) {
-        if(type == null || type.toString().trim().isEmpty()) {
-            throw new EmptyStringException("We're sorry, but the contact type cannot be empty!");
-        }
-        if(contact == null || contact.trim().isEmpty()) {
-            throw new EmptyStringException("We're sorry, but the contact cannot be empty!");
-        }
+public record ContactInfo(ContactInfoType type, @NotBlank String contact, @NotBlank String description) {
+    public ContactInfo(ContactInfoType type, @NotBlank String contact, @NotBlank String description) {
         String clean_contact = contact.trim();
-
         switch(type) {
             case ContactInfoType.EMAIL:
                 if(!clean_contact.matches("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z]{2,}$")) {

@@ -1,15 +1,13 @@
 package com.marslps.AISafeFMS.model.entities;
 
-import com.marslps.AISafeFMS.model.enums.MaintenanceComponent;
 import com.marslps.AISafeFMS.model.enums.MaintenanceTemplateType;
-import com.marslps.AISafeFMS.model.vo.NonEmptyString;
-import com.marslps.AISafeFMS.model.vo.PositiveDouble;
+import com.marslps.AISafeFMS.model.vo.Checklist;
+import com.marslps.AISafeFMS.model.vo.NumberedItem;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class MaintenanceTemplate {
@@ -18,37 +16,37 @@ public class MaintenanceTemplate {
 
     @Enumerated
     private MaintenanceTemplateType type;
+    @Column @NotBlank
+    private String name;
+    @ElementCollection @NotBlank
+    private Set<String> applicable_models;
     @Embedded
-    private NonEmptyString name;
-    @ElementCollection
-    private Set<NonEmptyString> applicable_models;
-    @OneToMany
-    private List<NumberedItem> checklist;
-    @Enumerated
-    private MaintenanceComponent component;
-    @Embedded
-    private PositiveDouble cost;
+    private Checklist checklist;
+    @OneToOne
+    private MaintenancePart part;
+    @Column @Positive
+    private double cost;
 
     public MaintenanceTemplate() {
         this.type = MaintenanceTemplateType.OVERHAUL;
-        this.name = new NonEmptyString();
-        this.applicable_models = new HashSet<>();
-        this.checklist = new ArrayList<>();
-        this.component = MaintenanceComponent.EXTERIOR;
-        this.cost = new PositiveDouble(30.9);
+        this.name = "something";
+        this.applicable_models = new HashSet<>(Arrays.asList("something"));
+        this.checklist = new Checklist(new ArrayList<>(Arrays.asList(new NumberedItem())));
+        this.part = new MaintenancePart();
+        this.cost = 30.9;
     }
 
     public MaintenanceTemplate(MaintenanceTemplateType type,
-                               NonEmptyString name,
-                               Set<NonEmptyString> applicable_models,
-                               List<NumberedItem> checklist,
-                               MaintenanceComponent component,
-                               PositiveDouble cost) {
+                               @NotBlank String name,
+                               Set<String> applicable_models,
+                               Checklist checklist,
+                               MaintenancePart part,
+                               @Positive double cost) {
         this.type = type;
         this.name = name;
         this.applicable_models = applicable_models;
         this.checklist = checklist;
-        this.component = component;
+        this.part = part;
         this.cost = cost;
     }
 }

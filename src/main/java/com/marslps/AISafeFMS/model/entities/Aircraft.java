@@ -1,34 +1,31 @@
 package com.marslps.AISafeFMS.model.entities;
 
 import com.marslps.AISafeFMS.model.enums.AircraftStatus;
+import com.marslps.AISafeFMS.model.vo.AircraftManufacturer;
+import com.marslps.AISafeFMS.model.vo.AircraftModel;
 import com.marslps.AISafeFMS.model.vo.AircraftRegistration;
-import com.marslps.AISafeFMS.model.vo.NonEmptyString;
-import com.marslps.AISafeFMS.model.vo.PositiveDouble;
+import com.marslps.AISafeFMS.model.vo.SeatingConfiguration;
 import jakarta.persistence.*;
 import org.apache.axis.types.PositiveInteger;
-
 import java.awt.image.BufferedImage;
 import java.util.Date;
-import java.util.Set;
 
 @Entity
 public class Aircraft {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "aircraft_db_id")
     private Long db_id;
-    @Embedded
+    @Embedded @Column(unique = true)
     private AircraftRegistration registration_number;
     @Embedded
-    private NonEmptyString manufactor;
+    private AircraftManufacturer manufacturer;
     @Embedded
-    private NonEmptyString model;
+    private AircraftModel model;
+    @Embedded
+    private SeatingConfiguration seating_configuration;
     @Column
-    private PositiveInteger number_of_seats;
-    @Embedded
-    private PositiveDouble fuel_capacity;
-    @Embedded
-    private PositiveDouble max_range;
-    @Embedded
-    private PositiveDouble cruising_speed;
+    private double fuel_capacity;
+    @Column
+    private double cruising_speed;
     @Temporal(TemporalType.DATE)
     private Date manufactoring_date;
     @Embedded
@@ -43,7 +40,5 @@ public class Aircraft {
     private PositiveInteger max_days_until_maintenance;
     @Column
     private AircraftStatus status;
-    @ElementCollection
-    private Set<NonEmptyString> features;
 
 }

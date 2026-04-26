@@ -5,9 +5,9 @@ import jakarta.persistence.Embeddable;
 import org.apache.axis.types.PositiveInteger;
 
 @Embeddable
-public class OperationalHours {
-    @Column
-    private PositiveInteger opening_hours;
-    @Column
-    private PositiveInteger closing_hours;
+public record OperationalHours(PositiveInteger opening_hours, PositiveInteger closing_hours) {
+    public OperationalHours(PositiveInteger opening_hours, PositiveInteger closing_hours) {
+        this.opening_hours = opening_hours;
+        this.closing_hours = closing_hours;
+    }
 }
