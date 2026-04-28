@@ -1,0 +1,52 @@
+[
+  {
+    "type": "OVERHAUL",
+    "name": "New Paint",
+    "applicable_models": [
+      "1",
+      "2",
+      "3"
+    ],
+    "checklist": {
+      "checklist": [
+        { "id": 1, "task": "Paint" },
+        { "id": 2, "task": "Let it dry" },
+        { "id": 3, "task": "Re-paint" }
+      ]
+    },
+    "part": {
+      "name": "Exterior",
+      "description": "",
+      "stock_quantity": 1,
+      "part_number": {
+        "part_number": "123-4567"
+      }
+    },
+    "cost": 195000.0
+  },
+  {
+    "type": "MODIFICATION",
+    "name": "Change Engine",
+    "applicable_models": [
+      "1",
+      "2",
+      "3"
+    ],
+    "checklist": {
+      "checklist": [
+        { "id": 1, "task": "Order an Engine" },
+        { "id": 2, "task": "Remove the current Engine" },
+        { "id": 3, "task": "Install the new engine" }
+      ]
+    },
+    "part": {
+      "name": "Engine",
+      "description": "An engine",
+      "stock_quantity": 1,
+      "part_number": {
+        "part_number": "F57551054000"
+      }
+    },
+    "cost": 738000.0
+  }
+]

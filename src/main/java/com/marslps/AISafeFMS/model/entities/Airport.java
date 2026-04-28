@@ -5,7 +5,6 @@ import com.marslps.AISafeFMS.model.vo.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +16,8 @@ public class Airport {
     private LocationIdentifier iata_code;
     @Embedded
     private Coordinates coordinates;
+    @JoinColumn @ManyToOne
+    private AirportType airport_type;
     @OneToMany
     private List<RunwayInfo> runway_info;
     @NotBlank
@@ -39,4 +40,11 @@ public class Airport {
     private Set<NonEmptyString> gates;
     @ElementCollection
     private Set<NonEmptyString> services;
+
+    public Aircraft() {
+        this.iata_code = new LocationIdentifier("AAA");
+        this.coordinates = new Coordinates(0, 'W',0, 'N');
+        this.airport_type = new AirportType();
+        // por acabar
+    }
 }

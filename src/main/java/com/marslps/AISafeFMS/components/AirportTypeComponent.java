@@ -1,10 +1,16 @@
 package com.marslps.AISafeFMS.components;
 
-import com.marslps.AISafeFMS.model.vo.AirportType;
+import com.marslps.AISafeFMS.model.entities.AirportType;
 import com.marslps.AISafeFMS.repository.AirportTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.util.List;
 
 @Component
 public class AirportTypeComponent implements CommandLineRunner {
@@ -13,14 +19,10 @@ public class AirportTypeComponent implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        airport_type_repo.save(new AirportType("Commercial Service"));
-        airport_type_repo.save(new AirportType("Primary Large Hub"));
-        airport_type_repo.save(new AirportType("Primary Medium Hub"));
-        airport_type_repo.save(new AirportType("Primary Small Hub"));
-        airport_type_repo.save(new AirportType("Primary NonHub"));
-        airport_type_repo.save(new AirportType("Nonprimary NonHub"));
-        airport_type_repo.save(new AirportType("Nonprimary Reliever"));
-        airport_type_repo.save(new AirportType("Nonprimary General Aviation"));
+        ObjectMapper mapper = new ObjectMapper();
+        InputStream file = new ClassPathResource("airport_types.json").getInputStream();
+        List<AirportType> types = mapper.readValue(file, new TypeReference<>() {});
+        airport_type_repo.saveAll(types);
     }
 }
 

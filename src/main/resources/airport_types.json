@@ -1,0 +1,26 @@
+[
+  {
+    "type": "Commercial Service"
+  },
+  {
+    "type": "Primary Large Hub"
+  },
+  {
+    "type": "Primary Medium Hub"
+  },
+  {
+    "type": "Primary Small Hub"
+  },
+  {
+    "type": "Primary NonHub"
+  },
+  {
+    "type": "Nonprimary NonHub"
+  },
+  {
+    "type": "Nonprimary Reliever"
+  },
+  {
+    "type": "Nonprimary General Aviation"
+  }
+]

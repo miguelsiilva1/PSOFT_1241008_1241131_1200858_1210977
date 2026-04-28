@@ -1,13 +1,16 @@
 package com.marslps.AISafeFMS.components;
 
-import com.marslps.AISafeFMS.model.vo.AircraftManufacturer;
+import com.marslps.AISafeFMS.model.entities.AircraftManufacturer;
 import com.marslps.AISafeFMS.repository.AircraftManufacturerRepository;
-import com.marslps.AISafeFMS.security.model.entities.SystemUser;
-import com.marslps.AISafeFMS.security.model.enums.SystemUserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+
+import java.io.InputStream;
+import java.util.List;
 
 @Component
 public class AircraftManufacturerComponent implements CommandLineRunner {
@@ -16,15 +19,10 @@ public class AircraftManufacturerComponent implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        aircraft_manu_repo.save(new AircraftManufacturer("Boeing"));
-        aircraft_manu_repo.save(new AircraftManufacturer("Airbus"));
-        aircraft_manu_repo.save(new AircraftManufacturer("Embraer"));
-        aircraft_manu_repo.save(new AircraftManufacturer("Bombardier"));
-        aircraft_manu_repo.save(new AircraftManufacturer("Cessna"));
-        aircraft_manu_repo.save(new AircraftManufacturer("Dessault Aviation"));
-        aircraft_manu_repo.save(new AircraftManufacturer("Gulfstream Aerospace"));
-        aircraft_manu_repo.save(new AircraftManufacturer("Sukhoi"));
-        aircraft_manu_repo.save(new AircraftManufacturer("COMAC"));
-        aircraft_manu_repo.save(new AircraftManufacturer("ATR"));
+        ObjectMapper mapper = new ObjectMapper();
+        InputStream file = new ClassPathResource("manufacturers.json").getInputStream();
+        List<AircraftManufacturer> manufacturers = mapper.readValue(file, new TypeReference<>() {
+        });
+        aircraft_manu_repo.saveAll(manufacturers);
     }
 }

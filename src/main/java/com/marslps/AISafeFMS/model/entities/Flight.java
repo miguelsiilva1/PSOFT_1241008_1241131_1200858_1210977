@@ -24,4 +24,6 @@ public class Flight {
     private Aircraft aircraft;
     @Enumerated
     private FlightStatus status;
+
+
 }
