@@ -2,16 +2,15 @@ package com.marslps.AISafeFMS.model.vo;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.apache.axis.types.PositiveInteger;
+import jakarta.validation.constraints.Positive;
 
 @Embeddable
-public record NumberedItem(PositiveInteger id, @NotBlank String task) {
-    public NumberedItem(PositiveInteger id, @NotBlank String task) {
+public record NumberedItem(@Positive int id, @NotBlank String task) {
+    public NumberedItem(@Positive int id, @NotBlank String task) {
         this.id = id;
         this.task = task;
     }
-
     public NumberedItem() {
-        this(new PositiveInteger("1"), "something");
+        this(1, "something");
     }
 }

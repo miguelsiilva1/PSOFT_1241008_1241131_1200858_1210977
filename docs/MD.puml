@@ -11,9 +11,9 @@ package "Aircraft Aggregate" {
         - last_maintenance: Date
         - fuel_capacity: double
         - cruising_speed: double
-        - days_since_last_maintenance <<calculated>>: PositiveInteger
-        - max_flight_hours_until_maintenance: PositiveInteger
-        - max_days_until_maintenance: PositiveInteger
+        - days_since_last_maintenance <<calculated>>: int
+        - max_flight_hours_until_maintenance: int
+        - max_days_until_maintenance: int
     }
     Aircraft o--> AircraftRegistration
     Aircraft o--> AircraftStatus
@@ -21,7 +21,7 @@ package "Aircraft Aggregate" {
     Aircraft o--> AircraftModel
     Aircraft o--> SeatingConfiguration
 
-    class AircraftManufacturer <<value object>> {
+    class AircraftManufacturer <<entity>> {
         - name: String
     }
 
@@ -36,16 +36,16 @@ package "Aircraft Aggregate" {
     }
     class AircraftModel <<value object>> {
         - name: String
-        - seating_capacity: PositiveInteger
+        - seating_capacity: int
         - range: double
         - feature: Set<String>
     }
 
     class SeatingConfiguration <<value object>> {
-        - economy_seats: PositiveInteger
-        - premium_economy_seats: PositiveInteger
-        - business_seats: PositiveInteger
-        - first_seats: PositiveInteger
+        - economy_seats: int
+        - premium_economy_seats: int
+        - business_seats: int
+        - first_seats: int
     }
 }
 
@@ -83,7 +83,7 @@ package "Airport Aggregate" {
         - service: String
     }
 
-    class AirportType <<value object>> {
+    class AirportType <<entity>> {
         - name: String
         - description: String
     }
@@ -93,13 +93,13 @@ package "Airport Aggregate" {
 
     class TimeZone <<entity>> {
         - abbreviation: String
-        - utc_offset_minutes: PositiveInteger
-        - gmt_offset_minutes: PositiveInteger
+        - utc_offset_minutes: int
+        - gmt_offset_minutes: int
     }
 
     class OperationalHours <<value object>> {
-        - opening_hours: PositiveInteger
-        - closing_hours: PositiveInteger
+        - opening_hours: int
+        - closing_hours: int
     }
 
     class ContactInfo <<value object>> {
@@ -123,7 +123,7 @@ package "Airport Aggregate" {
         - latitude_direction: char
     }
 
-    class RunwayInfo <<entity>> {
+    class RunwayInfo <<value object>> {
         - name: String
         - length: double
     }
@@ -197,14 +197,14 @@ package "Maintenance Aggregate" {
     class Checklist <<entity>> {}
     Checklist --> "N" NumberedItem
     class NumberedItem <<value object>> {
-        - id: PositiveInteger
+        - id: int
         - task: String
     }
 
     class MaintenancePart <<entity>> {
         - name: String
         - description: String
-        - stock_quantity: PositiveInteger
+        - stock_quantity: int
     }
     MaintenancePart o--> MaintenanceComponent
     MaintenancePart o--> PartNumber

@@ -4,6 +4,7 @@ import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import com.marslps.AISafeFMS.model.vo.PartNumber;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import org.apache.axis.types.PositiveInteger;
 
 @Entity
@@ -14,21 +15,21 @@ public class MaintenancePart {
     private String name;
     @Column
     private String description;
-    @Column
-    private PositiveInteger stock_quantity;
+    @Column @Positive
+    private int stock_quantity;
     @Embedded
     private PartNumber part_number;
 
     public MaintenancePart() {
         this.name = "something";
         this.description = "";
-        this.stock_quantity = new PositiveInteger("0");
+        this.stock_quantity = 0;
         this.part_number = new PartNumber("F57551054000");
     }
 
     public MaintenancePart(@NotBlank String name,
                            String description,
-                           PositiveInteger stock_quantity,
+                           @Positive int stock_quantity,
                            PartNumber part_number) {
         this.name = name;
         this.description = description;

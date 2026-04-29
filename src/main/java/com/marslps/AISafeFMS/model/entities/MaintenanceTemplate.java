@@ -35,7 +35,6 @@ public class MaintenanceTemplate {
         this.part = new MaintenancePart();
         this.cost = 30.9;
     }
-
     public MaintenanceTemplate(MaintenanceTemplateType type,
                                @NotBlank String name,
                                Set<String> applicable_models,
@@ -48,5 +47,13 @@ public class MaintenanceTemplate {
         this.checklist = checklist;
         this.part = part;
         this.cost = cost;
+    }
+    public MaintenanceTemplate(MaintenanceTemplate maintenance_template) {
+        this.type = maintenance_template.type;
+        this.name = maintenance_template.name;
+        this.applicable_models = maintenance_template.applicable_models;
+        this.checklist = maintenance_template.checklist;
+        this.part = maintenance_template.part;
+        this.cost = maintenance_template.cost;
     }
 }

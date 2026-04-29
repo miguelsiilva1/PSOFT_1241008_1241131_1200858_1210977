@@ -3,7 +3,7 @@ package com.marslps.AISafeFMS.model.entities;
 import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import org.apache.axis.types.PositiveInteger;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class TimeZone {
@@ -12,7 +12,7 @@ public class TimeZone {
     @NotBlank
     private String abbreviation;
     @Column
-    private PositiveInteger utc_offset_minutes;
+    private @Positive int utc_offset_minutes;
     @Column
-    private PositiveInteger gmt_offset_minutes;
+    private @Positive int gmt_offset_minutes;
 }

@@ -13,4 +13,7 @@ public record Coordinates(@Positive double longitude, @NotBlank char longitude_d
         this.latitude = latitude;
         this.latitude_direction = latitude_direction;
     }
+    public Coordinates() {
+        this(0, 'W', 0, 'N');
+    }
 }

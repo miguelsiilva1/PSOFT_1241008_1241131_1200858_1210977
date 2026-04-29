@@ -7,14 +7,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
-@Entity
-public class RunwayInfo {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "runway_info_db_id")
-    private static Long db_id;
-    @NotBlank
-    private static String name;
-    @Positive
-    private static double length;
-    @Embedded
-    private static Orientation orientation;
+@Embeddable
+public record RunwayInfo(@NotBlank String name, @Positive double length, @Embedded Orientation orientation) {
+    public RunwayInfo(@NotBlank String name, @Positive double length, Orientation orientation) {
+        this.name = name;
+        this.length = length;
+        this.orientation = orientation;
+    }
+    public RunwayInfo() {
+        this("something", 0.0, null);
+    }
 }
