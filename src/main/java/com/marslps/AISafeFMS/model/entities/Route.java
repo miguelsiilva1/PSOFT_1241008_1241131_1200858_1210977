@@ -5,6 +5,8 @@ import com.marslps.AISafeFMS.model.vo.RouteID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 
+import java.util.Date;
+
 @Entity
 public class Route {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "route_db_id")
@@ -52,5 +54,9 @@ public class Route {
         this.min_aircraft_range = min_aircraft_range;
         this.min_aircraft_capacity = min_aircraft_capacity;
         this.active = active;
+    }
+
+    public Date calculateScheduledArrival(Date scheduled_departure) {
+        return new Date(scheduled_departure.getTime() + ((long) this.flight_time * 60 * 60 * 1000));
     }
 }
