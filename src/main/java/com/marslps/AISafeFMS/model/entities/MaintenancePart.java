@@ -1,11 +1,11 @@
 package com.marslps.AISafeFMS.model.entities;
 
-import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import com.marslps.AISafeFMS.model.vo.PartNumber;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import org.apache.axis.types.PositiveInteger;
+
+import java.util.Objects;
 
 @Entity
 public class MaintenancePart {
@@ -35,5 +35,15 @@ public class MaintenancePart {
         this.description = description;
         this.stock_quantity = stock_quantity;
         this.part_number = part_number;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof MaintenancePart part)) {return false;}
+        return Objects.equals(this.part_number, part.part_number);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.part_number);
     }
 }

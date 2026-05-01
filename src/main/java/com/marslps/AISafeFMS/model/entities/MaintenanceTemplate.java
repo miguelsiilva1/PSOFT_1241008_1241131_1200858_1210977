@@ -13,7 +13,8 @@ import java.util.*;
 public class MaintenanceTemplate {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "maintenance_template_db_id")
     private Long db_id;
-
+    @Column @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int template_id;
     @Enumerated
     private MaintenanceTemplateType type;
     @Column @NotBlank
@@ -55,5 +56,15 @@ public class MaintenanceTemplate {
         this.checklist = maintenance_template.checklist;
         this.part = maintenance_template.part;
         this.cost = maintenance_template.cost;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof MaintenanceTemplate template)) {return false;}
+        return Objects.equals(this.template_id, template.template_id);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.template_id);
     }
 }

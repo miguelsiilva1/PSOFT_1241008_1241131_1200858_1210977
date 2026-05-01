@@ -1,8 +1,5 @@
-package com.marslps.AISafeFMS.model.entities;
+package com.marslps.AISafeFMS.model.vo;
 
-import com.marslps.AISafeFMS.model.vo.NonEmptyString;
-import com.marslps.AISafeFMS.model.vo.Orientation;
-import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

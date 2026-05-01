@@ -3,12 +3,8 @@ package com.marslps.AISafeFMS.model.entities;
 import com.marslps.AISafeFMS.model.enums.AirportStatus;
 import com.marslps.AISafeFMS.model.vo.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Airport {
@@ -84,5 +80,15 @@ public class Airport {
         this.gates = gates;
         this.services = services;
         this.images = images;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Airport airport)) {return false;}
+        return Objects.equals(this.iata_code, airport.iata_code);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.iata_code);
     }
 }

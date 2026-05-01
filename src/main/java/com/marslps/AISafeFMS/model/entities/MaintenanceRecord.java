@@ -1,17 +1,18 @@
 package com.marslps.AISafeFMS.model.entities;
 
-import com.marslps.AISafeFMS.model.vo.NonEmptyString;
-import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 public class MaintenanceRecord extends MaintenanceTemplate {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "maintenance_record_db_id")
     private Long db_id;
+    @Column @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int record_id;
     @JoinColumn @ManyToOne
     private Aircraft aircraft;
     @Column @NotBlank
@@ -48,5 +49,15 @@ public class MaintenanceRecord extends MaintenanceTemplate {
         this.expected_duration = expected_duration;
         this.end_date = new Date(start_date.getTime() + ((long) expected_duration * 60 * 60 * 1000));
         this.completed = completed;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof MaintenanceRecord record)) {return false;}
+        return Objects.equals(this.record_id, record.record_id);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.record_id);
     }
 }

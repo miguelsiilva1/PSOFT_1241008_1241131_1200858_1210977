@@ -180,6 +180,7 @@ package "Flight Aggregate" {
 
 package "Maintenance Aggregate" {
     class MaintenanceTemplate <<entity>> {
+        - template_id: int
         - name: String
         - cost: double
         - applicable_models: Set<String>
@@ -220,6 +221,7 @@ package "Maintenance Aggregate" {
     }
 
     class MaintenanceRecord <<entity>> <<root>> extends MaintenanceTemplate {
+        - record_id: int
         - description: String
         - expected_duration: double
         - start_date: Date

@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Positive;
 import org.apache.axis.types.PositiveInteger;
 import java.awt.image.BufferedImage;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -83,5 +84,15 @@ public class Aircraft {
         this.max_flight_hours_until_maintenance = max_flight_hours_until_maintenance;
         this.max_days_until_maintenance = max_days_until_maintenance;
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Aircraft aircraft)) {return false;}
+        return Objects.equals(this.registration_number, aircraft.registration_number);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.registration_number);
     }
 }

@@ -1,11 +1,11 @@
 package com.marslps.AISafeFMS.model.entities;
 
-import com.marslps.AISafeFMS.model.vo.PositiveDouble;
 import com.marslps.AISafeFMS.model.vo.RouteID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 public class Route {
@@ -58,5 +58,15 @@ public class Route {
 
     public Date calculateScheduledArrival(Date scheduled_departure) {
         return new Date(scheduled_departure.getTime() + ((long) this.flight_time * 60 * 60 * 1000));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Route route)) {return false;}
+        return Objects.equals(this.id, route.id);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
     }
 }

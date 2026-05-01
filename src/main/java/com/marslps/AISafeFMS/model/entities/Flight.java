@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 public class Flight {
@@ -57,5 +58,15 @@ public class Flight {
         this.scheduled_arrival = route.calculateScheduledArrival(scheduled_departure);
         this.effective_arrival = new Date(this.scheduled_arrival.getTime() + ((long) delayed_hours * 60 * 60 * 1000));
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Flight flight)) {return false;}
+        return Objects.equals(this.id, flight.id);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
     }
 }
