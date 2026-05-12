@@ -7,7 +7,7 @@ hide methods
 package "Aircraft Aggregate" {
     class Aircraft <<entity>> <<root>> {
         - manufacturing_date: Date
-        - image: BufferedImage
+        - image: String
         - last_maintenance: Date
         - fuel_capacity: double
         - cruising_speed: double
@@ -177,9 +177,8 @@ package "Flight Aggregate" {
         - CANCELED: int
     }
 }
-
-package "Maintenance Aggregate" {
-    class MaintenanceTemplate <<entity>> {
+package "Maintenance Template Aggregate" {
+    class MaintenanceTemplate <<entity>> <<root>> {
         - template_id: int
         - name: String
         - cost: double
@@ -201,14 +200,11 @@ package "Maintenance Aggregate" {
         - id: int
         - task: String
     }
-
     class MaintenancePart <<entity>> {
         - name: String
         - description: String
         - stock_quantity: int
     }
-    MaintenancePart o--> MaintenanceComponent
-    MaintenancePart o--> PartNumber
     class PartNumber <<value object>> {
         - part_number: String
     }
@@ -219,8 +215,12 @@ package "Maintenance Aggregate" {
         - INTERIOR: int
         - EXTERIOR: int
     }
+  MaintenancePart o--> MaintenanceComponent
+    MaintenancePart o--> PartNumber
+}
 
-    class MaintenanceRecord <<entity>> <<root>> extends MaintenanceTemplate {
+package "Maintenance Aggregate" {
+    class MaintenanceRecord <<entity>> <<root>> {
         - record_id: int
         - description: String
         - expected_duration: double
@@ -239,5 +239,6 @@ Route --> "2" Airport
 MaintenanceRecord --> Aircraft
 Flight --> Route
 Flight --> Aircraft
+MaintenanceRecord --> MaintenanceTemplate
 
 @enduml
