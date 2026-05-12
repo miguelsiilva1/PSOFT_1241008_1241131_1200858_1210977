@@ -11,9 +11,7 @@ import java.util.*;
 
 @Entity
 public class MaintenanceTemplate {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "maintenance_template_db_id")
-    private Long db_id;
-    @Column @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @Column @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int template_id;
     @Enumerated
     private MaintenanceTemplateType type;

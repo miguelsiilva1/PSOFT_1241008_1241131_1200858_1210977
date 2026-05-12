@@ -6,8 +6,6 @@ import com.marslps.AISafeFMS.model.vo.AircraftRegistration;
 import com.marslps.AISafeFMS.model.vo.SeatingConfiguration;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
-import org.apache.axis.types.PositiveInteger;
-import java.awt.image.BufferedImage;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
@@ -30,8 +28,8 @@ public class Aircraft {
     private double cruising_speed;
     @Temporal(TemporalType.DATE)
     private Date manufactoring_date;
-    @Embedded
-    private BufferedImage image;
+    @Column
+    private String image;
     @Temporal(TemporalType.DATE)
     private Date last_maintenance;
     @Transient
@@ -50,9 +48,9 @@ public class Aircraft {
         this.seating_configuration = new SeatingConfiguration(100, 50, 40, 20);
         this.fuel_capacity = 250.0;
         this.cruising_speed = 900.0;
-        this.manufactoring_date = new Date("");
+        this.manufactoring_date = new Date();
         this.image = null;
-        this.last_maintenance = new Date("");
+        this.last_maintenance = new Date();
         this.days_since_last_maintenance = 1;
         this.max_flight_hours_until_maintenance = 1;
         this.max_days_until_maintenance = 1;
@@ -66,7 +64,7 @@ public class Aircraft {
                     @Positive double fuel_capacity,
                     @Positive double cruising_speed,
                     Date manufacturing_date,
-                    BufferedImage image,
+                    String image,
                     Date last_maintenance,
                     @Positive int max_flight_hours_until_maintenance,
                     @Positive int max_days_until_maintenance,

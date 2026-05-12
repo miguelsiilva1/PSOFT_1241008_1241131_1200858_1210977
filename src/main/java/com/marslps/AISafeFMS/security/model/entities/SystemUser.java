@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name = "system_users")
 public class SystemUser implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long sysuser_id;
