@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Register an Airport: Simplified Sequence Diagram
+
+actor BackofficeOperator as BO
+participant ":System" as S
+
+BO -> S: Asks to register an Airport
+S --> BO: Requests Airport Details \n(LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
+
+BO -> S: Types requested data
+S --> BO: Shows all data and requests confirmation
+
+BO -> S: Confirms the data
+S --> BO: Informs operation success
+
+@enduml
