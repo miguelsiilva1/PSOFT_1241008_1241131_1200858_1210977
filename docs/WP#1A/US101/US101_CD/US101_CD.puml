@@ -1,0 +1,45 @@
+@startuml
+title Register an Aircraft Model: Architecture — Class Diagram
+
+package "Registering" <<rectangle>> {
+    class AircraftModel <<Aggregate Root>> {
+        - String name
+        - int seating_capacity
+        - double max_range
+        - double fuel_capacity
+        - double cruising_speed
+        - Set<String> feature
+        - AircraftManufacturer manufacturer
+        ---
+        + AircraftModel(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer)
+    }
+    interface AircraftModelRepository {
+        + boolean alreadyExists(name, seating_capacity, max_range, fuel_capacity, cruising_speed)
+        + AircraftModel save(AircraftModel)
+    }
+    class RegisterAircraftModelService <<Domain Service>> {
+        + AircraftModel register(name, seating_capacity, max_range, fuel_capacity, cruising_speed)
+    }
+    class RegisterAircraftModelUseCase <<@UseCase>> {
+        + AircraftModel execute(name, seating_capacity, max_range, fuel_capacity, cruising_speed)
+    }
+
+    RegisterAircraftModelUseCase ..> AircraftModelRepository : alreadyExists()
+    RegisterAircraftModelUseCase ..> AircraftModel : creates >
+    RegisterAircraftModelUseCase ..> RegisterAircraftModelService : delegates to >
+    RegisterAircraftModelUseCase ..> AircraftModelRepository : save()
+}
+
+package "Catalog" <<rectangle>> {
+    class AircraftManufacturer <<Aggregate Root>> {
+        - String name
+        + getName()
+    }
+    interface AircraftManufacturerRepository {
+        + Optional<AircraftManufacturer> findByName(name)
+    }
+
+    RegisterAircraftModelUseCase ..> AircraftManufacturerRepository : findByName()
+}
+
+@enduml

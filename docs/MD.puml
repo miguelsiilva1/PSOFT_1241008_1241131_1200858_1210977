@@ -9,21 +9,13 @@ package "Aircraft Aggregate" {
         - manufacturing_date: Date
         - image: String
         - last_maintenance: Date
-        - fuel_capacity: double
-        - cruising_speed: double
         - days_since_last_maintenance <<calculated>>: int
         - max_flight_hours_until_maintenance: int
         - max_days_until_maintenance: int
     }
     Aircraft o--> AircraftRegistration
     Aircraft o--> AircraftStatus
-    Aircraft o--> AircraftManufacturer
-    Aircraft o--> AircraftModel
     Aircraft o--> SeatingConfiguration
-
-    class AircraftManufacturer <<entity>> {
-        - name: String
-    }
 
     class AircraftRegistration <<value object>> {
         - registration_number: String
@@ -34,18 +26,28 @@ package "Aircraft Aggregate" {
         - INACTIVE: int
         - UNDER_MAINTENANCE: int
     }
-    class AircraftModel <<value object>> {
-        - name: String
-        - seating_capacity: int
-        - range: double
-        - feature: Set<String>
-    }
 
     class SeatingConfiguration <<value object>> {
         - economy_seats: int
         - premium_economy_seats: int
         - business_seats: int
         - first_seats: int
+    }
+}
+
+package "Aircraft Model Aggregate" {
+    class AircraftModel <<entity>> <<root>> {
+        - name: String
+        - seating_capacity: int
+        - max_range: double
+        - fuel_capacity: double
+        - cruising_speed: double
+        - feature: Set<String>
+    }
+    AircraftModel o--> AircraftManufacturer
+
+    class AircraftManufacturer <<entity>> {
+            - name: String
     }
 }
 
@@ -234,6 +236,7 @@ package "Maintenance Aggregate" {
     }
 }
 
+Aircraft --> AircraftModel
 Airport -up> "N" Aircraft
 Route --> "2" Airport
 MaintenanceRecord --> Aircraft

@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+package "Aircraft Model Aggregate" {
+    class AircraftModel <<entity>> <<root>> {
+        - name: String
+        - seating_capacity: int
+        - max_range: double
+        - fuel_capacity: double
+        - cruising_speed: double
+        - feature: Set<String>
+    }
+    AircraftModel o--> AircraftManufacturer
+
+    class AircraftManufacturer <<entity>> {
+            - name: String
+    }
+}
+
+@enduml
