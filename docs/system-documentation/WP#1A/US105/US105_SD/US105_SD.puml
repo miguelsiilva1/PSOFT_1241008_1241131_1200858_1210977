@@ -1,0 +1,34 @@
+@startuml
+title Update Aircraft status — PUT /aircraft
+
+autoactivate on
+
+actor ATCC
+participant AircraftController
+participant UpdateAircraftStatusUseCase <<@UseCase>>
+participant UpdateAircraftStatusService <<Domain Service>>
+participant AircraftRepository
+
+ATCC -> AircraftController : PUT /aircraft\n{\n\taircraft_registration: {registration_number: ""},\n\tstatus: "IN_FLIGHT"\n}
+
+AircraftController -> AircraftController : extract username from JWT
+alt "User has authorization"
+    AircraftController -> UpdateAircraftStatusUseCase : execute(aircraft_registration, status)
+        UpdateAircraftStatusUseCase -> AircraftRepository : findByIata(aircraft_registration.registration_number)
+        alt "Aircraft exists"
+        AircraftRepository --> UpdateAircraftStatusUseCase : aircraft_object
+        UpdateAircraftStatusUseCase -> UpdateAircraftStatusService : update(aircraft_object, status)
+        UpdateAircraftStatusService --> UpdateAircraftStatusUseCase : aircraft (unsaved)
+        UpdateAircraftStatusUseCase -> AircraftRepository : update(aircraft)
+        AircraftRepository --> UpdateAircraftStatusUseCase : aircraft (persisted)
+    UpdateAircraftStatusUseCase --> AircraftController : aircraft
+AircraftController --> ATCC : 200 OK\n{ { registration_number: aircraft.aircraft_registration.registration_number, status: status }, _links.return }
+        else "The aircraft does not exist in the system"
+AircraftController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+
+else "User does not have authorization"
+AircraftController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

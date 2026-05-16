@@ -4,6 +4,8 @@ hide circle
 skinparam classAttributeIconSize 0
 hide methods
 
+title Register an Aircraft Model: Domain Model
+
 package "Aircraft Model Aggregate" {
     class AircraftModel <<entity>> <<root>> {
         - name: String

@@ -1,0 +1,52 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Register an Aircraft: Architecture — Class Diagram
+
+package "Registering" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - String name
+        - int seating_capacity
+        - double max_range
+        - double fuel_capacity
+        - double cruising_speed
+        - Set<String> feature
+        - AircraftManufacturer manufacturer
+        ---
+        + Aircraft(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+    }
+    interface AircraftRepository {
+        + boolean alreadyExists(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+        + Aircraft save(Aircraft)
+    }
+    class RegisterAircraftService <<Domain Service>> {
+        + Aircraft register(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+    }
+    class RegisterAircraftUseCase <<@UseCase>> {
+        + Aircraft execute(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+    }
+
+    RegisterAircraftUseCase ..> AircraftRepository : alreadyExists()
+    RegisterAircraftUseCase ..> Aircraft : creates >
+    RegisterAircraftUseCase ..> RegisterAircraftService : delegates to >
+    RegisterAircraftUseCase ..> AircraftRepository : save()
+}
+
+package "Catalog" <<rectangle>> {
+    class AircraftModel <<Aggregate Root>> {
+        - name: String
+        - seating_capacity: int
+        - max_range: double
+        - fuel_capacity: double
+        - cruising_speed: double
+        - feature: Set<String>
+        + getName()
+    }
+    interface AircraftModelRepository {
+        + Optional<AircraftModel> findByName(name)
+    }
+
+    RegisterAircraftUseCase .up.> AircraftModelRepository : findByName()
+}
+
+@enduml

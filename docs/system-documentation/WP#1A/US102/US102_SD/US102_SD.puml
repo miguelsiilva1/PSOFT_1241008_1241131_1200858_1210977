@@ -1,0 +1,39 @@
+@startuml
+title Register an Aircraft — POST /aircraft
+
+autoactivate on
+
+actor ATCC
+participant AircraftController
+participant RegisterAircraftUseCase <<@UseCase>>
+participant RegisterAircraftService <<Domain Service>>
+participant AircraftRepository
+participant AircraftManufacturerRepository
+
+ATCC -> AircraftController : POST /aircraft\n{\n\taircraft_registration: {registration_number: ""},\n\taircraft_model: {name: "Boeing 737"},\n\tmanufacturing_date: "16/05/2025",\n\tlast_maintenance: "16/05/2025",\n\tmax_flight_hours_until_maintenance: 200,\n\tmax_days_until_maintenance: 150,\n\tseating_configuration:\n\t\t{\n\t\t\teconomy_seats: 150\n\t\t\tpremium_economy_seats: 70\n\t\t\tbusiness_seats: 35\n\t\t\tfirst_seats: 15\n\t\t}\n\tstatus: "AVAILABLE"\n}
+
+AircraftController -> AircraftController : extract username from JWT
+alt "User has authorization"
+    AircraftController -> RegisterAircraftUseCase : execute(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+        RegisterAircraftUseCase -> AircraftModelRepository : findByName(aircraft_model.name)
+        alt "The model's name exists"
+        AircraftModelRepository --> RegisterAircraftUseCase : aircraft_model_object
+        RegisterAircraftUseCase -> RegisterAircraftService : register(aircraft_registration, aircraft_model_object, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+            RegisterAircraftService -> AircraftRepository : alreadyExists(aircraft_registration)
+            AircraftRepository --> RegisterAircraftService : false
+            RegisterAircraftService -> RegisterAircraftService : new Aircraft(aircraft_registration, aircraft_model_object, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+        RegisterAircraftService --> RegisterAircraftUseCase : aircraft (unsaved)
+        deactivate
+        RegisterAircraftUseCase -> AircraftRepository : save(aircraft)
+        AircraftRepository --> RegisterAircraftUseCase : aircraft (persisted)
+    RegisterAircraftUseCase --> AircraftController : aircraft
+AircraftController --> ATCC : 201 Created\n{ aircraft.registration_number, _links.return }
+        else "The aircraft model does not exist in the system"
+AircraftController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+
+else "User does not have authorization"
+AircraftController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

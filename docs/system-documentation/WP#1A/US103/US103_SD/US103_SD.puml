@@ -1,0 +1,38 @@
+@startuml
+title View Aircraft's details by Registration Number — GET /aircraft
+
+autoactivate on
+
+actor "Backoffice\nOperator/ATCC" as BOATCC
+participant AircraftController
+participant SearchAircraftByIataUseCase <<@UseCase>>
+participant SearchAircraftByIataService <<Domain Service>>
+participant AircraftRepository
+participant AircraftModelRepository
+participant AircraftManufacturerRepository
+
+BOATCC -> AircraftController : GET /aircraft\n{\n\taircraft_registration:\n\t{\n\t\tregistration_number: ""\n\t}\n}
+
+AircraftController -> AircraftController : extract username from JWT
+alt "User has authorization"
+    AircraftController -> SearchAircraftByIataUseCase : execute(aircraft_registration)
+        SearchAircraftByIataUseCase -> AircraftRepository : findByIata(aircraft_registration.registration_number)
+        alt "The aircraft exists"
+        AircraftRepository --> SearchAircraftByIataUseCase : aircraft_object
+        SearchAircraftByIataUseCase -> SearchAircraftByIataService : getDetails(aircraft_object)
+            SearchAircraftByIataService -> AircraftModelRepository : findByName(aicraft_object.model.name)
+            AircraftModelRepository --> SearchAircraftByIataService : aircraft_model_object
+            SearchAircraftByIataService -> AircraftManufacturerRepository : findByName(aicraft_model_object.manufacturer.name)
+            AircraftManufacturerRepository --> SearchAircraftByIataService : aircraft_manufacturer_object
+        SearchAircraftByIataService --> SearchAircraftByIataUseCase : aircraft_object, aircraft_model_object, aircraft_manufacturer_object
+    SearchAircraftByIataUseCase --> AircraftController : aircraft_object, aircraft_model_object, aircraft_manufacturer_object
+AircraftController --> BOATCC : 200 OK\n{ aircraft's details, _links.return }
+        else "The aircraft does not exist in the system"
+AircraftController --> BOATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+
+else "User does not have authorization"
+AircraftController --> BOATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

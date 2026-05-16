@@ -1,0 +1,64 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+@startuml
+'https://plantuml.com/class-diagram
+
+title View Aircraft's details by Registration Number: Architecture — Class Diagram
+
+package "Searching" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - String name
+        - int seating_capacity
+        - double max_range
+        - double fuel_capacity
+        - double cruising_speed
+        - Set<String> feature
+        - AircraftManufacturer manufacturer
+        ---
+
+    }
+    interface AircraftRepository {
+        + Optional<Aircraft> findByIata(aircraft_registration.registration_number)
+    }
+    class SearchAircraftByIataService <<Domain Service>> {
+        + void getDetails(Aircraft)
+    }
+    class SearchAircraftByIataUseCase <<@UseCase>> {
+        + Aircraft execute(aircraft_registration)
+    }
+
+    SearchAircraftByIataUseCase ..> AircraftRepository : findByIata()
+    SearchAircraftByIataUseCase ..> SearchAircraftByIataService : delegates to >
+}
+
+package "Catalog" <<rectangle>> {
+    class AircraftManufacturer <<Aggregate Root>> {
+        - name: String
+        - seating_capacity: int
+        - max_range: double
+        - fuel_capacity: double
+        - cruising_speed: double
+        - feature: Set<String>
+        + getName()
+    }
+    interface AircraftManufacturerRepository {
+        + Optional<AircraftManufacturer> findByName(name)
+    }
+
+    SearchAircraftByIataUseCase .up.> AircraftManufacturerRepository : findByName()
+
+    class AircraftModel <<Aggregate Root>> {
+        - String name
+        + getName()
+    }
+    interface AircraftModelRepository {
+        + Optional<AircraftModel> findByName(name)
+    }
+
+    SearchAircraftByIataUseCase .up.> AircraftModelRepository : findByName()
+}
+
+@enduml
+
+@enduml

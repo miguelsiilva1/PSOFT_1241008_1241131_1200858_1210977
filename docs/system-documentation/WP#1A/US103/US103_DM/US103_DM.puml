@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title View Aircraft's details by Registration Number: Domain Model
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - manufacturing_date: Date
+        - image: String
+        - last_maintenance: Date
+        - days_since_last_maintenance <<calculated>>: int
+        - max_flight_hours_until_maintenance: int
+        - max_days_until_maintenance: int
+    }
+    Aircraft o--> AircraftRegistration
+    Aircraft o--> AircraftStatus
+    Aircraft o--> SeatingConfiguration
+
+    class AircraftRegistration <<value object>> {
+        - registration_number: String
+    }
+    class AircraftStatus <<enum>> {
+        - AVAILABLE: int
+        - IN_FLIGHT: int
+        - INACTIVE: int
+        - UNDER_MAINTENANCE: int
+    }
+
+    class SeatingConfiguration <<value object>> {
+        - economy_seats: int
+        - premium_economy_seats: int
+        - business_seats: int
+        - first_seats: int
+    }
+}
+
+package "Aircraft Model Aggregate" {
+    class AircraftModel <<entity>> <<root>> {
+        - name: String
+        - seating_capacity: int
+        - max_range: double
+        - fuel_capacity: double
+        - cruising_speed: double
+        - feature: Set<String>
+    }
+
+}
+
+package "Aircraft Manufacturer Aggregate" {
+    class AircraftManufacturer <<entity>> <<root>> {
+            - name: String
+    }
+}
+
+AircraftModel o-right-> AircraftManufacturer
+Aircraft o--> AircraftModel
+
+@enduml

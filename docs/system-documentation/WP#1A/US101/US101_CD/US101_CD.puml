@@ -32,7 +32,7 @@ package "Registering" <<rectangle>> {
 
 package "Catalog" <<rectangle>> {
     class AircraftManufacturer <<Aggregate Root>> {
-        - String name
+        - name: String
         + getName()
     }
     interface AircraftManufacturerRepository {

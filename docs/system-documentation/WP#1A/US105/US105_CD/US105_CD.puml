@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+@startuml
+'https://plantuml.com/class-diagram
+
+title Update Aircraft status: Architecture — Class Diagram
+
+package "Updating" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - String name
+        - int seating_capacity
+        - double max_range
+        - double fuel_capacity
+        - double cruising_speed
+        - Set<String> feature
+        - AircraftManufacturer manufacturer
+    }
+    interface AircraftRepository {
+        + Optional<Aircraft> findByIata(aircraft_registration.registration_number)
+        + Aircraft update(Aircraft)
+    }
+    class UpdateAircraftStatusService <<Domain Service>> {
+        + Aircraft update(Aircraft, status)
+    }
+    class UpdateAircraftStatusUseCase <<@UseCase>> {
+        + Aircraft execute(aircraft_registration, status)
+    }
+
+    UpdateAircraftStatusUseCase ..> AircraftRepository : findByIata()
+    UpdateAircraftStatusUseCase ..> UpdateAircraftStatusService : delegates to >
+    UpdateAircraftStatusUseCase ..> Aircraft : updates >
+}
+
+@enduml
