@@ -1,0 +1,32 @@
+@startuml
+title View Airport's details by IATA code — GET /airports/{iata_code}
+
+autoactivate on
+
+actor "Backoffice\nOperator/ATCC" as BOATCC
+participant AirportController
+participant ViewAirportDetailsUseCase <<@UseCase>>
+participant ViewAirportDetailsService <<Domain Service>>
+participant AirportRepository
+
+BOATCC -> AirportController : GET /airports/{iata_code}
+
+AirportController -> AirportController : extract username from JWT
+alt "User has authorization"
+    AirportController -> ViewAirportDetailsUseCase : execute(iata_code)
+        ViewAirportDetailsUseCase -> AirportRepository : findByIataCode(LocationIdentifier)
+        alt "The airport exists"
+            AirportRepository --> ViewAirportDetailsUseCase : airport_objetct
+            ViewAirportDetailsUseCase -> ViewAirportDetailsService : getDetails(aiport_object)
+            ViewAirportDetailsService --> ViewAirportDetailsUseCase : airport_details
+            ViewAirportDetailsUseCase --> AirportController : airport
+            AirportController --> BOATCC : 200 OK\n{ airport_details, _links.return }
+        else "The airport does not exist"
+            AirportController --> BOATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+
+else "User does not have authorization"
+    AirportController --> BOATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

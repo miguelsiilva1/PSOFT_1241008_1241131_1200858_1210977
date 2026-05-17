@@ -1,49 +1,39 @@
 @startuml
-title Loan a Book — POST /loans
+autonumber
+title Register an Airport — POST /airports
 
-actor Patron
-participant LendingController
-participant LoanBookUseCase <<@UseCase>>
-participant BookCopyRepository
-participant LoanBookService <<Domain Service>>
-participant LoanRepository
-participant LoanNotificationService <<@Service>>
-participant Webhook <<External>>
+autoactivate on
 
-Patron -> LendingController : POST /loans\n{ barCode: "BC-0001" }
-activate LendingController
+actor "Backoffice Operator" as BO
+participant AirportController
+participant RegisterAirportUseCase <<@UseCase>>
+participant RegisterAirportService <<Domain Service>>
+participant AirportRepository
 
-LendingController -> LendingController : extract PatronId from JWT
-LendingController -> LoanBookUseCase : execute(barCode, patronId)
-activate LoanBookUseCase
+BO -> AirportController : POST /airports\n{name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images}
 
-LoanBookUseCase -> BookCopyRepository : findByBarCode(BarCode("BC-0001"))
-BookCopyRepository --> LoanBookUseCase : BookCopy
+AirportController -> AirportController : extract username from JWT
+alt "User has authorization"
+    AirportController -> RegisterAirportUseCase : execute(name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images)
+        RegisterAirportUseCase -> AirportRepository : findByIataCode(LocationIdentifier)
+        alt "The Airport's Iata Code exists"
+        AirportRepository --> RegisterAirportUseCase: airport
+        RegisterAirportUseCase -> RegisterAirportService: registerAirport(name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images)
+            RegisterAirportService -> AirportRepository : isAvailable(LocationIdentifier)
+            AirportRepository --> RegisterAirportService : true
+            RegisterAirportService -> RegisterAirportService : new Airport(name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images)
+        RegisterAirportService --> RegisterAirportUseCase : airport(unsaved)
+        deactivate
+        RegisterAirportUseCase -> AirportRepository : save(airport)
+        AirportRepository --> RegisterAirportUseCase : airport (persisted)
+    RegisterAirportUseCase --> AirportController : airport
+AirportController --> BO : 201 Created\n{ airport.iata_code, _links.return }
+    else "The airport does not exist in the system"
+AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
+    end
 
-LoanBookUseCase -> LoanBookService : loan(barCode, patronId)
-activate LoanBookService
-
-LoanBookService -> LoanRepository : isAvailable(barCode)
-LoanRepository --> LoanBookService : true
-
-LoanBookService -> LoanBookService : new Loan(barCode, patronId)\n[registers LoanCreated event]
-LoanBookService --> LoanBookUseCase : loan (unsaved)
-deactivate LoanBookService
-
-LoanBookUseCase -> LoanRepository : save(loan)
-LoanRepository --> LoanBookUseCase : loan (persisted)
-deactivate LoanBookUseCase
-
-note over LoanBookUseCase : @Transactional commits\nSpring fires AFTER_COMMIT events
-
-LendingController --> Patron : 201 Created\n{ loanId, _links.return }
-deactivate LendingController
-
-LendingController -> LoanNotificationService : handle(LoanCreated)\n[AFTER_COMMIT]
-activate LoanNotificationService
-LoanNotificationService -> Webhook : POST /\n{ "event": "LoanCreated",\n  "barCode": "BC-0001",\n  "timestamp": "..." }
-note right: notifications.webhook-url\nno-op if blank
-Webhook --> LoanNotificationService : 200 OK
-deactivate LoanNotificationService
+else "User does not have authorization"
+AirportController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
 
 @enduml

@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Update Airport Status: Architecture — Class Diagram
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<root>> {
+        - String name
+        - LocationIdentifier iata_code
+        - AirportType airport_type
+        - Coordinates coordinates
+        - AirportLocation airport_location
+        - TimeZone time_zone
+        - OperationalHours operational_hours
+        - List<RunwayInfo> runway_info
+        - AirportStatus status
+        - List<ContactInfo> contact_info
+        - List<AirportTerminal> terminals
+        - List<AirportGate> gates
+        - List<AirportService> services
+        - List<String> images
+        ---
+        + updateStatus(AirportStatus status)
+    }
+
+    interface AirportRepository {
+        + Optional<Airport> findByIataCode(LocationIdentifier iata_code)
+        + Airport save(Airport airport)
+    }
+
+    class UpdateAirportService <<Domain Service>> {
+        + Airport updateStatus(Airport airport, AirportStatus status)
+    }
+
+    class UpdateAirportStatusUseCase <<@UseCase>> {
+        + Airport execute(LocationIdentifier iata_code, AirportStatus status)
+    }
+
+    UpdateAirportStatusUseCase ..> AirportRepository : findByIataCode()\nsave()
+    UpdateAirportStatusUseCase ..> UpdateAirportService : delegates to >
+    UpdateAirportService ..> Airport : updates >
+}
+
+@enduml

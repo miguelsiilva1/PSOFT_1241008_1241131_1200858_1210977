@@ -1,11 +1,11 @@
 @startuml
 'https://plantuml.com/class-diagram
-hide circle
 
-title Register an Airport: Architeture - Class Diagram
+title Register an Airport: Architecture — Class Diagram
 
 package "Airport Aggregate" <<rectangle>> {
     class Airport <<root>> {
+        - String name
         - LocationIdentifier iata_code
         - AirportType airport_type
         - Coordinates coordinates
@@ -20,122 +20,30 @@ package "Airport Aggregate" <<rectangle>> {
         - List<AirportService> services
         - List<String> images
         ---
-        + Airport(LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
+        + Airport(name, iata_code, airport_type, coordinates, airport_location, time_zone, operational_hours, runway_info, status, contact_info, terminals, gates, services, images)
     }
 
     class RegisterAirportService <<Domain Service>> {
         ---
-        + Airport airport(LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
+        + Airport registerAirport(String name, LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
     }
 
-    interface RegisterAirportRepository {
-        boolean isAvailable(iata_code)
-        Optional<Airport> findByIataCode(iata_code)
-        Airport save(airport)
+    interface AirportRepository {
+        + boolean isAvailable(LocationIdentifier)
+        + Optional<Airport> findByIataCode(LocationIdentifier)
+        + Airport save(Airport)
     }
 
+    class RegisterAirportUseCase <<@UseCase>> {
+        + Airport execute(String name, LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
+    }
 
 RegisterAirportService ..> Airport : creates >
-
-
-
-
+RegisterAirportUseCase ..> AirportRepository : save() >
+RegisterAirportService ..> AirportRepository : isAvailable() >
+RegisterAirportUseCase ..> RegisterAirportService : delegates to
+RegisterAirportUseCase ..> AirportRepository : findByIataCode() >
 
 }
-
-
-
 
 @enduml
-
-
-package "Airport Aggregate" {
-    class Airport <<entity>> <<root>> {
-        - name: String
-        - images: List<String>
-    }
-    Airport o--> LocationIdentifier
-    Airport o--> AirportType
-    Airport o--> Coordinates
-    Airport o--> AirportLocation
-    Airport o--> TimeZone
-    Airport o--> OperationalHours
-    Airport o--> AirportStatus
-    Airport o--> "N" RunwayInfo
-    Airport o--> "N" ContactInfo
-    Airport o--> "N" AirportTerminal
-    Airport o--> "N" AirportGate
-    Airport o--> "N" AirportService
-
-    class AirportLocation <<value object>> {
-        - city: String
-        - country: String
-        - region: String
-    }
-
-    class AirportTerminal <<value object>> {
-        - terminal: String
-    }
-    class AirportGate <<value object>> {
-        - gate: String
-    }
-    class AirportService <<value object>> {
-        - service: String
-    }
-
-    class AirportType <<entity>> {
-        - name: String
-        - description: String
-    }
-    class LocationIdentifier <<value object>> {
-        - iata_code: String
-    }
-
-    class TimeZone <<entity>> {
-        - abbreviation: String
-        - utc_offset_minutes: int
-        - gmt_offset_minutes: int
-    }
-
-    class OperationalHours <<value object>> {
-        - opening_hours: int
-        - closing_hours: int
-    }
-
-    class ContactInfo <<value object>> {
-        - type: String
-        - contact: String
-        - description: String
-    }
-    ContactInfo o--> ContactInfoType
-    class ContactInfoType <<enum>> {
-        - EMAIL: int
-        - PHONE_NUMBER: int
-        - FAX_NUMBER: int
-        - WEBSITE: int
-        - MAILING_ADDRESS: int
-    }
-
-    class Coordinates <<value object>> {
-        - longitude: double
-        - longitude_direction: char
-        - latitude: double
-        - latitude_direction: char
-    }
-
-    class RunwayInfo <<value object>> {
-        - name: String
-        - length: double
-    }
-    RunwayInfo o--> Orientation
-
-    class Orientation <<value object>> {
-        - orientation: String
-    }
-
-    class AirportStatus <<enum>> {
-        - OPERATIONAL: int
-        - CLOSED: int
-        - UNDER_MAINTENANCE: int
-    }
-}

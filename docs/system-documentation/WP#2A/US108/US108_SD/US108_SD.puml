@@ -1,0 +1,29 @@
+@startuml
+title Search for Airports — GET /airports?city={city}&country={country}&name={name}
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant AirportController
+participant SearchAirportsUseCase <<@UseCase>>
+participant SearchAirportsService <<Domain Service>>
+participant AirportRepository
+
+ATCC -> AirportController : GET /airports?city={city}&country={country}&name={name}
+
+AirportController -> AirportController : extract username from JWT
+alt "User has authorization"
+    AirportController -> SearchAirportsUseCase : execute(city, country, name)
+        SearchAirportsUseCase -> SearchAirportsService : searchAirports(city, country, name)
+            SearchAirportsService -> AirportRepository : searchAirports(city, country, name)
+            AirportRepository --> SearchAirportsService : list_of_airports
+        SearchAirportsService --> SearchAirportsUseCase : list_of_airports
+    SearchAirportsUseCase --> AirportController : list_of_airports
+
+    AirportController --> ATCC : 200 OK\n{ list_of_airports, _links.self }
+
+else "User does not have authorization"
+    AirportController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

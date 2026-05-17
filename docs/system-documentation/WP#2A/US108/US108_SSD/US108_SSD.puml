@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Search for Airports: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S: Asks to search for airports (by city, country, or name)
+S --> ATCC: Shows the list of matching airports
+
+@enduml

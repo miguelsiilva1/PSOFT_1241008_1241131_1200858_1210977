@@ -5,7 +5,7 @@ autonumber
 
 title Register an Airport: Simplified Sequence Diagram
 
-actor BackofficeOperator as BO
+actor "Backoffice Operator" as BO
 participant ":System" as S
 
 BO -> S: Asks to register an Airport
@@ -15,6 +15,6 @@ BO -> S: Types requested data
 S --> BO: Shows all data and requests confirmation
 
 BO -> S: Confirms the data
-S --> BO: Informs operation success
+S --> BO: Registers the Airport and informs operation success
 
 @enduml

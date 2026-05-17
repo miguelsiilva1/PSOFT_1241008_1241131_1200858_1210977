@@ -1,0 +1,42 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Search for Airports: Architecture — Class Diagram
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<root>> {
+        - String name
+        - LocationIdentifier iata_code
+        - AirportType airport_type
+        - Coordinates coordinates
+        - AirportLocation airport_location
+        - TimeZone time_zone
+        - OperationalHours operational_hours
+        - List<RunwayInfo> runway_info
+        - AirportStatus status
+        - List<ContactInfo> contact_info
+        - List<AirportTerminal> terminals
+        - List<AirportGate> gates
+        - List<AirportService> services
+        - List<String> images
+        ---
+    }
+
+    interface AirportRepository {
+        + List<Airport> searchAirports(String city, String country, String name)
+    }
+
+    class SearchAirportsService <<Domain Service>> {
+        + List<Airport> searchAirports(String city, String country, String name)
+    }
+
+    class SearchAirportsUseCase <<@UseCase>> {
+        + List<Airport> execute(String city, String country, String name)
+    }
+
+    SearchAirportsUseCase ..> AirportRepository : searchAirports() >
+    SearchAirportsUseCase ..> SearchAirportsService : delegates to >
+    SearchAirportsService ..> AirportRepository : searchAirports() >
+}
+
+@enduml

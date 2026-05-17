@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title View an Airport's Details: Simplified Sequence Diagram
+
+actor "Backoffice Operator / ATCC" as BO
+participant ":System" as S
+
+BO -> S: Asks to view an Airport's details by its IATA code
+S --> BO: Shows the Airport's details
+
+@enduml
