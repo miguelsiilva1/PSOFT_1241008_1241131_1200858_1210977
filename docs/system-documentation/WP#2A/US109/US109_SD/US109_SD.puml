@@ -1,5 +1,5 @@
 @startuml
-title Update Airport Status — PUT /airports/{iata_code}
+title Update Airport Status — PATCH /airports/{iata_code}
 
 autoactivate on
 
@@ -9,7 +9,7 @@ participant UpdateAirportStatusUseCase <<@UseCase>>
 participant UpdateAirportService <<Domain Service>>
 participant AirportRepository
 
-BO -> AirportController : PUT /airports/{iata_code}\n{ "status": "CLOSED" }
+BO -> AirportController : PATCH /airports/{iata_code}\n{ "status": "CLOSED" }
 
 AirportController -> AirportController : extract username from JWT
 alt "User has authorization"

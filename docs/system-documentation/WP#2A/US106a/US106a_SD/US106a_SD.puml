@@ -1,5 +1,5 @@
 @startuml
-title Add Airplane Certification to Airport — PATCH /airports/{iataCode}/certifications
+title Add Airplane Certification to Airport — PUT /airports/{iata_code}/certifications
 
 autoactivate on
 
@@ -8,24 +8,24 @@ participant AirportController
 participant CertifyAircraftUseCase <<@UseCase>>
 participant CertifyAircraftService <<Domain Service>>
 participant AirportRepository
-participant AircraftRepository
+participant AircraftModelRepository
 
-BO -> AirportController : PUT /airports/{iata_code}/certifications\n{ "registration_number": "XXX" }
+BO -> AirportController : PUT /airports/{iata_code}/certifications\n{ "model_name": "" }
 
 AirportController -> AirportController : extract username from JWT
 alt "User has authorization"
-    AirportController -> CertifyAircraftUseCase : execute(iata_code, registration_number)
+    AirportController -> CertifyAircraftUseCase : execute(iata_code, name)
         CertifyAircraftUseCase -> AirportRepository : findByIataCode(iata_code)
 
         alt "The airport exists"
             AirportRepository --> CertifyAircraftUseCase : airport_object
 
-            CertifyAircraftUseCase -> AircraftRepository : findByRegistrationNumber(registration_number)
+            CertifyAircraftUseCase -> AircraftModelRepository : findByName(name)
 
-            alt "The aircraft exists"
-                AircraftRepository --> CertifyAircraftUseCase : aircraft_object
+            alt "The aircraft model exists"
+                AircraftModelRepository --> CertifyAircraftUseCase : aircraft_model_object
 
-                CertifyAircraftUseCase -> CertifyAircraftService : certifyAircraft(airport_object, aircraft_object)
+                CertifyAircraftUseCase -> CertifyAircraftService : certifyAircraftModel(airport_object, aircraft_model_object)
                 CertifyAircraftService --> CertifyAircraftUseCase : airport_object (unsaved)
 
                 CertifyAircraftUseCase -> AirportRepository : save(airport_object)
@@ -34,7 +34,7 @@ alt "User has authorization"
                 CertifyAircraftUseCase --> AirportController : airport_object
                 AirportController --> BO : 200 OK\n{ airport_object, _links.self }
 
-            else "The aircraft does not exist"
+            else "The aircraft model does not exist"
                 AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
             end
 

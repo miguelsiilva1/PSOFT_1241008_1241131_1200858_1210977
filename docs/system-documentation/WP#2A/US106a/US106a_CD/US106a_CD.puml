@@ -5,7 +5,7 @@ title Add Airplane Certification to Airport: Architecture — Class Diagram
 
 package "Airport Aggregate" <<rectangle>> {
     class Airport <<root>> {
-        - Set<Aircraft> certified_aircrafts
+        - Set<AircraftModel> certified_models
         ---
     }
 
@@ -16,30 +16,26 @@ package "Airport Aggregate" <<rectangle>> {
 }
 
 package "Aircraft Aggregate" <<rectangle>> {
-    class Aircraft <<root>> {
-        - AircraftRegistration registration_number
-        ---
-    }
+    class AircraftModel <<Aggregate Root>> {
+            - String name
+            + getName()
+        }
 
-    class AircraftRegistration <<value object>> {
-        - String registration_number
-    }
-
-    interface AircraftRepository {
-        + Optional<Aircraft> findByRegistrationNumber(AircraftRegistration registration)
+    interface AircraftModelRepository {
+        + Optional<AircraftModel> findByName(name)
     }
 }
 
 class CertifyAircraftService <<Domain Service>> {
-    + void certify(Airport airport, Aircraft aircraft)
+    + void certify(Airport airport, AircraftModel model)
 }
 
 class CertifyAircraftUseCase <<@UseCase>> {
-    + Airport execute(LocationIdentifier iata_code, String registration_number)
+    + Airport execute(LocationIdentifier iata_code, String name)
 }
 
 CertifyAircraftUseCase ..> AirportRepository : findByIataCode()\nsave()
-CertifyAircraftUseCase ..> AircraftRepository : findByRegistrationNumber()
+CertifyAircraftUseCase ..> AircraftModelRepository : findByName()
 CertifyAircraftUseCase ..> CertifyAircraftService : delegates to >
 CertifyAircraftService ..> Airport : modifies >
 

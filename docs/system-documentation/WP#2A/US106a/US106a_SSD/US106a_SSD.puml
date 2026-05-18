@@ -9,7 +9,7 @@ actor "Backoffice Operator / ATCC" as BO
 participant ":System" as S
 
 BO -> S: Asks to add an airplane certification to an airport
-S --> BO: Requests Iata Code and Aircraft Registration Number
+S --> BO: Requests Iata Code and Aircraft Model
 
 BO -> S:Types requested data
 S --> BO: Certifies the aircraft for the airport and informs operation success
