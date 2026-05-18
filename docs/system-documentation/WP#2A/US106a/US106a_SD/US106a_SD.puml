@@ -1,0 +1,49 @@
+@startuml
+title Add Airplane Certification to Airport — PATCH /airports/{iataCode}/certifications
+
+autoactivate on
+
+actor "Backoffice Operator / ATCC" as BO
+participant AirportController
+participant CertifyAircraftUseCase <<@UseCase>>
+participant CertifyAircraftService <<Domain Service>>
+participant AirportRepository
+participant AircraftRepository
+
+BO -> AirportController : PUT /airports/{iata_code}/certifications\n{ "registration_number": "XXX" }
+
+AirportController -> AirportController : extract username from JWT
+alt "User has authorization"
+    AirportController -> CertifyAircraftUseCase : execute(iata_code, registration_number)
+        CertifyAircraftUseCase -> AirportRepository : findByIataCode(iata_code)
+
+        alt "The airport exists"
+            AirportRepository --> CertifyAircraftUseCase : airport_object
+
+            CertifyAircraftUseCase -> AircraftRepository : findByRegistrationNumber(registration_number)
+
+            alt "The aircraft exists"
+                AircraftRepository --> CertifyAircraftUseCase : aircraft_object
+
+                CertifyAircraftUseCase -> CertifyAircraftService : certifyAircraft(airport_object, aircraft_object)
+                CertifyAircraftService --> CertifyAircraftUseCase : airport_object (unsaved)
+
+                CertifyAircraftUseCase -> AirportRepository : save(airport_object)
+                AirportRepository --> CertifyAircraftUseCase : airport_object (persisted)
+
+                CertifyAircraftUseCase --> AirportController : airport_object
+                AirportController --> BO : 200 OK\n{ airport_object, _links.self }
+
+            else "The aircraft does not exist"
+                AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
+            end
+
+        else "The airport does not exist"
+            AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+
+else "User does not have authorization"
+    AirportController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml
