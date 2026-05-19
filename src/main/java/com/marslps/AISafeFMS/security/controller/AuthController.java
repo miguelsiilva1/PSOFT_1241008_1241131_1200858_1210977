@@ -22,7 +22,7 @@ public class AuthController {
         this.jwt_service = jwt_service;
     }
 
-    @PostMapping("/login")
+    @PostMapping
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
         authentication_manager.authenticate(
                 new UsernamePasswordAuthenticationToken(

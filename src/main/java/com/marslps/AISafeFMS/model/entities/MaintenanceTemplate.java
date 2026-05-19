@@ -1,10 +1,10 @@
 package com.marslps.AISafeFMS.model.entities;
 
 import com.marslps.AISafeFMS.model.enums.MaintenanceTemplateType;
-import com.marslps.AISafeFMS.model.vo.Checklist;
 import com.marslps.AISafeFMS.model.vo.NumberedItem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 
 import java.util.*;
@@ -17,11 +17,11 @@ public class MaintenanceTemplate {
     private MaintenanceTemplateType type;
     @Column @NotBlank
     private String name;
-    @ElementCollection @NotBlank
+    @ElementCollection @NotEmpty
     private Set<String> applicable_models;
-    @Embedded
+    @JoinColumn @OneToOne(cascade = CascadeType.ALL)
     private Checklist checklist;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private MaintenancePart part;
     @Column @Positive
     private double cost;
@@ -36,7 +36,7 @@ public class MaintenanceTemplate {
     }
     public MaintenanceTemplate(MaintenanceTemplateType type,
                                @NotBlank String name,
-                               Set<String> applicable_models,
+                               @NotEmpty Set<String> applicable_models,
                                Checklist checklist,
                                MaintenancePart part,
                                @Positive double cost) {

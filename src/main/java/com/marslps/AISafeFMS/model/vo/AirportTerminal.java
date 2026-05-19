@@ -8,4 +8,5 @@ public record AirportTerminal(@NotBlank String terminal) {
     public AirportTerminal(@NotBlank String terminal) {
         this.terminal = terminal;
     }
+    public AirportTerminal() {this("something");}
 }

@@ -1,6 +1,5 @@
 package com.marslps.AISafeFMS.model.entities;
 
-import com.marslps.AISafeFMS.model.vo.NonEmptyString;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;

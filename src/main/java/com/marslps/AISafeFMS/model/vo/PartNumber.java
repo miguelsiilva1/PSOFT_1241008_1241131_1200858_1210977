@@ -15,4 +15,5 @@ public record PartNumber(@NotBlank String part_number) {
         }
         this.part_number = clean_part_number;
     }
+    public PartNumber() {this("something");}
 }

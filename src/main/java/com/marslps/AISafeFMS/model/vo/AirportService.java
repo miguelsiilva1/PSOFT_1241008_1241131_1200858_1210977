@@ -8,4 +8,5 @@ public record AirportService(@NotBlank String service) {
     public AirportService(@NotBlank String service) {
         this.service = service;
     }
+    public AirportService() {this("something");}
 }

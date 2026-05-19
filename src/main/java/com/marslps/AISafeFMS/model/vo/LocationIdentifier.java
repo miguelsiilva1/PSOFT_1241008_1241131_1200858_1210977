@@ -15,4 +15,5 @@ public record LocationIdentifier(@NotBlank String iata_code) {
         }
         this.iata_code = iata_code;
     }
+    public LocationIdentifier() {this("ZZZ");}
 }

@@ -1,7 +1,6 @@
 package com.marslps.AISafeFMS.model.entities;
 
 import com.marslps.AISafeFMS.model.enums.AircraftStatus;
-import com.marslps.AISafeFMS.model.vo.AircraftModel;
 import com.marslps.AISafeFMS.model.vo.AircraftRegistration;
 import com.marslps.AISafeFMS.model.vo.SeatingConfiguration;
 import jakarta.persistence.*;
@@ -18,7 +17,7 @@ public class Aircraft {
     private AircraftRegistration registration_number;
     @JoinColumn @ManyToOne
     private AircraftManufacturer manufacturer;
-    @Embedded
+    @JoinColumn @ManyToOne
     private AircraftModel model;
     @Embedded
     private SeatingConfiguration seating_configuration;

@@ -11,4 +11,5 @@ public record AircraftRegistration(@NotBlank String registration_number) {
     public AircraftRegistration(@NotBlank String registration_number) {
         this.registration_number = registration_number;
     }
+    public AircraftRegistration() {this("something");}
 }
