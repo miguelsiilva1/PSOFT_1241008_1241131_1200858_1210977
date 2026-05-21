@@ -1,5 +1,7 @@
 package com.marslps.AISafeFMS.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.marslps.AISafeFMS.model.enums.MaintenanceTemplateType;
 import com.marslps.AISafeFMS.model.vo.NumberedItem;
 import jakarta.persistence.*;
@@ -26,20 +28,15 @@ public class MaintenanceTemplate {
     @Column @Positive
     private double cost;
 
-    public MaintenanceTemplate() {
-        this.type = MaintenanceTemplateType.OVERHAUL;
-        this.name = "something";
-        this.applicable_models = new HashSet<>(Arrays.asList("something"));
-        this.checklist = new Checklist(new ArrayList<>(Arrays.asList(new NumberedItem())));
-        this.part = new MaintenancePart();
-        this.cost = 30.9;
-    }
-    public MaintenanceTemplate(MaintenanceTemplateType type,
-                               @NotBlank String name,
-                               @NotEmpty Set<String> applicable_models,
-                               Checklist checklist,
-                               MaintenancePart part,
-                               @Positive double cost) {
+    protected MaintenanceTemplate() {}
+
+    @JsonCreator
+    public MaintenanceTemplate(@JsonProperty("type") MaintenanceTemplateType type,
+                               @JsonProperty("name") @NotBlank String name,
+                               @JsonProperty("applicable_models") @NotEmpty Set<String> applicable_models,
+                               @JsonProperty("checklist") Checklist checklist,
+                               @JsonProperty("part") MaintenancePart part,
+                               @JsonProperty("cost") @Positive double cost) {
         this.type = type;
         this.name = name;
         this.applicable_models = applicable_models;

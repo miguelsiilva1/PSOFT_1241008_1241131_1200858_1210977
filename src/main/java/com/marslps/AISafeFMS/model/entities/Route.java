@@ -28,16 +28,7 @@ public class Route {
     @Column
     private boolean active;
 
-    public Route() {
-        this.id = new RouteID();
-        this.departure = new Airport();
-        this.destination = new Airport();
-        this.flight_time = 0.0;
-        this.flight_distance = 0.0;
-        this.min_aircraft_range = 0.0;
-        this.min_aircraft_capacity = 0.0;
-        this.active = true;
-    }
+    protected Route() {}
     public Route(RouteID id,
                  Airport departure,
                  Airport destination,

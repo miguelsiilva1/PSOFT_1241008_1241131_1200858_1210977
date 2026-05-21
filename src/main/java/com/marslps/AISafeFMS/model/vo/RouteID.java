@@ -9,7 +9,7 @@ public record RouteID(@NotBlank String id) {
     public RouteID(@NotBlank String id) {
         this.id = id;
     }
-    public RouteID() {
+    protected RouteID() {
         this("something");
     }
 }

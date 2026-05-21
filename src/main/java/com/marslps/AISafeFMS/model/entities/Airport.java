@@ -3,6 +3,7 @@ package com.marslps.AISafeFMS.model.entities;
 import com.marslps.AISafeFMS.model.enums.AirportStatus;
 import com.marslps.AISafeFMS.model.vo.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.*;
 
@@ -30,30 +31,16 @@ public class Airport {
     private OperationalHours operational_hours;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<ContactInfo> contact_info;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<AirportTerminal> terminals;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<AirportGate> gates;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<AirportService> services;
-    @ElementCollection(fetch = FetchType.LAZY) @Column(name = "images_base64", columnDefinition = "TEXT")
     private List<String> images;
 
-    public Airport() {
-        this.iata_code = new LocationIdentifier("AAA");
-        this.coordinates = new Coordinates(0, 'W',0, 'N');
-        this.airport_location = new AirportLocation();
-        this.airport_type = new AirportType();
-        this.certified_aircrafts = new HashSet<>();
-        this.runway_info = new ArrayList<>();
-        this.time_zone =  new TimeZone();
-        this.operational_hours = new OperationalHours();
-        this.contact_info = new ArrayList<>();
-        this.terminals = new ArrayList<>();
-        this.gates = new ArrayList<>();
-        this.services = new ArrayList<>();
-        this.images = new ArrayList<>();
-    }
+    protected Airport() {}
+
     public Airport(LocationIdentifier iata_code,
                    Coordinates coordinates,
                    AirportLocation airport_location,

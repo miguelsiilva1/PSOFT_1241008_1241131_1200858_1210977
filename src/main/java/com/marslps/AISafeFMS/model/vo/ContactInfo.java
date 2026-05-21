@@ -46,7 +46,7 @@ public record ContactInfo(ContactInfoType type, @NotBlank String contact, @NotBl
         this.contact = clean_contact;
         this.description = description.trim();
     }
-    public ContactInfo() {
+    protected ContactInfo() {
         this(ContactInfoType.WEBSITE, "www.something.com", "something");
     }
 }

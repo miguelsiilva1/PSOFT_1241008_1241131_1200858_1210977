@@ -8,7 +8,7 @@ public record AirportLocation(@NotBlank String city, @NotBlank String country, @
         this.country = country;
         this.region = region;
     }
-    public AirportLocation() {
+    protected AirportLocation() {
         this("something", "something", "something");
     }
 }

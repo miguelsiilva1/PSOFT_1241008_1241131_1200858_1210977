@@ -11,7 +11,7 @@ public record RunwayInfo(@NotBlank String name, @Positive double length, @Embedd
         this.length = length;
         this.orientation = orientation;
     }
-    public RunwayInfo() {
+    protected RunwayInfo() {
         this("something", 0.0, null);
     }
 }

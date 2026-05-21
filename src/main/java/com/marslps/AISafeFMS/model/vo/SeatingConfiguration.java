@@ -2,16 +2,17 @@ package com.marslps.AISafeFMS.model.vo;
 
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Embeddable
-public record SeatingConfiguration(@Positive int economy_seats, @Positive int premium_economy_seats, @Positive int business_seats, @Positive int first_seats) {
-    public SeatingConfiguration(@Positive int economy_seats, @Positive int premium_economy_seats, @Positive int business_seats, @Positive int first_seats) {
+public record SeatingConfiguration(@PositiveOrZero int economy_seats, @PositiveOrZero int premium_economy_seats, @PositiveOrZero int business_seats, @PositiveOrZero int first_seats) {
+    public SeatingConfiguration(@PositiveOrZero int economy_seats, @PositiveOrZero int premium_economy_seats, @PositiveOrZero int business_seats, @PositiveOrZero int first_seats) {
         this.economy_seats = economy_seats;
         this.premium_economy_seats = premium_economy_seats;
         this.business_seats = business_seats;
         this.first_seats = first_seats;
     }
-    public SeatingConfiguration() {
+    protected SeatingConfiguration() {
         this(1, 1, 1, 1);
     }
 }

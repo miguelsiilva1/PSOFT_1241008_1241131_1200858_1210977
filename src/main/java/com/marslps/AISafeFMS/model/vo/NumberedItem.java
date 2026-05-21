@@ -10,7 +10,7 @@ public record NumberedItem(@Positive int id, @NotBlank String task) {
         this.id = id;
         this.task = task;
     }
-    public NumberedItem() {
+    protected NumberedItem() {
         this(1, "something");
     }
 }

@@ -1,5 +1,7 @@
 package com.marslps.AISafeFMS.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -11,13 +13,13 @@ public class AirportType {
     private Long db_id;
     @Column @NotBlank
     private String type;
-    public AirportType(@NotBlank String type) {
+
+    @JsonCreator
+    public AirportType(@JsonProperty("type") @NotBlank String type) {
         this.type = type;
     }
 
-    public AirportType() {
-        this.type = "something";
-    }
+    protected AirportType() {}
 
     @Override
     public boolean equals(Object other) {

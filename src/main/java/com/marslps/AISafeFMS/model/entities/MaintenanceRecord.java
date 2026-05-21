@@ -22,15 +22,7 @@ public class MaintenanceRecord extends MaintenanceTemplate {
     @Column
     private boolean completed;
 
-    public MaintenanceRecord() {
-        super();
-        this.aircraft = new Aircraft();
-        this.description = "something";
-        this.start_date = new Date();
-        this.expected_duration = 0;
-        this.end_date = new Date();
-        this.completed = false;
-    }
+    protected MaintenanceRecord() {}
 
     public MaintenanceRecord(MaintenanceTemplate maintenance_template,
                              Aircraft aircraft,

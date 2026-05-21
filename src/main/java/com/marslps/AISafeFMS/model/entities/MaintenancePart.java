@@ -20,12 +20,7 @@ public class MaintenancePart {
     @Embedded
     private PartNumber part_number;
 
-    public MaintenancePart() {
-        this.name = "something";
-        this.description = "";
-        this.stock_quantity = 1;
-        this.part_number = new PartNumber("F57551054000");
-    }
+    protected MaintenancePart() {}
 
     public MaintenancePart(@NotBlank String name,
                            String description,

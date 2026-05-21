@@ -8,5 +8,5 @@ public record AirportGate(@NotBlank String gate) {
     public AirportGate(@NotBlank String gate) {
         this.gate = gate;
     }
-    public AirportGate() {this("something");}
+    protected AirportGate() {this("something");}
 }

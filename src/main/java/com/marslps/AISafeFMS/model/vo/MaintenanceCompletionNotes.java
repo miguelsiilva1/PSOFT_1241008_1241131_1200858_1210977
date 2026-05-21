@@ -9,7 +9,7 @@ public record MaintenanceCompletionNotes(String completion_notes) {
     public MaintenanceCompletionNotes(String completion_notes) {
         this.completion_notes = completion_notes;
     }
-    public MaintenanceCompletionNotes() {
+    protected MaintenanceCompletionNotes() {
         this("");
     }
 }

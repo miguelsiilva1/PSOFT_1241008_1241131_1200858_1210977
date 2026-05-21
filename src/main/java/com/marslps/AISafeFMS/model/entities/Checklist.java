@@ -18,5 +18,5 @@ public class Checklist {
     public Checklist(List<NumberedItem> checklist) {
         this.checklist = checklist;
     }
-    public Checklist() {this(new ArrayList<>());}
+    protected Checklist() {}
 }

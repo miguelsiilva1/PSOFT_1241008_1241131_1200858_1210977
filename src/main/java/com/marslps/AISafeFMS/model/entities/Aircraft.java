@@ -40,21 +40,7 @@ public class Aircraft {
     @Column
     private AircraftStatus status;
 
-    public Aircraft() {
-        this.registration_number = new AircraftRegistration("1");
-        this.manufacturer = new AircraftManufacturer("");
-        this.model = new AircraftModel("something", 1, 100.1, Set.of("something"));
-        this.seating_configuration = new SeatingConfiguration(100, 50, 40, 20);
-        this.fuel_capacity = 250.0;
-        this.cruising_speed = 900.0;
-        this.manufactoring_date = new Date();
-        this.image = null;
-        this.last_maintenance = new Date();
-        this.days_since_last_maintenance = 1;
-        this.max_flight_hours_until_maintenance = 1;
-        this.max_days_until_maintenance = 1;
-        this.status = AircraftStatus.AVAILABLE;
-    }
+    protected Aircraft() {}
 
     public Aircraft(AircraftRegistration registration_number,
                     AircraftManufacturer manufacturer,

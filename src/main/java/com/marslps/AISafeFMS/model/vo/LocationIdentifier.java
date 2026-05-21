@@ -13,7 +13,7 @@ public record LocationIdentifier(@NotBlank String iata_code) {
         if(!clean_iata_code.matches("[A-Z]{3}")) {
             throw new IllegalIataCodeException("We're sorry, but the IATA code must be 3 letters long.");
         }
-        this.iata_code = iata_code;
+        this.iata_code = clean_iata_code;
     }
-    public LocationIdentifier() {this("ZZZ");}
+    protected LocationIdentifier() {this("ZZZ");}
 }

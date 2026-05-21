@@ -32,17 +32,7 @@ public class Flight {
     @Enumerated
     private FlightStatus status;
 
-    public Flight() {
-        this.id = new FlightID();
-        this.route = new Route();
-        this.aircraft = new Aircraft();
-        this.scheduled_departure = new Date();
-        this.delayed_hours = 0.0;
-        this.effective_departure = new Date();
-        this.scheduled_arrival = new Date();
-        this.effective_arrival = new Date();
-        this.status = FlightStatus.SCHEDULED;
-    }
+    protected Flight() {}
     public Flight(FlightID id,
                   Route route,
                   Aircraft aircraft,

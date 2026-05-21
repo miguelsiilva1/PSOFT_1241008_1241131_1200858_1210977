@@ -9,7 +9,7 @@ public record FlightID(@NotBlank String id) {
     public FlightID(@NotBlank String id) {
         this.id = id;
     }
-    public FlightID() {
+    protected FlightID() {
         this("something");
     }
 }

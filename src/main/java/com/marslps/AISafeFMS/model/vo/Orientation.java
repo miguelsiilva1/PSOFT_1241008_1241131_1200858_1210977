@@ -17,5 +17,5 @@ public record Orientation(@NotBlank String orientation) {
         }
         this.orientation = clean_orientation;
     }
-    public Orientation() {this("N");}
+    protected Orientation() {this("N");}
 }

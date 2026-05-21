@@ -10,7 +10,7 @@ public record OperationalHours(@Positive int opening_hours, @Positive int closin
         this.opening_hours = opening_hours;
         this.closing_hours = closing_hours;
     }
-    public OperationalHours() {
+    protected OperationalHours() {
         this(1, 1);
     }
 }

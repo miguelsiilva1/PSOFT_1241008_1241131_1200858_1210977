@@ -3,6 +3,7 @@ package com.marslps.AISafeFMS.model.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.Objects;
 
@@ -13,9 +14,19 @@ public class TimeZone {
     @NotBlank
     private String abbreviation;
     @Column
-    private @Positive int utc_offset_minutes;
+    private @PositiveOrZero int utc_offset_minutes;
     @Column
-    private @Positive int gmt_offset_minutes;
+    private @PositiveOrZero int gmt_offset_minutes;
+
+    protected TimeZone() {}
+
+    public TimeZone(@NotBlank String abbreviation,
+                    @PositiveOrZero int utc_offset_minutes,
+                    @PositiveOrZero int gmt_offset_minutes) {
+        this.abbreviation = abbreviation;
+        this.utc_offset_minutes = utc_offset_minutes;
+        this.gmt_offset_minutes = gmt_offset_minutes;
+    }
 
     @Override
     public boolean equals(Object other) {
