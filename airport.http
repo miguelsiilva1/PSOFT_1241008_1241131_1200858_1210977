@@ -1,0 +1,76 @@
+### Login
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "username": "backoffice",
+  "password": "1234"
+}
+
+> {%
+    client.global.set("auth_token", response.body.token);
+%}
+
+### US 106 - Registar Aeroporto
+POST http://localhost:8080/api/airports
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "Aeroporto de Teste",
+  "iata": {
+    "iata": "TSA"
+  },
+  "coordinates": {
+    "longitude": -8.9,
+    "longitude_direction": "W",
+    "latitude": 38.7,
+    "latitude_direction": "N"
+  },
+  "airport_location": {
+    "city": "Porto",
+    "country": "Portugal",
+    "region": "Europa"
+  },
+  "airport_type": "Civil",
+  "time_zone": "GMT",
+  "status": "OPERATIONAL",
+  "operational_hours": {
+    "opening_hours": 6,
+    "closing_hours": 23
+  },
+  "runway_info": [
+    {
+      "name": "03/21",
+      "length": 3805.0,
+      "orientation": {
+        "orientation": "NE"
+      }
+    }
+  ],
+  "contact_info": [
+    {
+      "type": "EMAIL",
+      "contact": "geral@aeroporto.pt",
+      "description": "Contacto Geral"
+    }
+  ],
+  "terminals": [
+    { "terminal": "T1" }
+  ],
+  "gates": [
+    { "gate": "G42" }
+  ],
+  "services": [
+    { "service": "Free Wi-Fi" }
+  ],
+  "images": []
+}
+
+### Listar Aeroportos
+GET http://localhost:8080/api/airports
+Authorization: Bearer {{auth_token}}
+
+### Obter Aeroportos por IATA
+GET http://localhost:8080/api/airports/TSA
+Authorization: Bearer {{auth_token}}

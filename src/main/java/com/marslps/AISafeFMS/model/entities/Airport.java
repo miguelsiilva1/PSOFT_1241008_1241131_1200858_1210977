@@ -4,15 +4,19 @@ import com.marslps.AISafeFMS.model.enums.AirportStatus;
 import com.marslps.AISafeFMS.model.vo.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.Getter;
 
 import java.util.*;
 
 @Entity
+@Getter
 public class Airport {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "airport_db_id")
-    private Long db_id;
+    private Long id;
+    @Column
+    private String name;
     @Embedded
-    private LocationIdentifier iata_code;
+    private LocationIdentifier iata;
     @Embedded
     private Coordinates coordinates;
     @Embedded
@@ -37,16 +41,19 @@ public class Airport {
     private List<AirportGate> gates;
     @ElementCollection(fetch = FetchType.LAZY)
     private List<AirportService> services;
+    @ElementCollection(fetch = FetchType.LAZY)
     private List<String> images;
 
     protected Airport() {}
 
-    public Airport(LocationIdentifier iata_code,
+    public Airport(String name,
+                   LocationIdentifier iata,
                    Coordinates coordinates,
                    AirportLocation airport_location,
                    AirportType airport_type,
                    Set<Aircraft> certified_aircrafts,
                    List<RunwayInfo> runway_info,
+                   AirportStatus status,
                    TimeZone time_zone,
                    OperationalHours operational_hours,
                    List<ContactInfo> contact_info,
@@ -54,12 +61,14 @@ public class Airport {
                    List<AirportGate> gates,
                    List<AirportService> services,
                    List<String> images) {
-        this.iata_code = iata_code;
+        this.name = name;
+        this.iata = iata;
         this.coordinates = coordinates;
         this.airport_location = airport_location;
         this.airport_type = airport_type;
         this.certified_aircrafts = certified_aircrafts;
         this.runway_info = runway_info;
+        this.status = status;
         this.time_zone = time_zone;
         this.operational_hours = operational_hours;
         this.contact_info = contact_info;
@@ -69,13 +78,17 @@ public class Airport {
         this.images = images;
     }
 
+    public LocationIdentifier obtainIata() {
+        return this.iata;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof Airport airport)) {return false;}
-        return Objects.equals(this.iata_code, airport.iata_code);
+        return Objects.equals(this.iata, airport.iata);
     }
     @Override
     public int hashCode() {
-        return Objects.hash(this.iata_code);
+        return Objects.hash(this.iata);
     }
 }

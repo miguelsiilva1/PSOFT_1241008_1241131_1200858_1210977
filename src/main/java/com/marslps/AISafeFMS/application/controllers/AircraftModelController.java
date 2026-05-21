@@ -32,7 +32,7 @@ public class AircraftModelController {
     }
 
     @PostMapping()
-    @PreAuthorize("hasRole('BACKOFFICE_OPERATOR')")
+    @PreAuthorize("hasRole('BACKOFFICE_OP')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> registerAircraftModel(@Valid @RequestBody RegisterAircraftModelRequest request) {
         try {

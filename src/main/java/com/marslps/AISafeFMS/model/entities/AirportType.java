@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
 import java.util.Objects;
 
 @Entity
+@Getter
 public class AirportType {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "airport_type_db_id")
     private Long db_id;

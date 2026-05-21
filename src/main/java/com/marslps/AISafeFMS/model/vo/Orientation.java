@@ -12,7 +12,7 @@ import java.util.*;
 public record Orientation(@NotBlank String orientation) {
     public Orientation(@NotBlank String orientation) {
         String clean_orientation = orientation.trim();
-        if(!clean_orientation.matches("^(N|S|E|W|NNE|ENE|ESE|SSE|SSW|WSW|WNW|NNW)$")) {
+        if(!clean_orientation.matches("^(N|S|E|W|NE|SE|SW|NW|NNE|ENE|ESE|SSE|SSW|WSW|WNW|NNW)$")) {
             throw new IllegalOrientationException("We're sorry, but that orientation is invalid in our system!");
         }
         this.orientation = clean_orientation;

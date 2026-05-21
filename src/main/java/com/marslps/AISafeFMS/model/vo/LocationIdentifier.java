@@ -7,13 +7,13 @@ import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
 
 @Embeddable
-public record LocationIdentifier(@NotBlank String iata_code) {
-    public LocationIdentifier(@NotBlank String iata_code) {
-        String clean_iata_code = iata_code.trim();
-        if(!clean_iata_code.matches("[A-Z]{3}")) {
+public record LocationIdentifier(@NotBlank String iata) {
+    public LocationIdentifier(@NotBlank String iata) {
+        String clean_iata = iata.trim();
+        if(!clean_iata.matches("[A-Z]{3}")) {
             throw new IllegalIataCodeException("We're sorry, but the IATA code must be 3 letters long.");
         }
-        this.iata_code = clean_iata_code;
+        this.iata = clean_iata;
     }
     protected LocationIdentifier() {this("ZZZ");}
 }
