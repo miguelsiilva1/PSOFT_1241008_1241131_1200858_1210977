@@ -1,6 +1,7 @@
 package com.marslps.AISafeFMS.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import java.util.Objects;
 @Getter
 public class AirportType {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "airport_type_db_id")
+    @JsonIgnore
     private Long db_id;
     @Column @NotBlank
     private String type;

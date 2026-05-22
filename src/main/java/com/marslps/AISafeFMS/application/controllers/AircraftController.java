@@ -47,7 +47,7 @@ public class AircraftController {
     }
 
     @PostMapping()
-    @PreAuthorize("hasRole('BACKOFFICE_OP')")
+    @PreAuthorize("hasAuthority('BACKOFFICE_OP')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> registerAircraft(@Valid @RequestBody RegisterAircraftRequest request) {
         try {
@@ -85,7 +85,7 @@ public class AircraftController {
     }
 
     @GetMapping(params = "registration_number")
-    @PreAuthorize("hasAnyRole('BACKOFFICE_OP', 'ATCC')")
+    @PreAuthorize("hasAnyAuthority('BACKOFFICE_OP', 'ATCC')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> searchAircraftByRegistrationNumber(@RequestParam("registration_number") String registration_number) {
         try {
@@ -107,7 +107,7 @@ public class AircraftController {
     }
 
     @GetMapping(params = "model_name")
-    @PreAuthorize("hasRole('ATCC')")
+    @PreAuthorize("hasAuthority('ATCC')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> searchAircraftByModel(@RequestParam("model_name") String model_name) {
         try {
@@ -131,7 +131,7 @@ public class AircraftController {
         }
     }
     @GetMapping(params = "status")
-    @PreAuthorize("hasRole('ATCC')")
+    @PreAuthorize("hasAuthority('ATCC')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> searchAircraftByStatus(@RequestParam("status") String status) {
         try {
@@ -155,7 +155,7 @@ public class AircraftController {
         }
     }
     @GetMapping(params = "year")
-    @PreAuthorize("hasRole('ATCC')")
+    @PreAuthorize("hasAuthority('ATCC')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> searchAircraftByManufacturingYear(@RequestParam("year") int year) {
         try {
@@ -180,7 +180,7 @@ public class AircraftController {
     }
 
     @PutMapping()
-    @PreAuthorize("hasRole('ATCC')")
+    @PreAuthorize("hasAuthority('ATCC')")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> updateAircraftStatus(@Valid @RequestBody UpdateAircraftStatusRequest request) {
         try {
@@ -210,6 +210,7 @@ public class AircraftController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('BACKOFFICE_OP', 'ATCC')")
     public ResponseEntity<?> getAllAircrafts() {
         List<Aircraft> aircrafts = (List<Aircraft>) aircraft_repo.findAll();
         return ResponseEntity.ok(aircrafts);

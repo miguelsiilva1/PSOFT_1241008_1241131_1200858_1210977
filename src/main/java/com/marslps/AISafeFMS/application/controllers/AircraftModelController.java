@@ -32,7 +32,7 @@ public class AircraftModelController {
     }
 
     @PostMapping()
-    @PreAuthorize("hasRole('BACKOFFICE_OP')")
+    @PreAuthorize("hasAuthority('BACKOFFICE_OP')")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> registerAircraftModel(@Valid @RequestBody RegisterAircraftModelRequest request) {
         try {
@@ -65,6 +65,7 @@ public class AircraftModelController {
     }
 
     @GetMapping("/{name}")
+    @PreAuthorize("hasAnyAuthority('BACKOFFICE_OP', 'ATCC')")
     public ResponseEntity<?> getAircraftModelByName(@PathVariable String name) {
         try {
             List<AircraftModel> models = aircraft_model_repo.findByName(name);
@@ -75,6 +76,7 @@ public class AircraftModelController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAnyAuthority('BACKOFFICE_OP', 'ATCC')")
     public ResponseEntity<?> getAllAircraftModels() {
         List<AircraftModel> models = (List<AircraftModel>) aircraft_model_repo.findAll();
         return ResponseEntity.ok(models);

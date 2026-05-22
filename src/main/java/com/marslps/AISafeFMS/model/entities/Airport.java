@@ -1,5 +1,7 @@
 package com.marslps.AISafeFMS.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.marslps.AISafeFMS.model.enums.AirportStatus;
 import com.marslps.AISafeFMS.model.vo.*;
 import jakarta.persistence.*;
@@ -12,6 +14,7 @@ import java.util.*;
 @Getter
 public class Airport {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "airport_db_id")
+    @JsonIgnore
     private Long id;
     @Column
     private String name;
@@ -23,8 +26,9 @@ public class Airport {
     private AirportLocation airport_location;
     @JoinColumn @ManyToOne
     private AirportType airport_type;
-    @OneToMany
-    private Set<Aircraft> certified_aircrafts;
+    @ManyToMany
+    @JsonIgnoreProperties({"id", "seating_capacity", "max_range", "fuel_capacity", "cruising_speed", "manufacturer", "features"})
+    private Set<AircraftModel> certified_models;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<RunwayInfo> runway_info;
     @Column
@@ -51,7 +55,7 @@ public class Airport {
                    Coordinates coordinates,
                    AirportLocation airport_location,
                    AirportType airport_type,
-                   Set<Aircraft> certified_aircrafts,
+                   Set<AircraftModel> certified_models,
                    List<RunwayInfo> runway_info,
                    AirportStatus status,
                    TimeZone time_zone,
@@ -66,7 +70,7 @@ public class Airport {
         this.coordinates = coordinates;
         this.airport_location = airport_location;
         this.airport_type = airport_type;
-        this.certified_aircrafts = certified_aircrafts;
+        this.certified_models = certified_models;
         this.runway_info = runway_info;
         this.status = status;
         this.time_zone = time_zone;
@@ -90,5 +94,22 @@ public class Airport {
     @Override
     public int hashCode() {
         return Objects.hash(this.iata);
+    }
+
+    public void addCertifiedAircraftModel(AircraftModel model) {
+        if (this.certified_models == null) {
+            this.certified_models = new HashSet<>();
+        }
+        if (this.certified_models.contains(model)) {
+            throw new IllegalArgumentException("This Aircraft Model is already certified for this Airport.");
+        }
+        this.certified_models.add(model);
+    }
+
+    public void updateStatus(AirportStatus status) {
+        if (this.status == status) {
+            throw new IllegalArgumentException("The airport is already in the requested status.");
+        }
+        this.status = status;
     }
 }

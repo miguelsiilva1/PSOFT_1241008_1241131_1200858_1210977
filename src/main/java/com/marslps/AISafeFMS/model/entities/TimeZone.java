@@ -1,5 +1,6 @@
 package com.marslps.AISafeFMS.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -12,6 +13,7 @@ import java.util.Objects;
 @Getter
 public class TimeZone {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "time_zone_db_id")
+    @JsonIgnore
     private Long db_id;
     @NotBlank
     private String abbreviation;
