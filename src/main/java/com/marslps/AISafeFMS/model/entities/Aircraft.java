@@ -43,23 +43,17 @@ public class Aircraft {
     protected Aircraft() {}
 
     public Aircraft(AircraftRegistration registration_number,
-                    AircraftManufacturer manufacturer,
                     AircraftModel model,
                     SeatingConfiguration seating_configuration,
-                    @Positive double fuel_capacity,
-                    @Positive double cruising_speed,
                     Date manufacturing_date,
-                    String image,
                     Date last_maintenance,
+                    String image,
                     @Positive int max_flight_hours_until_maintenance,
                     @Positive int max_days_until_maintenance,
                     AircraftStatus status) {
         this.registration_number = registration_number;
-        this.manufacturer = manufacturer;
         this.model = model;
         this.seating_configuration = seating_configuration;
-        this.fuel_capacity = fuel_capacity;
-        this.cruising_speed = cruising_speed;
         this.manufactoring_date = manufacturing_date;
         this.image = image;
         this.last_maintenance = last_maintenance;
@@ -68,6 +62,11 @@ public class Aircraft {
         this.max_days_until_maintenance = max_days_until_maintenance;
         this.status = status;
     }
+
+    public String obtainRegistrationNumber() {
+        return this.registration_number.registration_number();
+    }
+    public String obtainAircraftStatus() {return this.status.toString();}
 
     @Override
     public boolean equals(Object other) {

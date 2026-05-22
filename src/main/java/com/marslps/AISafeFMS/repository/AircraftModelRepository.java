@@ -25,4 +25,6 @@ public interface AircraftModelRepository extends CrudRepository<AircraftModel, L
                           @Param("cruising_speed") double cruising_speed);
 
     List<AircraftModel> findByName(String name);
+    @Query("SELECT am FROM AircraftModel am WHERE am.name LIKE :name AND am.seating_capacity = :seating_capacity")
+    AircraftModel findByNameAndSeatingCapacity(@Param("name") String name, @Param("seating_capacity") int seating_capacity);
 }
