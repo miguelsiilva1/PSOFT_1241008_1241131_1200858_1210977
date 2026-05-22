@@ -1,0 +1,54 @@
+@startuml
+autonumber
+title Create a Flight Route - POST /api/routes
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant "RouteController" as RouteController
+participant "CreateRouteUseCase" as CreateRouteUseCase
+participant "RouteService" as RouteService
+participant "AirportRepository" as AirportRepository
+participant "RouteRepository" as RouteRepository
+participant "RouteHistoryRepository" as RouteHistoryRepository
+
+ATCC -> RouteController : POST /api/routes\n(departure_iata, destination_iata,\nestimated_flight_time, min_aircraft_range,\nmin_aircraft_capacity)
+
+RouteController -> RouteController : validate JWT and ATCC authority
+
+alt User has authorization
+    RouteController -> CreateRouteUseCase : execute(departure_iata, destination_iata,\nestimated_flight_time, min_aircraft_range,\nmin_aircraft_capacity)
+
+    CreateRouteUseCase -> AirportRepository : findByIata(departure_iata)
+    AirportRepository --> CreateRouteUseCase : departure airport
+
+    CreateRouteUseCase -> AirportRepository : findByIata(destination_iata)
+    AirportRepository --> CreateRouteUseCase : destination airport
+
+    alt Both airports exist and are operational
+        CreateRouteUseCase -> RouteService : createRoute(departure, destination,\nestimated_flight_time, min_aircraft_range,\nmin_aircraft_capacity)
+
+        RouteService -> RouteRepository : existsById_Id(routeId)
+        RouteRepository --> RouteService : false
+
+        RouteService -> RouteService : create Route
+
+        RouteService --> CreateRouteUseCase : route
+
+        CreateRouteUseCase -> RouteRepository : save(route)
+        RouteRepository --> CreateRouteUseCase : persisted route
+
+        CreateRouteUseCase -> RouteHistoryRepository : save(RouteHistory)
+        RouteHistoryRepository --> CreateRouteUseCase : persisted history
+
+        CreateRouteUseCase --> RouteController : route
+
+        RouteController --> ATCC : 201 Created\n(route data with links)
+    else Airport missing, closed, duplicate route or invalid data
+        RouteController --> ATCC : 400 Bad Request\n(error message)
+    end
+else User does not have authorization
+    RouteController --> ATCC : 401 / 403\n(error message)
+end
+
+@enduml

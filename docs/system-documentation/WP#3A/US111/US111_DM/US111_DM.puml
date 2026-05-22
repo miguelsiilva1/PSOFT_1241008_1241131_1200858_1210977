@@ -1,0 +1,32 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title Keep Track of Route History: Domain Model
+
+package "Route Aggregate" {
+    class Route <<entity>> <<root>> {
+        - flight_time: double
+        - min_aircraft_range: double
+        - min_aircraft_capacity: int
+        - active: boolean
+        - version: Long
+    }
+
+    class RouteID <<value object>> {
+        - id: String
+    }
+
+    class RouteHistory <<entity>> {
+        - description: String
+        - registered_at: LocalDateTime
+    }
+
+    Route o--> RouteID
+    Route "1" o--> "N" RouteHistory : history
+    RouteHistory --> Route : route
+}
+
+@enduml

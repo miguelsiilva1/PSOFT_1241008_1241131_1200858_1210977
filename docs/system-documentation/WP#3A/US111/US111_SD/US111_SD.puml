@@ -1,0 +1,38 @@
+@startuml
+
+autonumber
+
+title Keep Track of Route History - GET /api/routes/{id}/history
+
+autoactivate on
+
+actor "ATCC / Backoffice Operator" as User
+participant "RouteController" as RouteController
+participant "ViewRouteHistoryUseCase" as ViewRouteHistoryUseCase
+participant "RouteRepository" as RouteRepository
+participant "RouteHistoryRepository" as RouteHistoryRepository
+
+User -> RouteController : GET /api/routes/{id}/history
+RouteController -> RouteController : validate JWT and authority
+
+alt User has authorization
+    RouteController -> ViewRouteHistoryUseCase : execute(routeId)
+
+    ViewRouteHistoryUseCase -> RouteRepository : findById(routeId)
+    RouteRepository --> ViewRouteHistoryUseCase : route
+
+    alt Route exists
+        ViewRouteHistoryUseCase -> RouteHistoryRepository : findByRoute_Id(routeId)
+        RouteHistoryRepository --> ViewRouteHistoryUseCase : route history list
+
+        ViewRouteHistoryUseCase --> RouteController : route history list
+        RouteController --> User : 200 OK\n(history entries)
+    else Route does not exist
+        ViewRouteHistoryUseCase --> RouteController : route not found
+        RouteController --> User : 404 Not Found\n(error message)
+    end
+else User does not have authorization
+    RouteController --> User : 401 / 403\n(error message)
+end
+
+@enduml

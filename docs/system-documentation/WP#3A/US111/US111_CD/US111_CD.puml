@@ -1,0 +1,70 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Keep Track of Route History: Architecture - Class Diagram
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+        - Long version
+        ---
+        + getId()
+        + isActive()
+    }
+
+    class RouteID <<value object>> {
+        - String id
+        ---
+        + RouteID(String id)
+        + getId()
+    }
+
+    class RouteHistory {
+        - Long id
+        - Route route
+        - String description
+        - LocalDateTime registered_at
+        ---
+        + RouteHistory(Route route, String description)
+        + getRoute()
+        + getDescription()
+        + getRegisteredAt()
+    }
+
+    class RouteHistoryResponse {
+        - String route_id
+        - String description
+        - LocalDateTime registered_at
+    }
+
+    class RouteController <<Rest Controller>> {
+        + ResponseEntity getRouteHistory(String routeId)
+    }
+
+    class ViewRouteHistoryUseCase <<@UseCase>> {
+        + List<RouteHistory> execute(String routeId)
+    }
+
+    interface RouteRepository {
+        + Optional<Route> findById(RouteID id)
+    }
+
+    interface RouteHistoryRepository {
+        + List<RouteHistory> findByRoute_Id(RouteID routeId)
+    }
+}
+
+RouteController ..> ViewRouteHistoryUseCase : execute() >
+ViewRouteHistoryUseCase ..> RouteRepository : findById() >
+ViewRouteHistoryUseCase ..> RouteHistoryRepository : findByRoute_Id() >
+ViewRouteHistoryUseCase ..> RouteHistoryResponse : maps to >
+RouteHistory --> Route : belongs to >
+Route --> RouteID : identified by >
+
+@enduml

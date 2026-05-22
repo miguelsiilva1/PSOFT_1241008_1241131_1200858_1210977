@@ -1,0 +1,96 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Update or Deactivate a Route: Architecture - Class Diagram
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+        - Long version
+        ---
+        + updateRoute(double flight_time, double min_aircraft_range, int min_aircraft_capacity)
+        + deactivate()
+        + isActive()
+        + getId()
+    }
+
+    class RouteID <<value object>> {
+        - String id
+        ---
+        + RouteID(String id)
+        + getId()
+    }
+
+    class RouteHistory {
+        - Long id
+        - Route route
+        - String description
+        - LocalDateTime registered_at
+        ---
+        + RouteHistory(Route route, String description)
+        + getDescription()
+        + getRegisteredAt()
+    }
+
+    class UpdateRouteRequest {
+        - double estimated_flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+    }
+
+    class RouteResponse {
+        - String route_id
+        - String departure_iata
+        - String destination_iata
+        - double estimated_flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+    }
+
+    class RouteController <<Rest Controller>> {
+        + ResponseEntity updateRoute(String routeId, UpdateRouteRequest request)
+        + ResponseEntity deactivateRoute(String routeId)
+    }
+
+    class UpdateRouteUseCase <<@UseCase>> {
+        + Route execute(String routeId, UpdateRouteRequest request)
+    }
+
+    class DeactivateRouteUseCase <<@UseCase>> {
+        + Route execute(String routeId)
+    }
+
+    interface RouteRepository {
+        + Optional<Route> findById(RouteID id)
+        + Route save(Route route)
+    }
+
+    interface RouteHistoryRepository {
+        + RouteHistory save(RouteHistory routeHistory)
+    }
+}
+
+RouteController ..> UpdateRouteUseCase : update >
+RouteController ..> DeactivateRouteUseCase : deactivate >
+RouteController ..> UpdateRouteRequest : receives >
+RouteController ..> RouteResponse : returns >
+
+UpdateRouteUseCase ..> RouteRepository : findById(), save() >
+UpdateRouteUseCase ..> RouteHistoryRepository : save() >
+UpdateRouteUseCase ..> Route : updateRoute() >
+
+DeactivateRouteUseCase ..> RouteRepository : findById(), save() >
+DeactivateRouteUseCase ..> RouteHistoryRepository : save() >
+DeactivateRouteUseCase ..> Route : deactivate() >
+
+RouteHistory --> Route : records >
+Route --> RouteID : identified by >
+
+@enduml

@@ -1,0 +1,58 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Search Routes by Origin and Destination: Domain Model
+
+hide circle
+skinparam classAttributeIconSize 0
+
+package "Route Aggregate" {
+    class Route <<entity>> <<root>> {
+        flight_time: double
+        min_aircraft_range: double
+        min_aircraft_capacity: int
+        active: boolean
+        version: Long
+    }
+
+    class RouteID <<value object>> {
+        id: String
+    }
+
+    Route o--> RouteID
+    Route --> Airport : departure
+    Route --> Airport : destination
+}
+
+package "Airport Aggregate" {
+    class Airport <<entity>> <<root>> {
+        name: String
+        city: String
+        country: String
+        timezone: String
+        latitude: double
+        longitude: double
+    }
+
+    class LocationIdentifier <<value object>> {
+        iata_code: String
+    }
+
+    enum AirportStatus {
+        OPERATIONAL
+        CLOSED
+        UNDER_MAINTENANCE
+    }
+
+    Airport o--> LocationIdentifier
+    Airport o--> AirportStatus
+}
+
+note right of Route
+Routes can be searched by:
+- origin airport
+- destination airport
+- origin and destination together
+end note
+
+@enduml

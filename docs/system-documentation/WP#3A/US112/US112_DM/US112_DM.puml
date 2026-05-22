@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title Update or Deactivate a Route: Domain Model
+
+package "Route Aggregate" {
+    class Route <<entity>> <<root>> {
+        - flight_time: double
+        - min_aircraft_range: double
+        - min_aircraft_capacity: int
+        - active: boolean
+        - version: Long
+    }
+
+    class RouteID <<value object>> {
+        - id: String
+    }
+
+    class RouteHistory <<entity>> {
+        - description: String
+        - registered_at: LocalDateTime
+    }
+
+    Route o--> RouteID
+    Route "1" o--> "N" RouteHistory : history
+    RouteHistory --> Route : route
+}
+
+note right of Route
+A route can be updated or deactivated.
+Deactivation keeps the route in the system
+but marks it as inactive.
+end note
+
+note right of RouteHistory
+Each relevant change is recorded
+in the route history.
+end note
+
+@enduml

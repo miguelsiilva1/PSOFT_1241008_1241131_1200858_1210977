@@ -1,0 +1,72 @@
+@startuml
+
+autonumber
+
+title Update or Deactivate a Route - PATCH /api/routes/{id}
+
+autoactivate on
+
+actor "ATCC / Backoffice Operator" as User
+participant "RouteController" as RouteController
+participant "UpdateRouteUseCase" as UpdateRouteUseCase
+participant "DeactivateRouteUseCase" as DeactivateRouteUseCase
+participant "RouteRepository" as RouteRepository
+participant "RouteHistoryRepository" as RouteHistoryRepository
+
+alt Update route
+    User -> RouteController : PATCH /api/routes/{id}\n(estimated_flight_time, min_aircraft_range,\nmin_aircraft_capacity)
+    RouteController -> RouteController : validate JWT and authority
+
+    alt User has authorization
+        RouteController -> UpdateRouteUseCase : execute(routeId, request)
+
+        UpdateRouteUseCase -> RouteRepository : findById(routeId)
+        RouteRepository --> UpdateRouteUseCase : route
+
+        alt Route exists and data is valid
+            UpdateRouteUseCase -> UpdateRouteUseCase : update route data
+            UpdateRouteUseCase -> RouteRepository : save(route)
+            RouteRepository --> UpdateRouteUseCase : updated route
+
+            UpdateRouteUseCase -> RouteHistoryRepository : save(RouteHistory)
+            RouteHistoryRepository --> UpdateRouteUseCase : persisted history
+
+            UpdateRouteUseCase --> RouteController : updated route
+            RouteController --> User : 200 OK\n(updated route data with links)
+        else Route not found or invalid data
+            UpdateRouteUseCase --> RouteController : error
+            RouteController --> User : 400 / 404\n(error message)
+        end
+    else User does not have authorization
+        RouteController --> User : 401 / 403\n(error message)
+    end
+else Deactivate route
+    User -> RouteController : PATCH /api/routes/{id}/deactivate
+    RouteController -> RouteController : validate JWT and authority
+
+    alt User has authorization
+        RouteController -> DeactivateRouteUseCase : execute(routeId)
+
+        DeactivateRouteUseCase -> RouteRepository : findById(routeId)
+        RouteRepository --> DeactivateRouteUseCase : route
+
+        alt Route exists and is active
+            DeactivateRouteUseCase -> DeactivateRouteUseCase : deactivate route
+            DeactivateRouteUseCase -> RouteRepository : save(route)
+            RouteRepository --> DeactivateRouteUseCase : deactivated route
+
+            DeactivateRouteUseCase -> RouteHistoryRepository : save(RouteHistory)
+            RouteHistoryRepository --> DeactivateRouteUseCase : persisted history
+
+            DeactivateRouteUseCase --> RouteController : deactivated route
+            RouteController --> User : 200 OK\n(deactivated route data with links)
+        else Route not found or already inactive
+            DeactivateRouteUseCase --> RouteController : error
+            RouteController --> User : 404 / 409\n(error message)
+        end
+    else User does not have authorization
+        RouteController --> User : 401 / 403\n(error message)
+    end
+end
+
+@enduml

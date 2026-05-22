@@ -1,0 +1,71 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Create a Flight Route: Architecture — Class Diagram
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+        - Long version
+        ---
+        + Route(id, departure, destination, flight_time, min_aircraft_range, min_aircraft_capacity)
+    }
+
+    class RouteHistory {
+        - Route route
+        - String description
+        - LocalDateTime registered_at
+        ---
+        + RouteHistory(Route, String)
+    }
+
+    class RouteService <<Domain Service>> {
+        ---
+        + Route createRoute(Airport departure, Airport destination, double estimated_flight_time, double min_aircraft_range, int min_aircraft_capacity)
+    }
+
+    interface RouteRepository {
+        + boolean existsById_Id(String id)
+        + Route save(Route)
+    }
+
+    interface RouteHistoryRepository {
+        + RouteHistory save(RouteHistory)
+    }
+
+    class CreateRouteUseCase <<@UseCase>> {
+        + Route execute(String departure_iata, String destination_iata, double estimated_flight_time, double min_aircraft_range, int min_aircraft_capacity)
+    }
+
+    class RouteController <<Rest Controller>> {
+        + ResponseEntity createRoute(CreateRouteRequest)
+    }
+}
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<root>> {
+        - LocationIdentifier iata
+        - AirportStatus status
+    }
+    interface AirportRepository {
+        + Optional<Airport> findByIata(LocationIdentifier iata)
+    }
+}
+
+RouteController ..> CreateRouteUseCase : execute() >
+CreateRouteUseCase ..> AirportRepository : findByIata() >
+CreateRouteUseCase ..> RouteService : delegates to >
+CreateRouteUseCase ..> RouteRepository : save() >
+CreateRouteUseCase ..> RouteHistoryRepository : save() >
+RouteService ..> RouteRepository : existsById_Id() >
+RouteService ..> Route : creates >
+RouteHistory ..> Route : records >
+Route ..> Airport : uses departure/destination >
+
+@enduml

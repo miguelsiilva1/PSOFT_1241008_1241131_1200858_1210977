@@ -1,0 +1,20 @@
+@startuml
+
+autonumber
+
+title Create a Flight Route: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S : Asks to create a flight route
+S --> ATCC : Requests origin airport, destination airport,\nestimated flight time, minimum range\nand minimum capacity
+ATCC -> S : Types requested data
+S -> S : Checks if both airports exist and are operational
+S -> S : Checks route data and duplicate route
+S --> ATCC : Shows route data and requests confirmation
+ATCC -> S : Confirms the data
+S -> S : Registers route and stores route history
+S --> ATCC : Informs operation success and route ID
+
+@enduml

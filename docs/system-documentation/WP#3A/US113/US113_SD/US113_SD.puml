@@ -1,0 +1,62 @@
+@startuml
+
+autonumber
+
+title View Routes and Route Details - GET /api/routes/{id} and GET /api/routes/from/{iataCode}
+
+autoactivate on
+
+actor "ATCC / Backoffice Operator" as User
+participant "RouteController" as RouteController
+participant "ViewRouteDetailsUseCase" as ViewRouteDetailsUseCase
+participant "ViewRoutesFromAirportUseCase" as ViewRoutesFromAirportUseCase
+participant "AirportRepository" as AirportRepository
+participant "RouteRepository" as RouteRepository
+
+alt View route details by ID
+    User -> RouteController : GET /api/routes/{id}
+    RouteController -> RouteController : validate JWT and authority
+
+    alt User has authorization
+        RouteController -> ViewRouteDetailsUseCase : execute(routeId)
+
+        ViewRouteDetailsUseCase -> RouteRepository : findById(routeId)
+        RouteRepository --> ViewRouteDetailsUseCase : route
+
+        alt Route exists
+            ViewRouteDetailsUseCase --> RouteController : route
+            RouteController --> User : 200 OK\n(route details with links)
+        else Route does not exist
+            ViewRouteDetailsUseCase --> RouteController : route not found
+            RouteController --> User : 404 Not Found\n(error message)
+        end
+    else User does not have authorization
+        RouteController --> User : 401 / 403\n(error message)
+    end
+
+else View all routes from a specific airport
+    User -> RouteController : GET /api/routes/from/{iataCode}
+    RouteController -> RouteController : validate JWT and authority
+
+    alt User has authorization
+        RouteController -> ViewRoutesFromAirportUseCase : execute(iataCode)
+
+        ViewRoutesFromAirportUseCase -> AirportRepository : findByIata(iataCode)
+        AirportRepository --> ViewRoutesFromAirportUseCase : airport
+
+        alt Airport exists
+            ViewRoutesFromAirportUseCase -> RouteRepository : findByDeparture_Iata(iataCode)
+            RouteRepository --> ViewRoutesFromAirportUseCase : routes list
+
+            ViewRoutesFromAirportUseCase --> RouteController : routes list
+            RouteController --> User : 200 OK\n(routes from airport with links)
+        else Airport does not exist
+            ViewRoutesFromAirportUseCase --> RouteController : airport not found
+            RouteController --> User : 404 Not Found\n(error message)
+        end
+    else User does not have authorization
+        RouteController --> User : 401 / 403\n(error message)
+    end
+end
+
+@enduml

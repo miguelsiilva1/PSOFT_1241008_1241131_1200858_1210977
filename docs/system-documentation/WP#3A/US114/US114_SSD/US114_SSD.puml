@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Search Routes by Origin and Destination: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S : Asks to search for routes
+S --> ATCC : Requests origin airport, destination airport, or both
+ATCC -> S : Types the search criteria
+S -> S : Validates user permissions
+S -> S : Checks if the provided airports exist
+S -> S : Searches routes matching the criteria
+S --> ATCC : Shows matching routes
+
+@enduml

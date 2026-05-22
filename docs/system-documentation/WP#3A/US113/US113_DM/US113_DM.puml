@@ -1,0 +1,55 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title View Routes and Route Details: Domain Model
+
+package "Route Aggregate" {
+    class Route <<entity>> <<root>> {
+        - flight_time: double
+        - min_aircraft_range: double
+        - min_aircraft_capacity: int
+        - active: boolean
+        - version: Long
+    }
+
+    class RouteID <<value object>> {
+        - id: String
+    }
+
+    Route o--> RouteID
+    Route --> Airport : departure
+    Route --> Airport : destination
+}
+
+package "Airport Aggregate" {
+    class Airport <<entity>> <<root>> {
+        - name: String
+        - city: String
+        - country: String
+        - status: AirportStatus
+    }
+
+    class LocationIdentifier <<value object>> {
+        - iata_code: String
+    }
+
+    class AirportStatus <<enum>> {
+        - OPERATIONAL: int
+        - CLOSED: int
+        - UNDER_MAINTENANCE: int
+    }
+
+    Airport o--> LocationIdentifier
+    Airport o--> AirportStatus
+}
+
+note right of Route
+A route can be viewed by its ID.
+The system can also list all routes
+departing from a specific airport.
+end note
+
+@enduml

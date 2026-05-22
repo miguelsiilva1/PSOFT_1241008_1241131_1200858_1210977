@@ -1,0 +1,75 @@
+@startuml
+
+autonumber
+
+title Search Routes by Origin and Destination - GET /api/routes/search
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant "RouteController" as RouteController
+participant "SearchRoutesUseCase" as SearchRoutesUseCase
+participant "AirportRepository" as AirportRepository
+participant "RouteRepository" as RouteRepository
+
+ATCC -> RouteController : GET /api/routes/search?origin={origin}&destination={destination}
+RouteController -> RouteController : validate JWT and ATCC authority
+
+alt User has authorization
+    RouteController -> SearchRoutesUseCase : execute(origin, destination)
+
+    alt Origin and destination were provided
+        SearchRoutesUseCase -> AirportRepository : findByIata(origin)
+        AirportRepository --> SearchRoutesUseCase : origin airport
+
+        SearchRoutesUseCase -> AirportRepository : findByIata(destination)
+        AirportRepository --> SearchRoutesUseCase : destination airport
+
+        alt Both airports exist
+            SearchRoutesUseCase -> RouteRepository : findByDeparture_IataAndDestination_Iata(origin, destination)
+            RouteRepository --> SearchRoutesUseCase : routes list
+            SearchRoutesUseCase --> RouteController : routes list
+            RouteController --> ATCC : 200 OK\n(routes matching origin and destination)
+        else Origin or destination airport does not exist
+            SearchRoutesUseCase --> RouteController : airport not found
+            RouteController --> ATCC : 404 Not Found\n(error message)
+        end
+
+    else Only origin was provided
+        SearchRoutesUseCase -> AirportRepository : findByIata(origin)
+        AirportRepository --> SearchRoutesUseCase : origin airport
+
+        alt Origin airport exists
+            SearchRoutesUseCase -> RouteRepository : findByDeparture_Iata(origin)
+            RouteRepository --> SearchRoutesUseCase : routes list
+            SearchRoutesUseCase --> RouteController : routes list
+            RouteController --> ATCC : 200 OK\n(routes from origin)
+        else Origin airport does not exist
+            SearchRoutesUseCase --> RouteController : airport not found
+            RouteController --> ATCC : 404 Not Found\n(error message)
+        end
+
+    else Only destination was provided
+        SearchRoutesUseCase -> AirportRepository : findByIata(destination)
+        AirportRepository --> SearchRoutesUseCase : destination airport
+
+        alt Destination airport exists
+            SearchRoutesUseCase -> RouteRepository : findByDestination_Iata(destination)
+            RouteRepository --> SearchRoutesUseCase : routes list
+            SearchRoutesUseCase --> RouteController : routes list
+            RouteController --> ATCC : 200 OK\n(routes to destination)
+        else Destination airport does not exist
+            SearchRoutesUseCase --> RouteController : airport not found
+            RouteController --> ATCC : 404 Not Found\n(error message)
+        end
+
+    else No search criteria provided
+        SearchRoutesUseCase --> RouteController : invalid search criteria
+        RouteController --> ATCC : 400 Bad Request\n(origin or destination is required)
+    end
+
+else User does not have authorization
+    RouteController --> ATCC : 401 / 403\n(error message)
+end
+
+@enduml

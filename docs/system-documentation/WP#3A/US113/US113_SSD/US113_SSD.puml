@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title View Routes and Route Details: Simplified Sequence Diagram
+
+actor "ATCC / Backoffice Operator" as User
+participant ":System" as S
+
+alt View route details by ID
+    User -> S : Asks to view a route details
+    S --> User : Requests the route ID
+    User -> S : Types the route ID
+    S -> S : Validates user permissions
+    S -> S : Checks if the route exists
+    S --> User : Shows the route details
+else View all routes from a specific airport
+    User -> S : Asks to view all routes from an airport
+    S --> User : Requests the airport IATA code
+    User -> S : Types the airport IATA code
+    S -> S : Validates user permissions
+    S -> S : Checks if the airport exists
+    S -> S : Retrieves all routes departing from that airport
+    S --> User : Shows the routes list
+end
+
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Keep Track of Route History: Simplified Sequence Diagram
+
+actor "ATCC / Backoffice Operator" as User
+participant ":System" as S
+
+User -> S : Asks to view the history of a route
+S --> User : Requests the route ID
+User -> S : Types the route ID
+S -> S : Validates user permissions
+S -> S : Checks if the route exists
+S -> S : Retrieves the route history entries
+S --> User : Shows the route history
+
+@enduml

@@ -1,0 +1,90 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Search Routes by Origin and Destination: Architecture - Class Diagram
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+        - Long version
+        ---
+        + getId()
+        + getDeparture()
+        + getDestination()
+        + getFlightTime()
+        + getMinAircraftRange()
+        + getMinAircraftCapacity()
+        + isActive()
+    }
+
+    class RouteID <<value object>> {
+        - String id
+        ---
+        + RouteID(String id)
+        + getId()
+    }
+
+    class RouteResponse {
+        - String route_id
+        - String departure_iata
+        - String destination_iata
+        - double estimated_flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+    }
+
+    class RouteController <<Rest Controller>> {
+        + ResponseEntity searchRoutes(String origin, String destination)
+    }
+
+    class SearchRoutesUseCase <<@UseCase>> {
+        + List<Route> execute(String origin, String destination)
+    }
+
+    interface RouteRepository {
+        + List<Route> findByDeparture_Iata(LocationIdentifier origin)
+        + List<Route> findByDestination_Iata(LocationIdentifier destination)
+        + List<Route> findByDeparture_IataAndDestination_Iata(LocationIdentifier origin, LocationIdentifier destination)
+    }
+}
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<root>> {
+        - LocationIdentifier iata
+        - String name
+        - AirportStatus status
+        ---
+        + getIata()
+        + getName()
+        + getStatus()
+    }
+
+    class LocationIdentifier <<value object>> {
+        - String iata_code
+        ---
+        + LocationIdentifier(String iata_code)
+        + getIataCode()
+    }
+
+    interface AirportRepository {
+        + Optional<Airport> findByIata(LocationIdentifier iata)
+    }
+}
+
+RouteController ..> SearchRoutesUseCase : execute() >
+RouteController ..> RouteResponse : returns >
+SearchRoutesUseCase ..> AirportRepository : validates origin/destination >
+SearchRoutesUseCase ..> RouteRepository : searches routes >
+Route --> RouteID : identified by >
+Route --> Airport : departure >
+Route --> Airport : destination >
+Airport --> LocationIdentifier : identified by >
+
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Update or Deactivate a Route: Simplified Sequence Diagram
+
+actor "ATCC / Backoffice Operator" as User
+participant ":System" as S
+
+alt Update route
+    User -> S : Asks to update a route
+    S --> User : Requests route ID and new route data
+    User -> S : Types route ID and new data
+    S -> S : Validates user permissions
+    S -> S : Checks if the route exists
+    S -> S : Validates new route data
+    S -> S : Updates the route
+    S -> S : Registers update in route history
+    S --> User : Shows updated route information
+else Deactivate route
+    User -> S : Asks to deactivate a route
+    S --> User : Requests route ID
+    User -> S : Types route ID
+    S -> S : Validates user permissions
+    S -> S : Checks if the route exists and is active
+    S -> S : Deactivates the route
+    S -> S : Registers deactivation in route history
+    S --> User : Informs operation success
+end
+
+@enduml
