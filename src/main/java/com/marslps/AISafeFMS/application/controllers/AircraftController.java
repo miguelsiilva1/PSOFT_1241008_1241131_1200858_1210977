@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +84,10 @@ public class AircraftController {
         }
     }
 
-    @GetMapping("/{registration_number}")
-    @PreAuthorize("hasRole('BACKOFFICE_OP'||'ATCC')")
+    @GetMapping(params = "registration_number")
+    @PreAuthorize("hasAnyRole('BACKOFFICE_OP', 'ATCC')")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> searchAircraftByRegistrationNumber(@Valid @RequestBody String registration_number) {
+    public ResponseEntity<?> searchAircraftByRegistrationNumber(@RequestParam("registration_number") String registration_number) {
         try {
             Aircraft aircraft = find_aircraft_by_registration_number.execute(registration_number);
 
@@ -105,15 +106,18 @@ public class AircraftController {
         }
     }
 
-    @GetMapping()
+    @GetMapping(params = "model_name")
     @PreAuthorize("hasRole('ATCC')")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> searchAircraftByModel(@Valid @RequestBody String model_name) {
+    public ResponseEntity<?> searchAircraftByModel(@RequestParam("model_name") String model_name) {
         try {
             List<Aircraft> aircrafts = find_aircraft_by_model_status_manufactoring_year.execute(model_name);
 
+            List<String> registration_numbers = new ArrayList<>();
+            for(Aircraft a : aircrafts) {registration_numbers.add(a.obtainRegistrationNumber());}
+
             Map<String, Object> data = new HashMap<>();
-            for(Aircraft a : aircrafts) {data.put("registration_number", a.obtainRegistrationNumber());}
+            data.put("registration_numbers", registration_numbers);
 
             EntityModel<Map<String, Object>> resource = EntityModel.of(data);
 
@@ -126,15 +130,18 @@ public class AircraftController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @GetMapping()
+    @GetMapping(params = "status")
     @PreAuthorize("hasRole('ATCC')")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> searchAircraftByStatus(@Valid @RequestBody String status) {
+    public ResponseEntity<?> searchAircraftByStatus(@RequestParam("status") String status) {
         try {
             List<Aircraft> aircrafts = find_aircraft_by_model_status_manufactoring_year.execute(AircraftStatus.valueOf(status));
 
+            List<String> registration_numbers = new ArrayList<>();
+            for(Aircraft a : aircrafts) {registration_numbers.add(a.obtainRegistrationNumber());}
+
             Map<String, Object> data = new HashMap<>();
-            for(Aircraft a : aircrafts) {data.put("registration_number", a.obtainRegistrationNumber());}
+            data.put("registration_numbers", registration_numbers);
 
             EntityModel<Map<String, Object>> resource = EntityModel.of(data);
 
@@ -147,15 +154,18 @@ public class AircraftController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @GetMapping()
+    @GetMapping(params = "year")
     @PreAuthorize("hasRole('ATCC')")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> searchAircraftByManufacturingYear(@Valid @RequestBody int year) {
+    public ResponseEntity<?> searchAircraftByManufacturingYear(@RequestParam("year") int year) {
         try {
             List<Aircraft> aircrafts = find_aircraft_by_model_status_manufactoring_year.execute(year);
 
+            List<String> registration_numbers = new ArrayList<>();
+            for(Aircraft a : aircrafts) {registration_numbers.add(a.obtainRegistrationNumber());}
+
             Map<String, Object> data = new HashMap<>();
-            for(Aircraft a : aircrafts) {data.put("registration_number", a.obtainRegistrationNumber());}
+            data.put("registration_numbers", registration_numbers);
 
             EntityModel<Map<String, Object>> resource = EntityModel.of(data);
 
@@ -190,7 +200,7 @@ public class AircraftController {
                     .getAllAircrafts()).withRel("return");
             resource.add(return_link);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(resource);
+            return ResponseEntity.status(HttpStatus.OK).body(resource);
         } catch (IllegalArgumentException e) {
             Map<String, String> error = new HashMap<>();
             error.put("message", "The request's data is malformed");
