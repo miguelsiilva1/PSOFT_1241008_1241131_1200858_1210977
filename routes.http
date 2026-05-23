@@ -1,0 +1,53 @@
+### Create route - US110
+POST http://localhost:8080/api/routes
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "departure_iata": "TSA",
+  "destination_iata": "TSB",
+  "estimated_flight_time": 1.0,
+  "flight_distance": 280.0,
+  "min_aircraft_range": 500.0,
+  "min_aircraft_capacity": 100
+}
+
+### View route by ID - US113
+GET http://localhost:8080/api/routes/TSA-TSB
+Authorization: Bearer {{auth_token}}
+
+### View route history - US111
+GET http://localhost:8080/api/routes/TSA-TSB/history
+Authorization: Bearer {{auth_token}}
+
+### Update route - US112
+PATCH http://localhost:8080/api/routes/TSA-TSB
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "estimated_flight_time": 1.2,
+  "flight_distance": 280.0,
+  "min_aircraft_range": 550.0,
+  "min_aircraft_capacity": 120
+}
+
+### Deactivate route - US112
+PATCH http://localhost:8080/api/routes/TSA-TSB/deactivate
+Authorization: Bearer {{auth_token}}
+
+### View routes from airport - US113
+GET http://localhost:8080/api/routes/from/TSA
+Authorization: Bearer {{auth_token}}
+
+### Search routes by origin - US114
+GET http://localhost:8080/api/routes/search?origin=TSA
+Authorization: Bearer {{auth_token}}
+
+### Search routes by destination - US114
+GET http://localhost:8080/api/routes/search?destination=TSB
+Authorization: Bearer {{auth_token}}
+
+### Search routes by origin and destination - US114
+GET http://localhost:8080/api/routes/search?origin=TSA&destination=TSB
+Authorization: Bearer {{auth_token}}

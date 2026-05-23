@@ -3,11 +3,13 @@ package com.marslps.AISafeFMS.model.entities;
 import com.marslps.AISafeFMS.model.vo.RouteID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import lombok.Getter;
 
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
+@Getter
 public class Route {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) @Column(name = "route_db_id")
     private Long db_id;
@@ -24,9 +26,11 @@ public class Route {
     @Positive
     private double min_aircraft_range;
     @Positive
-    private double min_aircraft_capacity;
+    private int min_aircraft_capacity;
     @Column
     private boolean active;
+    @Version
+    private Long version;
 
     protected Route() {}
     public Route(RouteID id,
@@ -35,8 +39,39 @@ public class Route {
                  @Positive double flight_time,
                  @Positive double flight_distance,
                  @Positive double min_aircraft_range,
-                 @Positive double min_aircraft_capacity,
+                 @Positive int min_aircraft_capacity,
                  boolean active) {
+        if (id == null) {
+            throw new IllegalArgumentException("Route ID is required.");
+        }
+
+        if (departure == null) {
+            throw new IllegalArgumentException("Departure airport is required.");
+        }
+
+        if (destination == null) {
+            throw new IllegalArgumentException("Destination airport is required.");
+        }
+
+        if (departure.equals(destination)) {
+            throw new IllegalArgumentException("Departure and destination airports must be different.");
+        }
+        if (flight_time <= 0) {
+            throw new IllegalArgumentException("Flight time must be positive.");
+        }
+
+        if (flight_distance <= 0) {
+            throw new IllegalArgumentException("Flight distance must be positive.");
+        }
+
+        if (min_aircraft_range <= 0) {
+            throw new IllegalArgumentException("Minimum aircraft range must be positive.");
+        }
+
+        if (min_aircraft_capacity <= 0) {
+            throw new IllegalArgumentException("Minimum aircraft capacity must be positive.");
+        }
+
         this.id = id;
         this.departure = departure;
         this.destination = destination;
@@ -45,6 +80,56 @@ public class Route {
         this.min_aircraft_range = min_aircraft_range;
         this.min_aircraft_capacity = min_aircraft_capacity;
         this.active = active;
+    }
+    public void updateRoute(double flight_time,
+                            double flight_distance,
+                            double min_aircraft_range,
+                            int min_aircraft_capacity) {
+
+        if (flight_time <= 0) {
+            throw new IllegalArgumentException("Flight time must be positive.");
+        }
+
+        if (flight_distance <= 0) {
+            throw new IllegalArgumentException("Flight distance must be positive.");
+        }
+
+        if (min_aircraft_range <= 0) {
+            throw new IllegalArgumentException("Minimum aircraft range must be positive.");
+        }
+
+        if (min_aircraft_capacity <= 0) {
+            throw new IllegalArgumentException("Minimum aircraft capacity must be positive.");
+        }
+
+        this.flight_time = flight_time;
+        this.flight_distance = flight_distance;
+        this.min_aircraft_range = min_aircraft_range;
+        this.min_aircraft_capacity = min_aircraft_capacity;
+    }
+
+    public void deactivate() {
+        if (!this.active) {
+            throw new IllegalArgumentException("Route is already inactive.");
+        }
+
+        this.active = false;
+    }
+
+    public RouteID obtainRouteID() {
+        return this.id;
+    }
+
+    public Airport obtainDeparture() {
+        return this.departure;
+    }
+
+    public Airport obtainDestination() {
+        return this.destination;
+    }
+
+    public boolean isActive() {
+        return this.active;
     }
 
     public Date calculateScheduledArrival(Date scheduled_departure) {
