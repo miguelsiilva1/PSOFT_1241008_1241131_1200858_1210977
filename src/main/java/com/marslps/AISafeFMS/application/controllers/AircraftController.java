@@ -1,5 +1,7 @@
 package com.marslps.AISafeFMS.application.controllers;
 
+import com.marslps.AISafeFMS.application.assemblers.AircraftAssembler;
+import com.marslps.AISafeFMS.application.dto.AircraftDTO;
 import com.marslps.AISafeFMS.application.model.RegisterAircraftRequest;
 import com.marslps.AISafeFMS.application.model.UpdateAircraftStatusRequest;
 import com.marslps.AISafeFMS.application.use_cases.FindAircraftByModelStatusManufactoringYearUseCase;
@@ -33,17 +35,20 @@ public class AircraftController {
     private final FindAircraftByModelStatusManufactoringYearUseCase find_aircraft_by_model_status_manufactoring_year;
     private final UpdateAircraftStatusUseCase update_aircraft_status;
     private final AircraftRepository aircraft_repo;
+    private final AircraftAssembler aircraft_assembler;
 
     public AircraftController(RegisterAircraftUseCase register_aircraft,
                               FindAircraftByRegistrationNumberUseCase find_aircraft_by_registration_number,
                               FindAircraftByModelStatusManufactoringYearUseCase findAircraftByModelStatusManufactoringYear,
                               UpdateAircraftStatusUseCase updateAircraftStatus,
-                              AircraftRepository aircraft_repo) {
+                              AircraftRepository aircraft_repo,
+                              AircraftAssembler aircraft_assembler) {
         this.register_aircraft = register_aircraft;
         this.find_aircraft_by_registration_number = find_aircraft_by_registration_number;
         find_aircraft_by_model_status_manufactoring_year = findAircraftByModelStatusManufactoringYear;
         update_aircraft_status = updateAircraftStatus;
         this.aircraft_repo = aircraft_repo;
+        this.aircraft_assembler = aircraft_assembler;
     }
 
     @PostMapping()
@@ -91,10 +96,7 @@ public class AircraftController {
         try {
             Aircraft aircraft = find_aircraft_by_registration_number.execute(registration_number);
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("registration_number", aircraft.obtainRegistrationNumber());
-
-            EntityModel<Map<String, Object>> resource = EntityModel.of(data);
+            AircraftDTO resource = aircraft_assembler.toModel(aircraft);
 
             Link return_link = linkTo(methodOn(AircraftController.class)
                     .getAllAircrafts()).withRel("return");

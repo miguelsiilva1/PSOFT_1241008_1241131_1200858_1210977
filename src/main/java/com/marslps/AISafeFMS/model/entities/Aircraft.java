@@ -21,10 +21,6 @@ public class Aircraft {
     private AircraftModel model;
     @Embedded
     private SeatingConfiguration seating_configuration;
-    @Column
-    private double fuel_capacity;
-    @Column
-    private double cruising_speed;
     @Temporal(TemporalType.DATE)
     private Date manufactoring_date;
     @Column
@@ -66,7 +62,22 @@ public class Aircraft {
     public String obtainRegistrationNumber() {
         return this.registration_number.registration_number();
     }
+    public String obtainManufacturerName() {return this.manufacturer.obtainName();}
+
+    public String obtainModelName() {return this.model.obtainName();}
+
+    public int obtainEconomySeats() {return this.seating_configuration.economy_seats();}
+    public int obtainPremiumEconomySeats() {return this.seating_configuration.premium_economy_seats();}
+    public int obtainBusinessSeats() {return this.seating_configuration.business_seats();}
+    public int obtainFirstSeats() {return this.seating_configuration.first_seats();}
+    public Date obtainManufacturingDate() { return this.manufactoring_date; }
+    public Date obtainLastMaintenance() { return this.last_maintenance; }
+    public int obtainDaysSinceLastMaintenance() { return this.days_since_last_maintenance; }
+    public int obtainMaxFlightHoursUntilMaintenance() { return this.max_flight_hours_until_maintenance; }
+    public int obtainMaxDaysUntilMaintenance() { return this.max_days_until_maintenance; }
     public String obtainAircraftStatus() {return this.status.toString();}
+    public String obtainImage() { return this.image; }
+
 
     @Override
     public boolean equals(Object other) {

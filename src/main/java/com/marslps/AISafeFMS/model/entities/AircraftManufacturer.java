@@ -21,6 +21,8 @@ public class AircraftManufacturer {
 
     protected AircraftManufacturer() {}
 
+    public String obtainName() {return this.name;}
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof AircraftManufacturer manufacturer)) {return false;}
