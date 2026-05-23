@@ -1,0 +1,39 @@
+@startuml
+autonumber
+skinparam maxMessageSize 150
+title US117: View Total Maintenance Hours - Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as User
+participant "MaintenanceController" as Controller <<RestController>>
+participant "ViewMaintenanceHoursUseCase" as UseCase <<UseCase>>
+participant "MaintenanceServiceImpl" as Service <<Domain Service>>
+participant "AircraftRepository" as AirRepo <<Repository>>
+participant "MaintenanceRecordRepository" as RecRepo <<Repository>>
+
+User -> Controller : GET /api/maintenance/aircraft/{registrationNumber}/hours
+
+Controller -> Controller : validate JWT and authority (ATCC)
+return
+
+Controller -> UseCase : execute(registrationNumber)
+
+UseCase -> Service : getTotalMaintenanceHoursForAircraft(registrationNumber)
+
+Service -> AirRepo : findByRegistrationNumber(registrationNumber)
+return aircraft (validate existence)
+
+Service -> RecRepo : totalMaintenanceHoursByAircraftRegistrationNumber(registrationNumber)
+return totalHours (Double)
+
+return totalHours
+
+return totalHours
+
+Controller -> Controller : map to MaintenanceHoursResponse\n& build HATEOAS links
+return
+
+return 200 OK (EntityModel<MaintenanceHoursResponse>)
+
+@enduml

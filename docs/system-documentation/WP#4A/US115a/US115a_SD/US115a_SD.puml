@@ -1,0 +1,30 @@
+@startuml
+autonumber
+title US115a: Create Maintenance Template - POST /api/maintenance/templates
+autoactivate on
+
+actor "Maintenance Tech" as User
+participant "MaintenanceController" as Controller
+participant "CreateMaintenanceTemplateUseCase" as UseCase
+participant "MaintenanceServiceImpl" as Service
+participant "MaintenanceTemplateRepository" as TempRepo
+
+User -> Controller : POST /api/maintenance/templates (CreateMaintenanceTemplateRequest)
+Controller -> Controller : validate JWT and authority (MAINTENANCE_TECH)
+
+Controller -> UseCase : execute(request)
+UseCase -> Service : createMaintenanceTemplate(request)
+
+Service -> Service : parse MaintenanceTemplateType
+Service -> Service : create new MaintenanceTemplate(type, name, models, checklist)
+
+Service -> TempRepo : save(template)
+TempRepo --> Service : savedTemplate
+
+Service --> UseCase : savedTemplate
+UseCase --> Controller : savedTemplate
+
+Controller -> Controller : map to DTO & build HATEOAS links
+Controller --> User : 201 Created (MaintenanceTemplateResponse)
+
+@enduml

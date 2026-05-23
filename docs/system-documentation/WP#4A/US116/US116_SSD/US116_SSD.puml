@@ -1,0 +1,10 @@
+@startuml
+autonumber
+title US116: View Maintenance Records for Aircraft - Simplified Sequence Diagram
+
+actor "Maintenance Technician" as User
+participant ":System" as S
+
+User -> S : Types requested data\n(String registrationNumber)
+S --> User : Returns the requested data or confirms the (in)success of the operation
+@enduml

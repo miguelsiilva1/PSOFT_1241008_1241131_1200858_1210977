@@ -1,0 +1,52 @@
+@startuml
+autonumber
+skinparam maxMessageSize 150
+title US115: Create Maintenance Record - Sequence Diagram
+
+autoactivate on
+
+actor "Maintenance Technician" as User
+participant "MaintenanceController" as Controller <<RestController>>
+participant "CreateMaintenanceRecordUseCase" as UseCase <<UseCase>>
+participant "MaintenanceServiceImpl" as Service <<Domain Service>>
+participant "AircraftRepository" as AirRepo <<Repository>>
+participant "MaintenanceTemplateRepository" as TempRepo <<Repository>>
+participant "MaintenanceRecordRepository" as RecRepo <<Repository>>
+
+User -> Controller : POST /api/maintenance/records\n(CreateMaintenanceRecordRequest)
+
+Controller -> Controller : validate JWT and authority (MAINTENANCE_TECH)
+return
+
+Controller -> UseCase : execute(request)
+
+UseCase -> Service : createMaintenanceRecord(request)
+
+Service -> AirRepo : findByRegistrationNumber(request.aircraft_registration)
+return aircraft
+
+Service -> TempRepo : findById(request.template_id)
+return template
+
+Service -> Service : validate template applicable_models
+return
+
+Service -> RecRepo : save(new MaintenanceRecord(...))
+return savedRecord
+
+Service -> Service : aircraft.setStatus(UNDER_MAINTENANCE)
+return
+
+Service -> AirRepo : save(aircraft)
+return updatedAircraft
+
+return savedRecord
+
+return savedRecord
+
+Controller -> Controller : map to MaintenanceRecordResponse\n& build HATEOAS links
+return
+
+return 201 Created (MaintenanceRecordResponse)
+
+@enduml

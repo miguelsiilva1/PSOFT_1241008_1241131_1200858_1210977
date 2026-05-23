@@ -1,0 +1,10 @@
+@startuml
+autonumber
+title US115a: Create Maintenance Template - Simplified Sequence Diagram
+
+actor "Maintenance Technician" as User
+participant ":System" as S
+
+User -> S : Types requested data\n(String name, String type, Set<String> applicable_models, List<NumberedItem> checklist)
+S --> User : Confirms the (in)success of the operation
+@enduml

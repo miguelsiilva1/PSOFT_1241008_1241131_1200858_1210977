@@ -1,0 +1,9 @@
+@startuml
+autonumber
+title US115: Create Maintenance Record - Simplified Sequence Diagram
+
+actor "Maintenance Technician" as User
+participant ":System" as S
+User -> S : Types requested data\n(String aircraft_registration, int template_id, String description, Date start_date, double expected_duration)
+S --> User : Confirms the (in)success of the operation
+@enduml

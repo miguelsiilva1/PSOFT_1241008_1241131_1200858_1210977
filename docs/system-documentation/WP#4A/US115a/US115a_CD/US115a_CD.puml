@@ -1,0 +1,61 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+title Create Maintenance Template: Architecture — Class Diagram
+
+package "Maintenance Template Aggregate" {
+
+    class MaintenanceController <<RestController>> {
+        + createMaintenanceTemplate(request: CreateMaintenanceTemplateRequest): ResponseEntity<?>
+    }
+
+    class CreateMaintenanceTemplateUseCase <<UseCase>> {
+        + execute(request: CreateMaintenanceTemplateRequest): MaintenanceTemplate
+    }
+
+    class MaintenanceServiceImpl <<Domain Service>> {
+        + createMaintenanceTemplate(request: CreateMaintenanceTemplateRequest): MaintenanceTemplate
+    }
+
+    interface MaintenanceTemplateRepository <<Repository>> {
+        + save(template: MaintenanceTemplate): MaintenanceTemplate
+    }
+
+    class MaintenanceTemplate <<Entity>> <<Root>> {
+        - template_id: int
+        - type: MaintenanceTemplateType
+        - name: String
+        - applicable_models: Set<String>
+        - cost: double
+        + MaintenanceTemplate(...)
+    }
+
+    class CreateMaintenanceTemplateRequest <<DTO>> {
+        - name: String
+        - type: String
+        - applicable_models: Set<String>
+        - checklist: List<NumberedItem>
+    }
+
+    class MaintenanceTemplateResponse <<DTO>> {
+        - template_id: int
+        - name: String
+        - type: String
+        - applicable_models: Set<String>
+        - checklist: List<NumberedItem>
+        + from(template: MaintenanceTemplate): MaintenanceTemplateResponse
+    }
+}
+
+MaintenanceController ..> CreateMaintenanceTemplateUseCase : delegates to >
+MaintenanceController ..> CreateMaintenanceTemplateRequest : receives >
+MaintenanceController ..> MaintenanceTemplateResponse : creates >
+
+CreateMaintenanceTemplateUseCase ..> MaintenanceServiceImpl : delegates to >
+
+MaintenanceServiceImpl ..> MaintenanceTemplateRepository : save() >
+MaintenanceServiceImpl ..> MaintenanceTemplate : creates >
+
+@enduml

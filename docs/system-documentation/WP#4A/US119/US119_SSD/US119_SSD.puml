@@ -1,0 +1,10 @@
+@startuml
+autonumber
+title US119: Complete Maintenance Record - Simplified Sequence Diagram
+
+actor "Maintenance Technician" as User
+participant ":System" as S
+
+User -> S : Types requested data\n(int recordId, String completion_notes)
+S --> User : Confirms the (in)success of the operation
+@enduml

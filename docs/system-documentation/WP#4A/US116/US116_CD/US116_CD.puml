@@ -1,0 +1,40 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+title View Maintenance Records for Aircraft: Architecture — Class Diagram
+
+package "Maintenance Aggregate" {
+    class MaintenanceController <<RestController>> {
+        + viewMaintenanceRecordsForAircraft(registrationNumber: String): ResponseEntity<?>
+    }
+    class ViewMaintenanceRecordsUseCase <<UseCase>> {
+        + execute(aircraftRegistration: String): List<MaintenanceRecord>
+    }
+    class MaintenanceServiceImpl <<Domain Service>> {
+        + getMaintenanceRecordsForAircraft(aircraftRegistration: String): List<MaintenanceRecord>
+    }
+    interface MaintenanceRecordRepository <<Repository>> {
+        + findByAircraftRegistrationNumber(registrationNumber: String): List<MaintenanceRecord>
+    }
+    class MaintenanceRecordResponse <<DTO>> {
+        + from(record: MaintenanceRecord): MaintenanceRecordResponse
+    }
+}
+
+package "Aircraft Aggregate" {
+    interface AircraftRepository <<Repository>> {
+        + findByRegistrationNumber(registrationNumber: String): Aircraft
+    }
+}
+
+MaintenanceController ..> ViewMaintenanceRecordsUseCase : delegates to >
+MaintenanceController ..> MaintenanceRecordResponse : creates List of >
+
+ViewMaintenanceRecordsUseCase ..> MaintenanceServiceImpl : delegates to >
+
+MaintenanceServiceImpl ..> MaintenanceRecordRepository : findByAircraftRegistrationNumber() >
+MaintenanceServiceImpl ..> AircraftRepository : findByRegistrationNumber() >
+
+@enduml

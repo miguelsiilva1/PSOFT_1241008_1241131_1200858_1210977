@@ -1,0 +1,39 @@
+@startuml
+autonumber
+skinparam maxMessageSize 150
+title US116: View Maintenance Records for Aircraft - Sequence Diagram
+
+autoactivate on
+
+actor "Maintenance Tech / ATCC" as User
+participant "MaintenanceController" as Controller <<RestController>>
+participant "ViewMaintenanceRecordsUseCase" as UseCase <<UseCase>>
+participant "MaintenanceServiceImpl" as Service <<Domain Service>>
+participant "AircraftRepository" as AirRepo <<Repository>>
+participant "MaintenanceRecordRepository" as RecRepo <<Repository>>
+
+User -> Controller : GET /api/maintenance/aircraft/{registration}/records
+
+Controller -> Controller : validate JWT and authority\n(MAINTENANCE_TECH or ATCC)
+return
+
+Controller -> UseCase : execute(registrationNumber)
+
+UseCase -> Service : getMaintenanceRecordsForAircraft(registrationNumber)
+
+Service -> AirRepo : findByRegistrationNumber(registrationNumber)
+return aircraft (validate existence)
+
+Service -> RecRepo : findByAircraftRegistrationNumber(registrationNumber)
+return List<MaintenanceRecord>
+
+return List<MaintenanceRecord>
+
+return List<MaintenanceRecord>
+
+Controller -> Controller : map to MaintenanceRecordResponse\n& build HATEOAS links
+return
+
+return 200 OK (CollectionModel<MaintenanceRecordResponse>)
+
+@enduml

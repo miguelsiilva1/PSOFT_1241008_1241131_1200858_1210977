@@ -1,0 +1,67 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+title Create Maintenance Record: Architecture — Class Diagram
+
+package "Maintenance Aggregate" {
+    class MaintenanceController <<RestController>> {
+        + createMaintenanceRecord(request: CreateMaintenanceRecordRequest): ResponseEntity<?>
+    }
+    class CreateMaintenanceRecordUseCase <<UseCase>> {
+        + execute(request: CreateMaintenanceRecordRequest): MaintenanceRecord
+    }
+    class MaintenanceServiceImpl <<Domain Service>> {
+        + createMaintenanceRecord(request: CreateMaintenanceRecordRequest): MaintenanceRecord
+    }
+    interface MaintenanceRecordRepository <<Repository>> {
+        + save(record: MaintenanceRecord): MaintenanceRecord
+    }
+    class MaintenanceRecord <<Entity>> <<Root>> {
+        - record_id: int
+        - description: String
+        - start_date: Date
+        - expected_duration: double
+        - end_date: Date
+        - completed: boolean
+        - version: Long
+        + MaintenanceRecord(...)
+    }
+    class CreateMaintenanceRecordRequest <<DTO>> {
+        - aircraft_registration: String
+        - template_id: int
+        - description: String
+        - start_date: Date
+        - expected_duration: double
+    }
+    class MaintenanceRecordResponse <<DTO>> {
+        + from(record: MaintenanceRecord): MaintenanceRecordResponse
+    }
+}
+
+package "Maintenance Template Aggregate" {
+    interface MaintenanceTemplateRepository <<Repository>> {
+        + findById(id: int): Optional<MaintenanceTemplate>
+    }
+}
+
+package "Aircraft Aggregate" {
+    interface AircraftRepository <<Repository>> {
+        + findByRegistrationNumber(registrationNumber: String): Aircraft
+        + save(aircraft: Aircraft): Aircraft
+    }
+}
+
+MaintenanceController ..> CreateMaintenanceRecordUseCase : delegates to >
+MaintenanceController ..> CreateMaintenanceRecordRequest : receives >
+MaintenanceController ..> MaintenanceRecordResponse : creates >
+
+CreateMaintenanceRecordUseCase ..> MaintenanceServiceImpl : delegates to >
+
+MaintenanceServiceImpl ..> MaintenanceRecordRepository : save() >
+MaintenanceServiceImpl ..> MaintenanceTemplateRepository : findById() >
+MaintenanceServiceImpl ..> AircraftRepository : findByRegistrationNumber() / save() >
+MaintenanceServiceImpl ..> MaintenanceRecord : creates >
+
+@enduml

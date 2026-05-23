@@ -1,0 +1,51 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+title Complete Maintenance Record: Architecture — Class Diagram
+
+package "Maintenance Aggregate" {
+    class MaintenanceController <<RestController>> {
+        + completeMaintenanceRecord(recordId: int, request: CompleteMaintenanceRecordRequest): ResponseEntity<?>
+    }
+    class CompleteMaintenanceRecordUseCase <<UseCase>> {
+        + execute(maintenanceRecordId: int, completionNotes: String): MaintenanceRecord
+    }
+    class MaintenanceServiceImpl <<Domain Service>> {
+        + completeMaintenanceRecord(maintenanceRecordId: int, completionNotes: String): MaintenanceRecord
+    }
+    interface MaintenanceRecordRepository <<Repository>> {
+        + findById(id: int): Optional<MaintenanceRecord>
+        + save(record: MaintenanceRecord): MaintenanceRecord
+    }
+    class MaintenanceRecord <<Entity>> <<Root>> {
+        - completed: boolean
+        - completion_notes: MaintenanceCompletionNotes
+        + complete(completion_notes: String): void
+    }
+    class CompleteMaintenanceRecordRequest <<DTO>> {
+        - completion_notes: String
+    }
+    class MaintenanceRecordResponse <<DTO>> {
+        + from(record: MaintenanceRecord): MaintenanceRecordResponse
+    }
+}
+
+package "Aircraft Aggregate" {
+    interface AircraftRepository <<Repository>> {
+        + save(aircraft: Aircraft): Aircraft
+    }
+}
+
+MaintenanceController ..> CompleteMaintenanceRecordUseCase : delegates to >
+MaintenanceController ..> CompleteMaintenanceRecordRequest : receives >
+MaintenanceController ..> MaintenanceRecordResponse : creates >
+
+CompleteMaintenanceRecordUseCase ..> MaintenanceServiceImpl : delegates to >
+
+MaintenanceServiceImpl ..> MaintenanceRecordRepository : findById() / save() >
+MaintenanceServiceImpl ..> AircraftRepository : save() >
+MaintenanceServiceImpl ..> MaintenanceRecord : complete(notes) >
+
+@enduml

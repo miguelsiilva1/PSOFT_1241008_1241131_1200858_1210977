@@ -1,0 +1,68 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+title Maintenance Domain Model
+
+package "Maintenance Aggregate" {
+    class MaintenanceRecord <<entity>> <<root>> {
+        - record_id: int
+        - description: String
+        - expected_duration: double
+        - start_date: Date
+        - end_date <<calculated>>: Date
+        - completed: boolean
+        - version: Long
+    }
+    class MaintenanceCompletionNotes <<value object>> {
+        - completion_notes: String
+    }
+    MaintenanceRecord o--> MaintenanceCompletionNotes
+}
+
+package "Maintenance Template Aggregate" {
+    class MaintenanceTemplate <<entity>> <<root>> {
+        - template_id: int
+        - name: String
+        - cost: double
+        - applicable_models: Set<String>
+    }
+    enum MaintenanceTemplateType {
+        - INSPECTION: int
+        - SCHEDULED_MAINTENANCE: int
+        - OVERHAUL: int
+        - MODIFICATION: int
+    }
+    class Checklist <<entity>> {
+    }
+    class NumberedItem <<value object>> {
+        - id: int
+        - task: String
+    }
+    MaintenanceTemplate --> MaintenanceTemplateType
+    MaintenanceTemplate o--> Checklist
+    Checklist o--> "N" NumberedItem
+}
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - status: AircraftStatus
+        - version: Long
+    }
+    class AircraftRegistration <<value object>> {
+        - registration_number: String
+    }
+    enum AircraftStatus {
+        - AVAILABLE: int
+        - IN_FLIGHT: int
+        - INACTIVE: int
+        - UNDER_MAINTENANCE: int
+    }
+    Aircraft o--> AircraftRegistration
+    Aircraft --> AircraftStatus
+}
+
+MaintenanceRecord --> MaintenanceTemplate : references >
+MaintenanceRecord --> Aircraft : applies to >
+
+@enduml

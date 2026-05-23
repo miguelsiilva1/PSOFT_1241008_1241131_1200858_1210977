@@ -1,0 +1,48 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+title View Total Maintenance Hours: Architecture — Class Diagram
+
+package "Maintenance Aggregate" {
+
+    class MaintenanceController <<RestController>> {
+        + viewTotalMaintenanceHours(registrationNumber: String): ResponseEntity<?>
+    }
+
+    class ViewMaintenanceHoursUseCase <<UseCase>> {
+        + execute(aircraftRegistration: String): double
+    }
+
+    class MaintenanceServiceImpl <<Domain Service>> {
+        + getTotalMaintenanceHoursForAircraft(aircraftRegistration: String): double
+    }
+
+    interface MaintenanceRecordRepository <<Repository>> {
+        + totalMaintenanceHoursByAircraftRegistrationNumber(registrationNumber: String): Double
+    }
+
+    class MaintenanceHoursResponse <<DTO>> {
+        - aircraft_registration: String
+        - total_maintenance_hours: double
+        + MaintenanceHoursResponse(aircraft_registration: String, total_maintenance_hours: double)
+    }
+}
+
+package "Aircraft Aggregate" {
+    interface AircraftRepository <<Repository>> {
+        + findByRegistrationNumber(registrationNumber: String): Aircraft
+    }
+}
+
+' Relacionamentos e chamadas de métodos mapeados
+MaintenanceController ..> ViewMaintenanceHoursUseCase : delegates to >
+MaintenanceController ..> MaintenanceHoursResponse : creates >
+
+ViewMaintenanceHoursUseCase ..> MaintenanceServiceImpl : delegates to >
+
+MaintenanceServiceImpl ..> MaintenanceRecordRepository : totalMaintenanceHoursByAircraftRegistrationNumber() >
+MaintenanceServiceImpl ..> AircraftRepository : findByRegistrationNumber() >
+
+@enduml
