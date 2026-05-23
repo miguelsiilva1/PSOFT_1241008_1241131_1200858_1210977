@@ -44,21 +44,21 @@ public class RouteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ATCC')")
+    @PreAuthorize("hasAuthority('ATCC')")
     public ResponseEntity<RouteResponse> createRoute(@Valid @RequestBody CreateRouteRequest request) {
         Route route = createRouteUseCase.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(RouteResponse.from(route));
     }
 
     @GetMapping("/{routeId}")
-    @PreAuthorize("hasAnyRole('ATCC', 'BACKOFFICE_OPERATOR')")
+    @PreAuthorize("hasAnyAuthority('ATCC', 'BACKOFFICE_OP')")
     public ResponseEntity<RouteResponse> getRouteById(@PathVariable String routeId) {
         Route route = viewRouteDetailsUseCase.execute(routeId);
         return ResponseEntity.ok(RouteResponse.from(route));
     }
 
     @GetMapping("/{routeId}/history")
-    @PreAuthorize("hasAnyRole('ATCC', 'BACKOFFICE_OPERATOR')")
+    @PreAuthorize("hasAnyAuthority('ATCC', 'BACKOFFICE_OP')")
     public ResponseEntity<List<RouteHistoryResponse>> getRouteHistory(@PathVariable String routeId) {
         List<RouteHistory> history = viewRouteHistoryUseCase.execute(routeId);
 
@@ -70,7 +70,7 @@ public class RouteController {
     }
 
     @PatchMapping("/{routeId}")
-    @PreAuthorize("hasAnyRole('ATCC', 'BACKOFFICE_OPERATOR')")
+    @PreAuthorize("hasAnyAuthority('ATCC', 'BACKOFFICE_OP')")
     public ResponseEntity<RouteResponse> updateRoute(@PathVariable String routeId,
                                                      @Valid @RequestBody UpdateRouteRequest request) {
         Route route = updateRouteUseCase.execute(routeId, request);
@@ -78,14 +78,14 @@ public class RouteController {
     }
 
     @PatchMapping("/{routeId}/deactivate")
-    @PreAuthorize("hasAnyRole('ATCC', 'BACKOFFICE_OPERATOR')")
+    @PreAuthorize("hasAnyAuthority('ATCC', 'BACKOFFICE_OP')")
     public ResponseEntity<RouteResponse> deactivateRoute(@PathVariable String routeId) {
         Route route = deactivateRouteUseCase.execute(routeId);
         return ResponseEntity.ok(RouteResponse.from(route));
     }
 
     @GetMapping("/from/{iataCode}")
-    @PreAuthorize("hasAnyRole('ATCC', 'BACKOFFICE_OPERATOR')")
+    @PreAuthorize("hasAnyAuthority('ATCC', 'BACKOFFICE_OP')")
     public ResponseEntity<List<RouteResponse>> getRoutesFromAirport(@PathVariable String iataCode) {
         List<Route> routes = viewRoutesFromAirportUseCase.execute(iataCode);
 
@@ -97,7 +97,7 @@ public class RouteController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ATCC')")
+    @PreAuthorize("hasAuthority('ATCC')")
     public ResponseEntity<List<RouteResponse>> searchRoutes(@RequestParam(required = false) String origin,
                                                             @RequestParam(required = false) String destination) {
         List<Route> routes = searchRoutesUseCase.execute(origin, destination);
