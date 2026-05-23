@@ -3,27 +3,31 @@
 
 title Register an Aircraft: Architecture — Class Diagram
 
-package "Registering" <<rectangle>> {
+package "Aircraft Aggregate" <<rectangle>> {
     class Aircraft <<Aggregate Root>> {
-        - String name
-        - int seating_capacity
-        - double max_range
-        - double fuel_capacity
-        - double cruising_speed
-        - Set<String> feature
+        - AircraftRegistration registration_number
         - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
         ---
         + Aircraft(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
     }
     interface AircraftRepository {
-        + boolean alreadyExists(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+        + boolean alreadyExists(aircraft_registration.registration_number)
         + Aircraft save(Aircraft)
     }
     class RegisterAircraftService <<Domain Service>> {
         + Aircraft register(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
     }
     class RegisterAircraftUseCase <<@UseCase>> {
-        + Aircraft execute(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+        + Aircraft execute(registration_number, model_name, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, economy_seats, premium_economy_seats, business_seats, first_seats, status)
     }
 
     RegisterAircraftUseCase ..> AircraftRepository : alreadyExists()
@@ -32,18 +36,20 @@ package "Registering" <<rectangle>> {
     RegisterAircraftUseCase ..> AircraftRepository : save()
 }
 
-package "Catalog" <<rectangle>> {
+package "Aircraft Model Aggregate" <<rectangle>> {
     class AircraftModel <<Aggregate Root>> {
-        - name: String
-        - seating_capacity: int
-        - max_range: double
-        - fuel_capacity: double
-        - cruising_speed: double
-        - feature: Set<String>
-        + getName()
+        - String name
+        - int seating_capacity
+        - double max_range
+        - double fuel_capacity
+        - double cruising_speed
+        - Set<String> feature
+        - AircraftManufacturer manufacturer
+        ---
+        + String obtainName()
     }
     interface AircraftModelRepository {
-        + Optional<AircraftModel> findByName(name)
+        + AircraftModel findByName(name)
     }
 
     RegisterAircraftUseCase .up.> AircraftModelRepository : findByName()

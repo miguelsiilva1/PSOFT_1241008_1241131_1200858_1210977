@@ -1,0 +1,53 @@
+openapi: "3.1.0"
+info:
+  title: "US101 - Register an Aircraft Model"
+  description: "As a Backoffice Operator, I want to register an aircraft model with specifications including manufacturer, model
+name, seating capacity, fuel capacity, maximum range, and cruising speed."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/aircraft-model:
+    post:
+      summary: "POST api/aircraft-model"
+      operationId: "registerAircraftModel"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterAircraftModelRequest"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    RegisterAircraftModelRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: true
+        seating_capacity:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        max_range:
+          type: "number"
+          format: "double"
+          nullable: true
+        fuel_capacity:
+          type: "number"
+          format: "double"
+          nullable: true
+        cruising_speed:
+          type: "number"
+          format: "double"
+          nullable: true
+        manufacturer_name:
+          type: "string"
+          nullable: true

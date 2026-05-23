@@ -1,0 +1,36 @@
+openapi: 3.1.0
+info:
+  title: "US105 - Update Aircraft status"
+  description: " As an ATCC, I want to update an aircraft operational status."
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8080'
+paths:
+  /api/aircraft:
+    put:
+      summary: "PUT api/aircraft"
+      operationId: "updateAircraftStatus"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAircraftStatusRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    UpdateAircraftStatusRequest:
+      type: "object"
+      properties:
+        registration_number:
+          type: "string"
+          nullable: true
+        status:
+          type: "string"
+          nullable: true

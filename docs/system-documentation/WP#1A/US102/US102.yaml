@@ -1,0 +1,73 @@
+openapi: 3.1.0
+info:
+  title: "US102 - Register an Aircraft"
+  description: "As an Air Transport Company Collaborator (ATCC), I want to register a specific aircraft instance with details
+such as registration number, model, manufacturing date, and current status (active, inactive, under maintenance)."
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8080'
+paths:
+  /api/aircraft:
+    post:
+      summary: "POST api/aircraft"
+      operationId: "registerAircraft"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterAircraftRequest"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    RegisterAircraftRequest:
+      type: "object"
+      properties:
+        registration_number:
+          type: "string"
+          nullable: true
+        model_name:
+          type: "string"
+          nullable: true
+        manufacturing_date:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        last_maintenance:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        max_flight_hours_until_maintenance:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        max_days_until_maintenance:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        economy_seats:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        premium_economy_seats:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        business_seats:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        first_seats:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        status:
+          type: "string"
+          nullable: true
+  

@@ -1,0 +1,26 @@
+openapi: 3.1.0
+info:
+  title: "US103 - View Aircraft's details by Registration Number"
+  description: "As a Backoffice Operator or ATCC, I want to view an aircraft's details given its registration number"
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8080'
+paths:
+  /api/aircraft:
+    get:
+      summary: "GET api/aircraft"
+      operationId: "searchAircraftByRegistrationNumber"
+      parameters:
+        - name: "registration_number"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  

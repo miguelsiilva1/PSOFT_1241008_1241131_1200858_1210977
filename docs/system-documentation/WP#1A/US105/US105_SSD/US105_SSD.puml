@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Update Aircraft status: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S: Types requested data \n(String registration_number, String status)
+S --> ATCC: Confirms the (in)sucess of the operation
+
+@enduml

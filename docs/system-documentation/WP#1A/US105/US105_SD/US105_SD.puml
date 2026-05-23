@@ -9,20 +9,22 @@ participant UpdateAircraftStatusUseCase <<@UseCase>>
 participant UpdateAircraftStatusService <<Domain Service>>
 participant AircraftRepository
 
-ATCC -> AircraftController : PUT /aircraft\n{\n\taircraft_registration: {registration_number: ""},\n\tstatus: "IN_FLIGHT"\n}
+ATCC -> AircraftController : PUT /aircraft\n{\n\tregistration_number: "N737UA",\n\tstatus: "IN_FLIGHT"\n}
 
 AircraftController -> AircraftController : extract username from JWT
 alt "User has authorization"
-    AircraftController -> UpdateAircraftStatusUseCase : execute(aircraft_registration, status)
-        UpdateAircraftStatusUseCase -> AircraftRepository : findByIata(aircraft_registration.registration_number)
+    AircraftController -> UpdateAircraftStatusUseCase : execute(registration_number, status)
+        UpdateAircraftStatusUseCase -> AircraftRepository : findByRegistrationNumber(registration_number)
         alt "Aircraft exists"
         AircraftRepository --> UpdateAircraftStatusUseCase : aircraft_object
-        UpdateAircraftStatusUseCase -> UpdateAircraftStatusService : update(aircraft_object, status)
+        UpdateAircraftStatusUseCase -> UpdateAircraftStatusService : update(aircraft_object.obtainRegistrationNumber(), status)
         UpdateAircraftStatusService --> UpdateAircraftStatusUseCase : aircraft (unsaved)
         UpdateAircraftStatusUseCase -> AircraftRepository : update(aircraft)
-        AircraftRepository --> UpdateAircraftStatusUseCase : aircraft (persisted)
+        AircraftRepository --> UpdateAircraftStatusUseCase : rows_updated
+        UpdateAircraftStatusUseCase -> AircraftRepository : findByRegistrationNumber(registration_number)
+                AircraftRepository --> UpdateAircraftStatusUseCase : aircraft (updated)
     UpdateAircraftStatusUseCase --> AircraftController : aircraft
-AircraftController --> ATCC : 200 OK\n{ { registration_number: aircraft.aircraft_registration.registration_number, status: status }, _links.return }
+AircraftController --> ATCC : 200 OK\n{ { registration_number: (aircraft.obtainRegistrationNumber(), new_status: status }, _links.return }
         else "The aircraft does not exist in the system"
 AircraftController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
         end

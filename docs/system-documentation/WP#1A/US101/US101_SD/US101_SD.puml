@@ -14,7 +14,7 @@ BO -> AircraftModelController : POST /aircraft-model\n{\n\tname: "Boeing 737",\n
 
 AircraftModelController -> AircraftModelController : extract username from JWT
 alt "User has authorization"
-    AircraftModelController -> RegisterAircraftModelUseCase : execute(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer)
+    AircraftModelController -> RegisterAircraftModelUseCase : execute(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer_name)
         RegisterAircraftModelUseCase -> AircraftManufacturerRepository : findByName(manufacturer_name)
         alt "The name manufacturer exists"
         AircraftManufacturerRepository --> RegisterAircraftModelUseCase : manufacturer_object

@@ -16,6 +16,9 @@ public class AircraftManufacturer {
 
     @JsonCreator
     public AircraftManufacturer(@JsonProperty("name") @NotBlank String manufacturer) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Manufacturer name cannot be empty");
+        }
         this.name = manufacturer;
     }
 

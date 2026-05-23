@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Search Aircrafts by Model/Status/Manufacturing Year: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S: Types requested data \n(String model_name / String status / int year)
+S --> ATCC: Confirms the (in)sucess of the operation\nand shows list of all aircrafts that respect\nthe criteria (in case of sucess)
+
+@enduml

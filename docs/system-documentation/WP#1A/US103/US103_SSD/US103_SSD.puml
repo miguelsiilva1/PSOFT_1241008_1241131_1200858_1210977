@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Register an Aircraft Model: Simplified Sequence Diagram
+
+actor "Backoffice\nOperator / ATCC" as BOATCC
+participant ":System" as S
+
+BOATCC -> S: Types requested data \n(String name, double seating_capacity,\ndouble max_range, double fuel_capacity\ndouble cruising_speed, String manufacturer_name)
+S --> BOATCC: Confirms the (in)sucess of the operation
+
+@enduml

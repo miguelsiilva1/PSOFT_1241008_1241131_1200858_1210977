@@ -44,10 +44,10 @@ package "Aircraft Model Aggregate" {
         - cruising_speed: double
         - feature: Set<String>
     }
-    AircraftModel o--> AircraftManufacturer
-
-    class AircraftManufacturer <<entity>> {
-            - name: String
+}
+package "Aircraft Manufacturer Aggregate" {
+    class AircraftManufacturer <<entity>> <<root>> {
+        - name: String
     }
 }
 
@@ -243,5 +243,6 @@ MaintenanceRecord --> Aircraft
 Flight --> Route
 Flight --> Aircraft
 MaintenanceRecord --> MaintenanceTemplate
+AircraftModel o--> AircraftManufacturer
 
 @enduml

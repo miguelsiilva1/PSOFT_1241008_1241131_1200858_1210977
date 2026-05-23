@@ -1,33 +1,38 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-@startuml
-'https://plantuml.com/class-diagram
-
 title Search Aircraft by Model/Status/Manufacturing Year: Architecture — Class Diagram
 
-package "Searching" <<rectangle>> {
+package "Aircraft Aggregate" <<rectangle>> {
     class Aircraft <<Aggregate Root>> {
-        - String name
-        - int seating_capacity
-        - double max_range
-        - double fuel_capacity
-        - double cruising_speed
-        - Set<String> feature
+        - AircraftRegistration registration_number
         - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
+        ---
+        + Aircraft(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
     }
     interface AircraftRepository {
-        + Optional<List<Aircraft>> findByParameter(aircraft_model.name)
-        + Optional<List<Aircraft>> findByParameter(status)
-        + Optional<List<Aircraft>> findByParameter(manufacturing_date)
+        + List<Aircraft> findByModelName(model_name)
+        + List<Aircraft> findByStatus(status)
+        + List<Aircraft> findByManufactoringYear(year)
     }
-    class SearchAircraftByIataUseCase <<@UseCase>> {
-        + List<Aircraft> execute(aircraft_model.name)
+    class FindAircraftByModelStatusManufactoringYearUseCase <<@UseCase>> {
+        + List<Aircraft> execute(model_name)
         + List<Aircraft> execute(status)
-        + List<Aircraft> execute(manufactoring_date)
+        + List<Aircraft> execute(year)
     }
 
-    SearchAircraftByIataUseCase ..> AircraftRepository : findByParameter()
+    FindAircraftByModelStatusManufactoringYearUseCase ..> AircraftRepository : findByModelName()
+    FindAircraftByModelStatusManufactoringYearUseCase ..> AircraftRepository : findByStatus()
+    FindAircraftByModelStatusManufactoringYearUseCase ..> AircraftRepository : findByManufactoringYear()
 }
 
 @enduml

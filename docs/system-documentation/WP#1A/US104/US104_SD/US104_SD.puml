@@ -1,28 +1,26 @@
 @startuml
-title Search Aircraft by Model/Status/Manufacturing Year — GET /aircraft
+title Search Aircrafts by Model/Status/Manufacturing Year — GET /aircraft
 
 autoactivate on
 
 actor ATCC
 participant AircraftController
-participant SearchListOfAircraftsUseCase <<@UseCase>>
-participant SearchListOfAircraftsService <<Domain Service>>
+participant FindAircraftByModelStatusManufactoringYearUseCase <<@UseCase>>
 participant AircraftRepository
 
-ATCC -> AircraftController : GET /aircraft\n\t{aircraft_model: {name: ""}}\n\tOR\n\t{status: ""}\n\tOR\n\t{manufacturing_date: "2025"}
+ATCC -> AircraftController : GET /aircraft\n\t{model_name: "Boeing 737"}\n\tOR\n\t{status: "AVAILABLE"}\n\tOR\n\t{year: 2025}
 
 AircraftController -> AircraftController : extract username from JWT
 alt "User has authorization"
-    AircraftController -> SearchListOfAircraftsUseCase : execute(aircraft_model.name / status / manufactoring_date)
-        SearchListOfAircraftsUseCase -> AircraftRepository : findByParameter(aircraft_model.name / status / manufactoring_date)
+    AircraftController -> FindAircraftByModelStatusManufactoringYearUseCase : execute(model_name / status / year)
+        FindAircraftByModelStatusManufactoringYearUseCase -> AircraftRepository : findByModelName(name) / findByStatus(status) / findByManufactoringYear(year)
         alt "Aircrafts exist"
-        AircraftRepository --> SearchListOfAircraftsUseCase : aircrafts
-    SearchListOfAircraftsUseCase --> AircraftController : aircrafts
+        AircraftRepository --> FindAircraftByModelStatusManufactoringYearUseCase : aircrafts
+    FindAircraftByModelStatusManufactoringYearUseCase --> AircraftController : aircrafts
 AircraftController --> ATCC : 200 OK\n{ list of the aircraft's registration numbers, _links.return }
         else "The aircraft does not exist in the system"
 AircraftController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
         end
-
 else "User does not have authorization"
 AircraftController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
 end

@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title View Aircraft's details by Registration Number: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S: Types requested data \n(String registration_number)
+S --> ATCC: Confirms the (in)sucess of the operation\nand shows the Aircraft's details (in case of sucess)
+
+@enduml

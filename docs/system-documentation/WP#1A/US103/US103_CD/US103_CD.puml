@@ -6,57 +6,30 @@
 
 title View Aircraft's details by Registration Number: Architecture — Class Diagram
 
-package "Searching" <<rectangle>> {
+package "Aircraft Aggregate" <<rectangle>> {
     class Aircraft <<Aggregate Root>> {
-        - String name
-        - int seating_capacity
-        - double max_range
-        - double fuel_capacity
-        - double cruising_speed
-        - Set<String> feature
+        - AircraftRegistration registration_number
         - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
         ---
-
+        + Aircraft(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
     }
     interface AircraftRepository {
-        + Optional<Aircraft> findByIata(aircraft_registration.registration_number)
+        + Aircraft findByRegistrationNumber(registration_number)
     }
-    class SearchAircraftByIataService <<Domain Service>> {
-        + void getDetails(Aircraft)
-    }
-    class SearchAircraftByIataUseCase <<@UseCase>> {
-        + Aircraft execute(aircraft_registration)
+    class FindAircraftByRegistrationNumberUseCase <<@UseCase>> {
+        + Aircraft execute(registration_number)
     }
 
-    SearchAircraftByIataUseCase ..> AircraftRepository : findByIata()
-    SearchAircraftByIataUseCase ..> SearchAircraftByIataService : delegates to >
-}
-
-package "Catalog" <<rectangle>> {
-    class AircraftManufacturer <<Aggregate Root>> {
-        - name: String
-        - seating_capacity: int
-        - max_range: double
-        - fuel_capacity: double
-        - cruising_speed: double
-        - feature: Set<String>
-        + getName()
-    }
-    interface AircraftManufacturerRepository {
-        + Optional<AircraftManufacturer> findByName(name)
-    }
-
-    SearchAircraftByIataUseCase .up.> AircraftManufacturerRepository : findByName()
-
-    class AircraftModel <<Aggregate Root>> {
-        - String name
-        + getName()
-    }
-    interface AircraftModelRepository {
-        + Optional<AircraftModel> findByName(name)
-    }
-
-    SearchAircraftByIataUseCase .up.> AircraftModelRepository : findByName()
+    FindAircraftByRegistrationNumberUseCase ..> AircraftRepository : findByRegistrationNumber()
 }
 
 @enduml

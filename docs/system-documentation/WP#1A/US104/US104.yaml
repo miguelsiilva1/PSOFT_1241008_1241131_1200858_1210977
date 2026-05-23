@@ -1,0 +1,38 @@
+openapi: 3.1.0
+info:
+  title: "US104 - Search Aircrafts by Model/Status/Manufacturing Year"
+  description: " As an ATCC, I want to search for aircraft by model, status, or manufacturing year."
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8080'
+paths:
+  /api/aircraft:
+    get:
+      summary: "GET api/aircraft"
+      operationId: "searchByModelNameOrStatusOrManufacturingYear"
+      parameters:
+        - name: "model_name"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "status"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "year"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+
+

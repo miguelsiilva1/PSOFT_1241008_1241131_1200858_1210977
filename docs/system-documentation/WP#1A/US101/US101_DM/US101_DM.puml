@@ -15,11 +15,12 @@ package "Aircraft Model Aggregate" {
         - cruising_speed: double
         - feature: Set<String>
     }
-    AircraftModel o--> AircraftManufacturer
-
+}
+package "Aircraft Manufacturer Aggregate" {
     class AircraftManufacturer <<entity>> {
             - name: String
     }
 }
+AircraftModel o-right-> AircraftManufacturer
 
 @enduml

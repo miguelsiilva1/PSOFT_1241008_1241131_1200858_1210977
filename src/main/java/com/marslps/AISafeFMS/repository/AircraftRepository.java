@@ -29,7 +29,7 @@ public interface AircraftRepository extends CrudRepository<Aircraft, Long>  {
     boolean alreadyExists(@Param("reg_num") String registration_number);
 
     @Query("UPDATE Aircraft a SET a.status = :status WHERE a.registration_number.registration_number = :reg_num")
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
-    Aircraft updateAircraftStatus(@Param("reg_num") String registration_number, @Param("status") AircraftStatus status);
+    int updateAircraftStatus(@Param("reg_num") String registration_number, @Param("status") AircraftStatus status);
 }

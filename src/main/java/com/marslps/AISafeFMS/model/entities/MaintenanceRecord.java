@@ -8,7 +8,11 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-public class MaintenanceRecord extends MaintenanceTemplate {
+public class MaintenanceRecord {
+    @Id @Column @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int template_id;
+    @ManyToOne @JoinColumn
+    private MaintenanceTemplate template;
     @JoinColumn @ManyToOne
     private Aircraft aircraft;
     @Column @NotBlank
@@ -30,7 +34,7 @@ public class MaintenanceRecord extends MaintenanceTemplate {
                              Date start_date,
                              @Positive double expected_duration,
                              boolean completed) {
-        super(maintenance_template);
+        this.template = maintenance_template;
         this.aircraft = aircraft;
         this.description = description;
         this.start_date = start_date;

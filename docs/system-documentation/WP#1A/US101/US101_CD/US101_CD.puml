@@ -1,7 +1,7 @@
 @startuml
 title Register an Aircraft Model: Architecture — Class Diagram
 
-package "Registering" <<rectangle>> {
+package "Aircraft Model Aggregate" <<rectangle>> {
     class AircraftModel <<Aggregate Root>> {
         - String name
         - int seating_capacity
@@ -18,10 +18,10 @@ package "Registering" <<rectangle>> {
         + AircraftModel save(AircraftModel)
     }
     class RegisterAircraftModelService <<Domain Service>> {
-        + AircraftModel register(name, seating_capacity, max_range, fuel_capacity, cruising_speed)
+        + AircraftModel register(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer)
     }
     class RegisterAircraftModelUseCase <<@UseCase>> {
-        + AircraftModel execute(name, seating_capacity, max_range, fuel_capacity, cruising_speed)
+        + AircraftModel execute(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer_name)
     }
 
     RegisterAircraftModelUseCase ..> AircraftModelRepository : alreadyExists()
@@ -30,13 +30,13 @@ package "Registering" <<rectangle>> {
     RegisterAircraftModelUseCase ..> AircraftModelRepository : save()
 }
 
-package "Catalog" <<rectangle>> {
+package "Aircraft Manufacturer Aggregate" <<rectangle>> {
     class AircraftManufacturer <<Aggregate Root>> {
-        - name: String
-        + getName()
+        - String name
+        + String obtainName()
     }
     interface AircraftManufacturerRepository {
-        + Optional<AircraftManufacturer> findByName(name)
+        + AircraftManufacturer findByName(name)
     }
 
     RegisterAircraftModelUseCase ..> AircraftManufacturerRepository : findByName()

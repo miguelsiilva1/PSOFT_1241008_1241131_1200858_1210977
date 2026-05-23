@@ -10,15 +10,21 @@ participant RegisterAircraftService <<Domain Service>>
 participant AircraftRepository
 participant AircraftManufacturerRepository
 
-ATCC -> AircraftController : POST /aircraft\n{\n\taircraft_registration: {registration_number: ""},\n\taircraft_model: {name: "Boeing 737"},\n\tmanufacturing_date: "16/05/2025",\n\tlast_maintenance: "16/05/2025",\n\tmax_flight_hours_until_maintenance: 200,\n\tmax_days_until_maintenance: 150,\n\tseating_configuration:\n\t\t{\n\t\t\teconomy_seats: 150\n\t\t\tpremium_economy_seats: 70\n\t\t\tbusiness_seats: 35\n\t\t\tfirst_seats: 15\n\t\t}\n\tstatus: "AVAILABLE"\n}
+ATCC -> AircraftController : POST /aircraft\n{\n\tregistration_number: "N737UA",\n\tmodel_name: "Boeing 737",\n\tmanufacturing_date: "2025-05-16",\n\tlast_maintenance: "2025-05-16",\n\tmax_flight_hours_until_maintenance: 200,\n\tmax_days_until_maintenance: 150,\n\teconomy_seats: 150\n\tpremium_economy_seats: 70\n\tbusiness_seats: 35\n\tfirst_seats: 15\n\tstatus: "AVAILABLE"\n}
 
 AircraftController -> AircraftController : extract username from JWT
 alt "User has authorization"
-    AircraftController -> RegisterAircraftUseCase : execute(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
-        RegisterAircraftUseCase -> AircraftModelRepository : findByName(aircraft_model.name)
-        alt "The model's name exists"
+    AircraftController -> RegisterAircraftUseCase : execute(registration_number, model_name, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, economy_seats, premium_economy_seats, business_seats, first_seats, status)
+        RegisterAircraftUseCase -> AircraftModelRepository : findByNameAndSeatingCapacity(model_name, economy_seats + premium_economy_seats + business_seats + first_seats)
+        alt "The model exists"
         AircraftModelRepository --> RegisterAircraftUseCase : aircraft_model_object
-        RegisterAircraftUseCase -> RegisterAircraftService : register(aircraft_registration, aircraft_model_object, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
+        RegisterAircraftUseCase -> RegisterAircraftUseCase : new AircraftRegistration(registration_number)
+        RegisterAircraftUseCase --> RegisterAircraftUseCase : aircraft_registration
+        RegisterAircraftUseCase -> RegisterAircraftUseCase : AircraftStatus.valueOf(status)
+        RegisterAircraftUseCase --> RegisterAircraftUseCase : aircraft_status
+        RegisterAircraftUseCase -> RegisterAircraftUseCase : new SeatingConfiguration(economy_seats, premium_economy_seats, business_seats, first_seats)
+        RegisterAircraftUseCase --> RegisterAircraftUseCase : seating_configuration
+        RegisterAircraftUseCase -> RegisterAircraftService : register(aircraft_registration, aircraft_model_object, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, aircraft_status)
             RegisterAircraftService -> AircraftRepository : alreadyExists(aircraft_registration)
             AircraftRepository --> RegisterAircraftService : false
             RegisterAircraftService -> RegisterAircraftService : new Aircraft(aircraft_registration, aircraft_model_object, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)

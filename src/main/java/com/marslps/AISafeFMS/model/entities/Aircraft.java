@@ -16,8 +16,6 @@ public class Aircraft {
     @Embedded @Column(unique = true)
     private AircraftRegistration registration_number;
     @JoinColumn @ManyToOne
-    private AircraftManufacturer manufacturer;
-    @JoinColumn @ManyToOne
     private AircraftModel model;
     @Embedded
     private SeatingConfiguration seating_configuration;
@@ -47,6 +45,14 @@ public class Aircraft {
                     @Positive int max_flight_hours_until_maintenance,
                     @Positive int max_days_until_maintenance,
                     AircraftStatus status) {
+        if (max_flight_hours_until_maintenance <= 0) {
+            throw new IllegalArgumentException("Max flight hours until maintenance must be strictly positive");
+        }
+
+        if (max_days_until_maintenance <= 0) {
+            throw new IllegalArgumentException("Max days until maintenance must be strictly positive");
+        }
+
         this.registration_number = registration_number;
         this.model = model;
         this.seating_configuration = seating_configuration;
@@ -62,7 +68,7 @@ public class Aircraft {
     public String obtainRegistrationNumber() {
         return this.registration_number.registration_number();
     }
-    public String obtainManufacturerName() {return this.manufacturer.obtainName();}
+    public String obtainManufacturerName() {return this.model.obtainManufacturer().obtainName();}
 
     public String obtainModelName() {return this.model.obtainName();}
 

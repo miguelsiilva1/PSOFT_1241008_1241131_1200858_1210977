@@ -45,4 +45,5 @@ public class AircraftModel {
     public String obtainName() {
         return this.name;
     }
+    public AircraftManufacturer obtainManufacturer() {return this.manufacturer;}
 }

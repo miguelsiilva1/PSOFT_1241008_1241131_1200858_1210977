@@ -1,24 +1,27 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-@startuml
-'https://plantuml.com/class-diagram
-
 title Update Aircraft status: Architecture — Class Diagram
 
 package "Updating" <<rectangle>> {
     class Aircraft <<Aggregate Root>> {
-        - String name
-        - int seating_capacity
-        - double max_range
-        - double fuel_capacity
-        - double cruising_speed
-        - Set<String> feature
+        - AircraftRegistration registration_number
         - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
+        ---
+        + Aircraft(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status)
     }
     interface AircraftRepository {
-        + Optional<Aircraft> findByIata(aircraft_registration.registration_number)
-        + Aircraft update(Aircraft)
+        + Aircraft findByRegistrationNumber(registration_number)
+        + Aircraft update(Aircraft, status)
     }
     class UpdateAircraftStatusService <<Domain Service>> {
         + Aircraft update(Aircraft, status)
@@ -27,7 +30,7 @@ package "Updating" <<rectangle>> {
         + Aircraft execute(aircraft_registration, status)
     }
 
-    UpdateAircraftStatusUseCase ..> AircraftRepository : findByIata()
+    UpdateAircraftStatusUseCase ..> AircraftRepository : findByRegistrationNumber()
     UpdateAircraftStatusUseCase ..> UpdateAircraftStatusService : delegates to >
     UpdateAircraftStatusUseCase ..> Aircraft : updates >
 }
