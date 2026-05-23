@@ -45,7 +45,7 @@ package "Airport Aggregate" {
         - description: String
     }
     class LocationIdentifier <<value object>> {
-        - iata_code: String
+        - iata: String
     }
 
     class TimeZone <<entity>> {
@@ -109,6 +109,6 @@ package "Aircraft Model Aggregate" {
 
 }
 
-Airport "1" ..> "0..*" AircraftModel : certifies >
+Airport "1" --> "*" AircraftModel : certified_models >
 
 @enduml

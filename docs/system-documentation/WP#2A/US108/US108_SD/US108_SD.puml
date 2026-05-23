@@ -1,5 +1,5 @@
 @startuml
-title Search for Airports — GET /airports?city={city}&country={country}&name={name}
+title Search for Airports — GET /api/airports?city={city}&country={country}&name={name}
 
 autoactivate on
 
@@ -8,22 +8,31 @@ participant AirportController
 participant SearchAirportsUseCase <<@UseCase>>
 participant SearchAirportsService <<Domain Service>>
 participant AirportRepository
+participant AirportAssembler
 
-ATCC -> AirportController : GET /airports?city={city}&country={country}&name={name}
+ATCC -> AirportController : GET /api/airports?city={city}&country={country}&name={name}
 
 AirportController -> AirportController : extract username from JWT
 alt "User has authorization"
     AirportController -> SearchAirportsUseCase : execute(city, country, name)
         SearchAirportsUseCase -> SearchAirportsService : searchAirports(city, country, name)
-            SearchAirportsService -> AirportRepository : searchAirports(city, country, name)
+            SearchAirportsService -> AirportRepository : findByName() / findByCity() / findByCountry() / findAll()
             AirportRepository --> SearchAirportsService : list_of_airports
         SearchAirportsService --> SearchAirportsUseCase : list_of_airports
     SearchAirportsUseCase --> AirportController : list_of_airports
 
-    AirportController --> ATCC : 200 OK\n{ list_of_airports, _links.self }
+    alt "Return a List of Airports"
+        loop "for each airport"
+            AirportController -> AirportAssembler : toModel(airport)
+            return AirportDTO
+        end
+        AirportController --> ATCC : 200 OK
+    else
+        AirportController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+    end
 
 else "User does not have authorization"
-    AirportController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+    AirportController --> ATCC : 403 Forbidden
 end
 
 @enduml

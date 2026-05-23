@@ -10,7 +10,7 @@ package "Airport Aggregate" <<rectangle>> {
     }
 
     interface AirportRepository {
-        + Optional<Airport> findByIataCode(LocationIdentifier iata_code)
+        + Optional<Airport> findByIata(LocationIdentifier iata)
         + Airport save(Airport airport)
     }
 }
@@ -22,7 +22,7 @@ package "Aircraft Aggregate" <<rectangle>> {
         }
 
     interface AircraftModelRepository {
-        + Optional<AircraftModel> findByName(name)
+        + List<AircraftModel> findByName(String name)
     }
 }
 
@@ -31,10 +31,10 @@ class CertifyAircraftService <<Domain Service>> {
 }
 
 class CertifyAircraftUseCase <<@UseCase>> {
-    + Airport execute(LocationIdentifier iata_code, String name)
+    + Airport execute(LocationIdentifier iata, String name)
 }
 
-CertifyAircraftUseCase ..> AirportRepository : findByIataCode()\nsave()
+CertifyAircraftUseCase ..> AirportRepository : findByIata()\nsave()
 CertifyAircraftUseCase ..> AircraftModelRepository : findByName()
 CertifyAircraftUseCase ..> CertifyAircraftService : delegates to >
 CertifyAircraftService ..> Airport : modifies >

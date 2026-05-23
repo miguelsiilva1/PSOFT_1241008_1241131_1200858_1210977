@@ -15,11 +15,11 @@ public class AircraftManufacturer {
     private String name;
 
     @JsonCreator
-    public AircraftManufacturer(@JsonProperty("name") @NotBlank String manufacturer) {
+    public AircraftManufacturer(@JsonProperty("name") @NotBlank String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Manufacturer name cannot be empty");
         }
-        this.name = manufacturer;
+        this.name = name;
     }
 
     protected AircraftManufacturer() {}

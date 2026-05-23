@@ -6,7 +6,7 @@ title View Airport's details by IATA Code: Architecture — Class Diagram
 package "Airport Aggregate" <<rectangle>> {
     class Airport <<root>> {
         - String name
-        - LocationIdentifier iata_code
+        - LocationIdentifier iata
         - AirportType airport_type
         - Coordinates coordinates
         - AirportLocation airport_location
@@ -19,11 +19,12 @@ package "Airport Aggregate" <<rectangle>> {
         - List<AirportGate> gates
         - List<AirportService> services
         - List<String> images
+        - Set<AircraftModel> certified_models
         ---
     }
 
     interface AirportRepository {
-        + Optional<Airport> findByIataCode(LocationIdentifier iata_code)
+        + Optional<Airport> findByIata(LocationIdentifier iata)
     }
 
     class ViewAirportDetailsService <<Domain Service>> {
@@ -31,10 +32,10 @@ package "Airport Aggregate" <<rectangle>> {
     }
 
     class ViewAirportDetailsUseCase <<@UseCase>> {
-        + Airport execute(LocationIdentifier iata_code)
+        + Airport execute(LocationIdentifier iata)
     }
 
-    ViewAirportDetailsUseCase ..> AirportRepository : findByIataCode() >
+    ViewAirportDetailsUseCase ..> AirportRepository : findByIata() >
     ViewAirportDetailsUseCase ..> ViewAirportDetailsService : delegates to >
 }
 

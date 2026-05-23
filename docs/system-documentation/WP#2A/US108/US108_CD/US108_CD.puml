@@ -6,7 +6,7 @@ title Search for Airports: Architecture — Class Diagram
 package "Airport Aggregate" <<rectangle>> {
     class Airport <<root>> {
         - String name
-        - LocationIdentifier iata_code
+        - LocationIdentifier iata
         - AirportType airport_type
         - Coordinates coordinates
         - AirportLocation airport_location
@@ -19,11 +19,15 @@ package "Airport Aggregate" <<rectangle>> {
         - List<AirportGate> gates
         - List<AirportService> services
         - List<String> images
+        - Set<AircraftModel> certified_models
         ---
     }
 
     interface AirportRepository {
-        + List<Airport> searchAirports(String city, String country, String name)
+        + List<Airport> findByName(String name)
+        + List<Airport> findByCity(String city)
+        + List<Airport> findByCountry(String country)
+        + List<Airport> findAll()
     }
 
     class SearchAirportsService <<Domain Service>> {
@@ -34,9 +38,8 @@ package "Airport Aggregate" <<rectangle>> {
         + List<Airport> execute(String city, String country, String name)
     }
 
-    SearchAirportsUseCase ..> AirportRepository : searchAirports() >
     SearchAirportsUseCase ..> SearchAirportsService : delegates to >
-    SearchAirportsService ..> AirportRepository : searchAirports() >
+    SearchAirportsService ..> AirportRepository : uses >
 }
 
 @enduml

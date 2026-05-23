@@ -85,6 +85,20 @@ public class Airport {
     public LocationIdentifier obtainIata() {
         return this.iata;
     }
+    public String obtainName() { return this.name; }
+    public Coordinates obtainCoordinates() { return this.coordinates; }
+    public AirportLocation obtainAirport_location() { return this.airport_location; }
+    public AirportType obtainAirport_type() { return this.airport_type; }
+    public Set<AircraftModel> obtainCertified_models() { return this.certified_models; }
+    public List<RunwayInfo> obtainRunway_info() { return this.runway_info; }
+    public AirportStatus obtainStatus() { return this.status; }
+    public TimeZone obtainTime_zone() { return this.time_zone; }
+    public OperationalHours obtainOperational_hours() { return this.operational_hours; }
+    public List<ContactInfo> obtainContact_info() { return this.contact_info; }
+    public List<AirportTerminal> obtainTerminals() { return this.terminals; }
+    public List<AirportGate> obtainGates() { return this.gates; }
+    public List<AirportService> obtainServices() { return this.services; }
+    public List<String> obtainImages() { return this.images; }
 
     @Override
     public boolean equals(Object other) {

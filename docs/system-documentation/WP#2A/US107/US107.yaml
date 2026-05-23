@@ -1,0 +1,24 @@
+openapi: "3.1.0"
+info:
+  title: "US107 - View Airport Details"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/airports/{iata}:
+    get:
+      summary: "GET api/airports/{iata}"
+      operationId: "getAirportByIata"
+      parameters:
+        - name: "iata"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

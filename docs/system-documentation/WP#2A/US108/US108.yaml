@@ -1,0 +1,28 @@
+openapi: "3.1.0"
+info:
+  title: "US108 - Search Airports"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/airports:
+    get:
+      summary: "GET api/airports"
+      operationId: "searchAirports"
+      parameters:
+        - name: "city"
+          in: "query"
+          schema: { type: "string" }
+        - name: "country"
+          in: "query"
+          schema: { type: "string" }
+        - name: "name"
+          in: "query"
+          schema: { type: "string" }
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

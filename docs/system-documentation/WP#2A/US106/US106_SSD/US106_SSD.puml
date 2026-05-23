@@ -9,7 +9,7 @@ actor "Backoffice Operator" as BO
 participant ":System" as S
 
 BO -> S: Asks to register an Airport
-S --> BO: Requests Airport Details \n(LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
+S --> BO: Requests Airport Details \n(String name, LocationIdentifier iata, Coordinates coordinates,\n AirportLocation airport_location, AirportType airport_type, List<RunwayInfo> runway_info,\n AirportStatus status, TimeZone time_zone, OperationalHours operational_hours,\n List<ContactInfo> contact_info, List<AirportTerminal> terminals, List<AirportGate> gates,\n List<AirportService> services, List<String> images)
 
 BO -> S: Types requested data
 S --> BO: Shows all data and requests confirmation

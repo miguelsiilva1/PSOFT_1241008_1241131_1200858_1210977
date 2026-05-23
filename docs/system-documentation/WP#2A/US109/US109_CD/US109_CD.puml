@@ -6,7 +6,7 @@ title Update Airport Status: Architecture — Class Diagram
 package "Airport Aggregate" <<rectangle>> {
     class Airport <<root>> {
         - String name
-        - LocationIdentifier iata_code
+        - LocationIdentifier iata
         - AirportType airport_type
         - Coordinates coordinates
         - AirportLocation airport_location
@@ -19,12 +19,13 @@ package "Airport Aggregate" <<rectangle>> {
         - List<AirportGate> gates
         - List<AirportService> services
         - List<String> images
+        - Set<AircraftModel> certified_models
         ---
         + updateStatus(AirportStatus status)
     }
 
     interface AirportRepository {
-        + Optional<Airport> findByIataCode(LocationIdentifier iata_code)
+        + Optional<Airport> findByIata(LocationIdentifier iata)
         + Airport save(Airport airport)
     }
 
@@ -36,7 +37,7 @@ package "Airport Aggregate" <<rectangle>> {
         + Airport execute(LocationIdentifier iata_code, AirportStatus status)
     }
 
-    UpdateAirportStatusUseCase ..> AirportRepository : findByIataCode()\nsave()
+    UpdateAirportStatusUseCase ..> AirportRepository : findByIata()\nsave()
     UpdateAirportStatusUseCase ..> UpdateAirportService : delegates to >
     UpdateAirportService ..> Airport : updates >
 }

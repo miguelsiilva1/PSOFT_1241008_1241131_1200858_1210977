@@ -1,39 +1,56 @@
 @startuml
 autonumber
-title Register an Airport — POST /airports
+title Register an Airport — POST /api/airports
 
 autoactivate on
 
 actor "Backoffice Operator" as BO
 participant AirportController
 participant RegisterAirportUseCase <<@UseCase>>
+participant AirportTypeRepository
+participant TimeZoneRepository
 participant RegisterAirportService <<Domain Service>>
 participant AirportRepository
 
-BO -> AirportController : POST /airports\n{name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images}
+BO -> AirportController : POST /api/airports
 
 AirportController -> AirportController : extract username from JWT
 alt "User has authorization"
-    AirportController -> RegisterAirportUseCase : execute(name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images)
-        RegisterAirportUseCase -> AirportRepository : findByIataCode(LocationIdentifier)
-        alt "The Airport's Iata Code exists"
-        AirportRepository --> RegisterAirportUseCase: airport
-        RegisterAirportUseCase -> RegisterAirportService: registerAirport(name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images)
-            RegisterAirportService -> AirportRepository : isAvailable(LocationIdentifier)
-            AirportRepository --> RegisterAirportService : true
-            RegisterAirportService -> RegisterAirportService : new Airport(name, iata_code, airport_type, coordinates,\n airport_location,time_zone,operational_hours,\n runway_info, status , contact_info, \nterminals, gates,services, images)
-        RegisterAirportService --> RegisterAirportUseCase : airport(unsaved)
-        deactivate
-        RegisterAirportUseCase -> AirportRepository : save(airport)
-        AirportRepository --> RegisterAirportUseCase : airport (persisted)
-    RegisterAirportUseCase --> AirportController : airport
-AirportController --> BO : 201 Created\n{ airport.iata_code, _links.return }
-    else "The airport does not exist in the system"
-AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
-    end
+    AirportController -> RegisterAirportUseCase : execute(name, iata, coordinates, airport_location, airport_type,\n runway_info, status, time_zone, operational_hours,\n contact_info, terminals, gates, services, images)
+        
+        RegisterAirportUseCase -> AirportTypeRepository : findByType(airport_type)
+        AirportTypeRepository --> RegisterAirportUseCase : airport_type_object
+        opt "airport_type_object == null"
+            RegisterAirportUseCase -> AirportTypeRepository : save(new AirportType(airport_type))
+            AirportTypeRepository --> RegisterAirportUseCase : airport_type_object (persisted)
+        end
+        
+        RegisterAirportUseCase -> TimeZoneRepository : findByAbbreviation(time_zone)
+        TimeZoneRepository --> RegisterAirportUseCase : time_zone_object
+        opt "time_zone_object == null"
+            RegisterAirportUseCase -> TimeZoneRepository : save(new TimeZone(time_zone, 0, 0))
+            TimeZoneRepository --> RegisterAirportUseCase : time_zone_object (persisted)
+        end
+
+        RegisterAirportUseCase -> RegisterAirportService: register(name, iata, coordinates, airport_location, airport_type_object,\n runway_info, status, time_zone_object, operational_hours,\n contact_info, terminals, gates, services, images)
+            RegisterAirportService -> AirportRepository : findByIata(iata)
+            alt "Airport with IATA does not exist"
+                AirportRepository --> RegisterAirportService: 
+                RegisterAirportService -> RegisterAirportService : new Airport(name, iata, coordinates, airport_location, airport_type_object,\n new HashSet<>(), runway_info, status, time_zone_object,\n operational_hours, contact_info, terminals, gates, services, images)
+                return airport (unsaved)
+                
+                RegisterAirportService --> RegisterAirportUseCase : airport (unsaved)
+                
+                RegisterAirportUseCase -> AirportRepository : save(airport)
+                AirportRepository --> RegisterAirportUseCase : airport (persisted)
+                RegisterAirportUseCase --> AirportController : airport
+                AirportController --> BO : 201 Created
+            else "Airport with IATA already exists"
+                AirportController --> BO : 400 Bad Request\n{ message: "This Airport already exists." }
+            end
 
 else "User does not have authorization"
-AirportController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+AirportController --> BO : 403 Forbidden
 end
 
 @enduml

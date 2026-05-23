@@ -1,5 +1,5 @@
 @startuml
-title Update Airport Status — PATCH /airports/{iata_code}
+title Update Airport Status — PATCH /api/airports/{iata}
 
 autoactivate on
 
@@ -7,33 +7,39 @@ actor "Backoffice Operator" as BO
 participant AirportController
 participant UpdateAirportStatusUseCase <<@UseCase>>
 participant UpdateAirportService <<Domain Service>>
+participant Airport
 participant AirportRepository
 
-BO -> AirportController : PATCH /airports/{iata_code}\n{ "status": "CLOSED" }
+BO -> AirportController : PATCH /api/airports/{iata}
+
 
 AirportController -> AirportController : extract username from JWT
+return
 alt "User has authorization"
     AirportController -> UpdateAirportStatusUseCase : execute(iata_code, status)
-        UpdateAirportStatusUseCase -> AirportRepository : findByIataCode(iata_code)
+        UpdateAirportStatusUseCase -> AirportRepository : findByIata(iata_code)
 
         alt "The airport exists"
-            AirportRepository --> UpdateAirportStatusUseCase : airport_object
+            AirportRepository --> UpdateAirportStatusUseCase :
 
-            UpdateAirportStatusUseCase -> UpdateAirportService : updateStatus(airport_object, status)
-            UpdateAirportService --> UpdateAirportStatusUseCase : airport (unsaved)
+            UpdateAirportStatusUseCase -> UpdateAirportService : updateStatus(airport, status)
+                UpdateAirportService -> Airport : updateStatus(status)
+                return
+            return airport (updated)
 
             UpdateAirportStatusUseCase -> AirportRepository : save(airport)
-            AirportRepository --> UpdateAirportStatusUseCase : airport (persisted)
+            return airport (persisted)
 
             UpdateAirportStatusUseCase --> AirportController : airport
-            AirportController --> BO : 200 OK\n{ airport.status, _links.self }
+            AirportController --> BO : 200 OK
 
         else "The airport does not exist"
+
             AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
         end
 
 else "User does not have authorization"
-    AirportController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+    AirportController --> BO : 403 Forbidden
 end
 
 @enduml

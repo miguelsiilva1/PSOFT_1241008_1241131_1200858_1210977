@@ -1,5 +1,5 @@
 @startuml
-title Add Airplane Certification to Airport — PUT /airports/{iata_code}/certifications
+title Add Airplane Certification to Airport — PUT /api/airports/{iata}/certifications
 
 autoactivate on
 
@@ -7,43 +7,51 @@ actor "Backoffice Operator / ATCC" as BO
 participant AirportController
 participant CertifyAircraftUseCase <<@UseCase>>
 participant CertifyAircraftService <<Domain Service>>
+participant Airport <<Entity>>
 participant AirportRepository
 participant AircraftModelRepository
+participant AirportAssembler
 
-BO -> AirportController : PUT /airports/{iata_code}/certifications\n{ "model_name": "" }
+BO -> AirportController : PUT /api/airports/{iata}/certifications
 
 AirportController -> AirportController : extract username from JWT
 alt "User has authorization"
-    AirportController -> CertifyAircraftUseCase : execute(iata_code, name)
-        CertifyAircraftUseCase -> AirportRepository : findByIataCode(iata_code)
+    AirportController -> CertifyAircraftUseCase : execute(iata, name)
+        CertifyAircraftUseCase -> AirportRepository : findByIata(iata)
 
         alt "The airport exists"
-            AirportRepository --> CertifyAircraftUseCase : airport_object
+            AirportRepository --> CertifyAircraftUseCase :
 
             CertifyAircraftUseCase -> AircraftModelRepository : findByName(name)
 
             alt "The aircraft model exists"
-                AircraftModelRepository --> CertifyAircraftUseCase : aircraft_model_object
+                AircraftModelRepository --> CertifyAircraftUseCase : List<AircraftModel>
 
-                CertifyAircraftUseCase -> CertifyAircraftService : certifyAircraftModel(airport_object, aircraft_model_object)
-                CertifyAircraftService --> CertifyAircraftUseCase : airport_object (unsaved)
+                CertifyAircraftUseCase -> CertifyAircraftService : certify(airport, models.get(0))
+                    CertifyAircraftService -> Airport : addCertifiedAircraftModel(model)
+                    return
+                return
 
-                CertifyAircraftUseCase -> AirportRepository : save(airport_object)
-                AirportRepository --> CertifyAircraftUseCase : airport_object (persisted)
+                CertifyAircraftUseCase -> AirportRepository : save(airport)
+                AirportRepository --> CertifyAircraftUseCase : airport (persisted)
 
-                CertifyAircraftUseCase --> AirportController : airport_object
-                AirportController --> BO : 200 OK\n{ airport_object, _links.self }
+                CertifyAircraftUseCase --> AirportController : airport
+                
+                AirportController -> AirportAssembler : toModel(airport)
+                return AirportDTO
+                
+                AirportController --> BO : 200 OK\n
 
             else "The aircraft model does not exist"
-                AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
+                AirportController --> BO : 400 Bad Request\n
             end
 
         else "The airport does not exist"
-            AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
+            AirportController --> BO : 400 Bad Request\n
         end
 
 else "User does not have authorization"
-    AirportController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+    AirportController --> BO : 403 Forbidden
 end
 
 @enduml

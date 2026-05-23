@@ -1,0 +1,36 @@
+openapi: "3.1.0"
+info:
+  title: "US106a - Add Airplane Certification"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/airports/{iata}/certifications:
+    put:
+      summary: "PUT api/airports/{iata}/certifications"
+      operationId: "certifyAircraftModel"
+      parameters:
+        - name: "iata"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertifyAircraftModelRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    CertifyAircraftModelRequest:
+      type: "object"
+      properties:
+        name: { type: "string" }

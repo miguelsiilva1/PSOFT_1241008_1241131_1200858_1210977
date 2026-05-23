@@ -3,6 +3,8 @@ package com.marslps.AISafeFMS.application.controllers;
 import com.marslps.AISafeFMS.application.model.CertifyAircraftModelRequest;
 import com.marslps.AISafeFMS.application.model.UpdateAirportStatusRequest;
 import com.marslps.AISafeFMS.application.use_cases.*;
+import com.marslps.AISafeFMS.application.assemblers.AirportAssembler;
+import com.marslps.AISafeFMS.application.dto.AirportDTO;
 import com.marslps.AISafeFMS.application.model.RegisterAirportRequest;
 import com.marslps.AISafeFMS.model.entities.Airport;
 import com.marslps.AISafeFMS.model.enums.AirportStatus;
@@ -35,14 +37,16 @@ public class AirportController {
     private final SearchAirportsUseCase search_airports;
     private final UpdateAirportStatusUseCase update_airport_status;
     private final AirportRepository airport_repository;
+    private final AirportAssembler airport_assembler;
 
-    public AirportController(RegisterAirportUseCase register_airport, CertifyAircraftUseCase certify_aircraft, ViewAirportDetailsUseCase view_airport_details, SearchAirportsUseCase search_airports, UpdateAirportStatusUseCase update_airport_status, AirportRepository airport_repository) {
+    public AirportController(RegisterAirportUseCase register_airport, CertifyAircraftUseCase certify_aircraft, ViewAirportDetailsUseCase view_airport_details, SearchAirportsUseCase search_airports, UpdateAirportStatusUseCase update_airport_status, AirportRepository airport_repository, AirportAssembler airport_assembler) {
         this.register_airport = register_airport;
         this.certify_aircraft = certify_aircraft;
         this.view_airport_details = view_airport_details;
         this.search_airports = search_airports;
         this.update_airport_status = update_airport_status;
         this.airport_repository = airport_repository;
+        this.airport_assembler = airport_assembler;
     }
 
     @PostMapping()
@@ -94,7 +98,7 @@ public class AirportController {
             LocationIdentifier iata_code = new LocationIdentifier(iata);
             Airport airport = certify_aircraft.execute(iata_code, request.name());
 
-            EntityModel<Airport> resource = EntityModel.of(airport);
+            AirportDTO resource = airport_assembler.toModel(airport);
 
             Link self_link = linkTo(methodOn(AirportController.class)
                     .getAirportByIata(airport.obtainIata().iata())).withSelfRel();
@@ -118,7 +122,7 @@ public class AirportController {
             LocationIdentifier iata_code = new LocationIdentifier(iata);
             Airport airport = view_airport_details.execute(iata_code);
             
-            EntityModel<Airport> resource = EntityModel.of(airport);
+            AirportDTO resource = airport_assembler.toModel(airport);
             
             Link self_link = linkTo(methodOn(AirportController.class)
                     .getAirportByIata(iata)).withSelfRel();
@@ -175,9 +179,9 @@ public class AirportController {
         try {
             List<Airport> airports = search_airports.execute(city, country, name);
 
-            List<EntityModel<Airport>> airport_resources = new ArrayList<>();
+            List<AirportDTO> airport_resources = new ArrayList<>();
             for (Airport airport : airports) {
-                EntityModel<Airport> airport_model = EntityModel.of(airport);
+                AirportDTO airport_model = airport_assembler.toModel(airport);
                 Link airport_link = linkTo(methodOn(AirportController.class)
                         .getAirportByIata(airport.obtainIata().iata())).withSelfRel();
                 airport_model.add(airport_link);
@@ -186,7 +190,7 @@ public class AirportController {
 
             Link self_link = linkTo(methodOn(AirportController.class)
                     .searchAirports(city, country, name)).withSelfRel();
-            CollectionModel<EntityModel<Airport>> resource = CollectionModel.of(airport_resources, self_link);
+            CollectionModel<AirportDTO> resource = CollectionModel.of(airport_resources, self_link);
 
             return ResponseEntity.ok(resource);
         } catch (IllegalArgumentException e) {

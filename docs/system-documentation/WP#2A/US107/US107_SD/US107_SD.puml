@@ -1,5 +1,5 @@
 @startuml
-title View Airport's details by IATA code — GET /airports/{iata_code}
+title View Airport's details by IATA code — GET /api/airports/{iata}
 
 autoactivate on
 
@@ -8,25 +8,30 @@ participant AirportController
 participant ViewAirportDetailsUseCase <<@UseCase>>
 participant ViewAirportDetailsService <<Domain Service>>
 participant AirportRepository
+participant AirportAssembler
 
-BOATCC -> AirportController : GET /airports/{iata_code}
+BOATCC -> AirportController : GET /api/airports/{iata}
 
 AirportController -> AirportController : extract username from JWT
 alt "User has authorization"
     AirportController -> ViewAirportDetailsUseCase : execute(iata_code)
-        ViewAirportDetailsUseCase -> AirportRepository : findByIataCode(LocationIdentifier)
+        ViewAirportDetailsUseCase -> AirportRepository : findByIata(LocationIdentifier)
         alt "The airport exists"
-            AirportRepository --> ViewAirportDetailsUseCase : airport_objetct
-            ViewAirportDetailsUseCase -> ViewAirportDetailsService : getDetails(aiport_object)
+            AirportRepository --> ViewAirportDetailsUseCase :
+            ViewAirportDetailsUseCase -> ViewAirportDetailsService : getDetails(airport)
             ViewAirportDetailsService --> ViewAirportDetailsUseCase : airport_details
             ViewAirportDetailsUseCase --> AirportController : airport
-            AirportController --> BOATCC : 200 OK\n{ airport_details, _links.return }
+            
+            AirportController -> AirportAssembler : toModel(airport)
+            return AirportDTO
+            
+            AirportController --> BOATCC : 200 OK
         else "The airport does not exist"
             AirportController --> BOATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
         end
 
 else "User does not have authorization"
-    AirportController --> BOATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+    AirportController --> BOATCC : 403 Forbidden
 end
 
 @enduml

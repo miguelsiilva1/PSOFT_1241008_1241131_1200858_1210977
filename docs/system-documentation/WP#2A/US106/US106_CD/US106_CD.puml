@@ -6,7 +6,7 @@ title Register an Airport: Architecture — Class Diagram
 package "Airport Aggregate" <<rectangle>> {
     class Airport <<root>> {
         - String name
-        - LocationIdentifier iata_code
+        - LocationIdentifier iata
         - AirportType airport_type
         - Coordinates coordinates
         - AirportLocation airport_location
@@ -19,30 +19,41 @@ package "Airport Aggregate" <<rectangle>> {
         - List<AirportGate> gates
         - List<AirportService> services
         - List<String> images
+        - Set<AircraftModel> certified_models
         ---
-        + Airport(name, iata_code, airport_type, coordinates, airport_location, time_zone, operational_hours, runway_info, status, contact_info, terminals, gates, services, images)
+        + Airport(name, iata, coordinates, airport_location, airport_type, certified_models, runway_info, status, time_zone, operational_hours, contact_info, terminals, gates, services, images)
     }
 
     class RegisterAirportService <<Domain Service>> {
         ---
-        + Airport registerAirport(String name, LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
+        + Airport register(String name, LocationIdentifier iata, Coordinates coordinates,\n AirportLocation airport_location, AirportType airport_type, List<RunwayInfo> runway_info,\n AirportStatus status, TimeZone time_zone, OperationalHours operational_hours,\n List<ContactInfo> contact_info, List<AirportTerminal> terminals, List<AirportGate> gates,\n List<AirportService> services, List<String> images)
     }
 
     interface AirportRepository {
-        + boolean isAvailable(LocationIdentifier)
-        + Optional<Airport> findByIataCode(LocationIdentifier)
+        + Optional<Airport> findByIata(LocationIdentifier)
         + Airport save(Airport)
     }
 
     class RegisterAirportUseCase <<@UseCase>> {
-        + Airport execute(String name, LocationIdentifier iata_code, AirportType airport_type, Coordinates coordinates,\n AirportLocation airport_location,TimeZone time_zone,OperationalHours operational_hours,\nList<RunwayInfo> runway_info,AirportStatus status ,List<ContactInfo> contact_info, \nList<AirportTerminal> terminals,List<AirportGate> gates,List<AirportService> services,List<String> images)
+        + Airport execute(String name, LocationIdentifier iata, Coordinates coordinates,\n AirportLocation airport_location, AirportType airport_type, List<RunwayInfo> runway_info,\n AirportStatus status, TimeZone time_zone, OperationalHours operational_hours,\n List<ContactInfo> contact_info, List<AirportTerminal> terminals, List<AirportGate> gates,\n List<AirportService> services, List<String> images)
     }
 
-RegisterAirportService ..> Airport : creates >
-RegisterAirportUseCase ..> AirportRepository : save() >
-RegisterAirportService ..> AirportRepository : isAvailable() >
-RegisterAirportUseCase ..> RegisterAirportService : delegates to
-RegisterAirportUseCase ..> AirportRepository : findByIataCode() >
+    interface AirportTypeRepository {
+        + Optional<AirportType> findByType(String)
+        + AirportType save(AirportType)
+    }
+
+    interface TimeZoneRepository {
+        + Optional<TimeZone> findByAbbreviation(String)
+        + TimeZone save(TimeZone)
+    }
+
+    RegisterAirportService ..> Airport : creates >
+    RegisterAirportUseCase ..> AirportRepository : save() >
+    RegisterAirportService ..> AirportRepository : findByIata() >
+    RegisterAirportUseCase ..> RegisterAirportService : delegates to
+    RegisterAirportUseCase ..> AirportTypeRepository : uses >
+    RegisterAirportUseCase ..> TimeZoneRepository : uses >
 
 }
 

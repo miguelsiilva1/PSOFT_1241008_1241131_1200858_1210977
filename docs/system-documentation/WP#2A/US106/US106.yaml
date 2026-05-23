@@ -1,0 +1,105 @@
+openapi: "3.1.0"
+info:
+  title: "US106 - Register an Airport"
+  description: "As a Backoffice Operator, I want to register a new airport in the system."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/airports:
+    post:
+      summary: "POST api/airports"
+      operationId: "registerAirport"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterAirportRequest"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    LocationIdentifier:
+      type: "object"
+      properties:
+        iata: { type: "string" }
+    Coordinates:
+      type: "object"
+      properties:
+        longitude: { type: "number", format: "double" }
+        longitude_direction: { type: "string" }
+        latitude: { type: "number", format: "double" }
+        latitude_direction: { type: "string" }
+    AirportLocation:
+      type: "object"
+      properties:
+        city: { type: "string" }
+        country: { type: "string" }
+        region: { type: "string" }
+    RunwayInfo:
+      type: "object"
+      properties:
+        name: { type: "string" }
+        length: { type: "number", format: "double" }
+        orientation: 
+          type: "object"
+          properties:
+            orientation: { type: "string" }
+    OperationalHours:
+      type: "object"
+      properties:
+        opening_hours: { type: "integer" }
+        closing_hours: { type: "integer" }
+    ContactInfo:
+      type: "object"
+      properties:
+        type: { type: "string" }
+        contact: { type: "string" }
+        description: { type: "string" }
+    AirportTerminal:
+      type: "object"
+      properties:
+        terminal: { type: "string" }
+    AirportGate:
+      type: "object"
+      properties:
+        gate: { type: "string" }
+    AirportService:
+      type: "object"
+      properties:
+        service: { type: "string" }
+    RegisterAirportRequest:
+      type: "object"
+      properties:
+        name: { type: "string" }
+        iata: { $ref: "#/components/schemas/LocationIdentifier" }
+        coordinates: { $ref: "#/components/schemas/Coordinates" }
+        airport_location: { $ref: "#/components/schemas/AirportLocation" }
+        airport_type: { type: "string" }
+        runway_info:
+          type: "array"
+          items: { $ref: "#/components/schemas/RunwayInfo" }
+        status: { type: "string" }
+        time_zone: { type: "string" }
+        operational_hours: { $ref: "#/components/schemas/OperationalHours" }
+        contact_info:
+          type: "array"
+          items: { $ref: "#/components/schemas/ContactInfo" }
+        terminals:
+          type: "array"
+          items: { $ref: "#/components/schemas/AirportTerminal" }
+        gates:
+          type: "array"
+          items: { $ref: "#/components/schemas/AirportGate" }
+        services:
+          type: "array"
+          items: { $ref: "#/components/schemas/AirportService" }
+        images:
+          type: "array"
+          items: { type: "string" }

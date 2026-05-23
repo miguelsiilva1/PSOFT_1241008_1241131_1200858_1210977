@@ -23,6 +23,7 @@ package "Airport Aggregate" {
     Airport o--> "N" AirportTerminal
     Airport o--> "N" AirportGate
     Airport o--> "N" AirportService
+    Airport o--> "N" AircraftModel : certified_models
 
     class AirportLocation <<value object>> {
         - city: String
@@ -45,7 +46,7 @@ package "Airport Aggregate" {
         - description: String
     }
     class LocationIdentifier <<value object>> {
-        - iata_code: String
+        - iata: String
     }
 
     class TimeZone <<entity>> {
@@ -94,6 +95,10 @@ package "Airport Aggregate" {
         - OPERATIONAL: int
         - CLOSED: int
         - UNDER_MAINTENANCE: int
+    }
+
+    class AircraftModel <<entity>> {
+        - name: String
     }
 }
 
