@@ -33,6 +33,8 @@ public class Aircraft {
     private int max_days_until_maintenance;
     @Column
     private AircraftStatus status;
+    @Version
+    private Long version;
 
     protected Aircraft() {}
 
@@ -93,5 +95,8 @@ public class Aircraft {
     @Override
     public int hashCode() {
         return Objects.hash(this.registration_number);
+    }
+    public void changeStatus(AircraftStatus newStatus) {
+        this.status = newStatus;
     }
 }

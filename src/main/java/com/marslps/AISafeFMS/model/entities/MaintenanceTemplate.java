@@ -62,4 +62,25 @@ public class MaintenanceTemplate {
     public int hashCode() {
         return Objects.hash(this.template_id);
     }
+    public Set<String> getApplicable_models() {
+        return this.applicable_models;
+    }
+    public int getTemplate_id() {
+        return this.template_id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public double getCost() {
+        return this.cost;
+    }
+
+    public MaintenanceTemplate(String type, String name, java.util.Set<String> applicable_models, double cost) {
+        this.type = com.marslps.AISafeFMS.model.enums.MaintenanceTemplateType.valueOf(type.toUpperCase());
+        this.name = name;
+        this.applicable_models = applicable_models;
+        this.cost = cost;
+    }
 }
