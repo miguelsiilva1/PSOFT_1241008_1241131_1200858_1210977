@@ -2,16 +2,21 @@ package com.marslps.AISafeFMS.repository;
 
 import com.marslps.AISafeFMS.model.entities.Route;
 import com.marslps.AISafeFMS.model.vo.LocationIdentifier;
+import com.marslps.AISafeFMS.model.vo.RouteID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface RouteRepository extends JpaRepository<Route, Long> {
 
-    Optional<Route> findById_Id(String id);
+    @Query("select r from Route r where r.id = :routeId")
+    Optional<Route> findByRouteId(@Param("routeId") RouteID routeId);
 
-    boolean existsById_Id(String id);
+    @Query("select count(r) > 0 from Route r where r.id = :routeId")
+    boolean existsByRouteId(@Param("routeId") RouteID routeId);
 
     List<Route> findByDeparture_Iata(LocationIdentifier iata);
 
