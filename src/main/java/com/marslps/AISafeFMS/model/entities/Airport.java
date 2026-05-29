@@ -126,4 +126,7 @@ public class Airport {
         }
         this.status = status;
     }
+    public com.marslps.AISafeFMS.model.enums.AirportStatus getStatus() {
+        return this.status;
+    }
 }
