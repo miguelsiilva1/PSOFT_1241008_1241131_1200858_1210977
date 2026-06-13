@@ -1,0 +1,12 @@
+@startuml
+autonumber
+
+title View Airport Routes: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S: Asks to view all routes that depart from\nor arrive at a specific airport
+S --> ATCC: Shows the list of matching routes
+
+@enduml
