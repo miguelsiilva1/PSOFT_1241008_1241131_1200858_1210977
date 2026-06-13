@@ -1,0 +1,45 @@
+@startuml
+title Update an Aircraft Model: Architecture — Class Diagram
+
+package "Aircraft Model Aggregate" <<rectangle>> {
+    class AircraftModel <<Aggregate Root>> {
+        - String name
+        - int seating_capacity
+        - double max_range
+        - double fuel_capacity
+        - double cruising_speed
+        - Set<String> feature
+        - AircraftManufacturer manufacturer
+        ---
+        + AircraftModel(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer)
+    }
+    interface AircraftModelRepository {
+        + boolean searchAicraftModel(name, seating_capacity, max_range, fuel_capacity, cruising_speed)
+        + AircraftModel update(old_aircraft_model, new_seating_capacity, new_max_range, new_fuel_capacity, new_cruising_speed)
+    }
+    class UpdateAircraftModelService <<Domain Service>> {
+        + AircraftModel update(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer_object, new_seating_capacity, new_max_range, new_fuel_capacity, new_cruising_speed)
+    }
+    class UpdateAircraftModelUseCase <<@UseCase>> {
+        + AircraftModel execute(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer_name, new_seating_capacity, new_max_range, new_fuel_capacity, new_cruising_speed)
+    }
+
+    UpdateAircraftModelUseCase ..> AircraftModelRepository : searchAicraftModel()
+    UpdateAircraftModelUseCase ..> AircraftModel : creates >
+    UpdateAircraftModelUseCase ..> UpdateAircraftModelService : delegates to >
+    UpdateAircraftModelUseCase ..> AircraftModelRepository : update()
+}
+
+package "Aircraft Manufacturer Aggregate" <<rectangle>> {
+    class AircraftManufacturer <<Aggregate Root>> {
+        - String name
+        + String obtainName()
+    }
+    interface AircraftManufacturerRepository {
+        + AircraftManufacturer findByName(name)
+    }
+
+    UpdateAircraftModelUseCase ..> AircraftManufacturerRepository : findByName()
+}
+
+@enduml

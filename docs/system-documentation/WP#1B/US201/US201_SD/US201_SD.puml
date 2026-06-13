@@ -1,0 +1,37 @@
+@startuml
+title Update an Aircraft Model — PUT /aircraft-model
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant AircraftModelController
+participant UpdateAircraftModelUseCase <<@UseCase>>
+participant UpdateẃAircraftModelService <<Domain Service>>
+participant AircraftModelRepository
+participant AircraftManufacturerRepository
+
+BO -> AircraftModelController : PUT /aircraft-model\n{\n\tname: "Boeing 737",\n\tseating_capacity: 209,\n\tmax_range: 309.2,\n\tfuel_capacity: 80.97,\n\tcruising_speed: 200.0,\n\tmanufacturer_name: "Boeing"\n\tnew_seating_capacity: 350,\n\tnew_max_range: 200.1,\n\tnew_fuel_capacity: 90.76,\n\tnew_cruising_speed: 180.9\n}
+
+AircraftModelController -> AircraftModelController : extract username from JWT
+alt "User has authorization"
+    AircraftModelController -> RegisterAircraftModelUseCase : execute(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer_name, new_seating_capacity, new_max_range, new_fuel_capacity, new_cruising_speed)
+        RegisterAircraftModelUseCase -> AircraftManufacturerRepository : findByName(manufacturer_name)
+        alt "The name manufacturer exists"
+        AircraftManufacturerRepository --> RegisterAircraftModelUseCase : manufacturer_object
+        RegisterAircraftModelUseCase -> RegisterAircraftModelService : update(name, seating_capacity, max_range, fuel_capacity, cruising_speed, manufacturer_object, new_seating_capacity, new_max_range, new_fuel_capacity, new_cruising_speed)
+            RegisterAircraftModelService -> AircraftModelRepository : searchAicraftModel(name, seating_capacity, max_range, fuel_capacity, cruising_speed)
+            AircraftModelRepository --> RegisterAircraftModelService : old_aircraft_model
+        RegisterAircraftModelService --> RegisterAircraftModelUseCase : old_aircraft_model
+        RegisterAircraftModelUseCase -> AircraftModelRepository : update(old_aircraft_model, new_seating_capacity, new_max_range, new_fuel_capacity, new_cruising_speed)
+        AircraftModelRepository --> RegisterAircraftModelUseCase : updated_aircraft_model (persisted)
+    RegisterAircraftModelUseCase --> AircraftModelController : updated_aircraft_model
+AircraftModelController --> BO : 200 OK\n{ updated_aircraft_model.name, _links.return }
+        else "The manufacturer does not exist in the system"
+AircraftModelController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+
+else "User does not have authorization"
+AircraftModelController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml
