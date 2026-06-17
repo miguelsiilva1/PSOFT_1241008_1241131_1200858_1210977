@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Generate Statistics on the Busiest Airport Architecture — Class Diagram
+
+package "Airport Aggregate" <<rectangle>> {
+    interface AirportRepository {
+        + Optional<Airport> findAll(LocationIdentifier iata)
+    }
+
+    class GenerateStatisticsService <<Domain Service>> {
+        + Airport generateStatistics(Airport)
+    }
+
+    class GenerateStatisticsUseCase <<@UseCase>> {
+        + List<Route> execute(String iata)
+    }
+
+    GenerateStatisticsUseCase ..> AirportRepository : findAll() >
+    GenerateStatisticsUseCase ..> GenerateStatisticsService : delegates to >
+}
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<Aggregate Root>> {
+    }
+    interface RouteRepository {
+        + List<Route> findByDeparture_IataAndDestination_Iata(LocationIdentifier iata)
+    }
+}
+
+GenerateStatisticsUseCase ..> RouteRepository : uses >
+RouteRepository ..> Route : returns >
+
+@enduml

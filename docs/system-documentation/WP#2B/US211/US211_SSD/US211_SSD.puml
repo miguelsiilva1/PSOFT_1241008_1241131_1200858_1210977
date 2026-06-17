@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title View Airports Grouped By Region or Country: Simplified Sequence Diagram
+
+actor "ATCC" as ATCC
+participant ":System" as S
+
+ATCC -> S: Asks to view airports grouped (by region or country)
+S --> ATCC: Shows the list of matching airports
+
+@enduml

@@ -1,0 +1,36 @@
+@startuml
+title Generate Statistics on the Busiest Airport — GET /api/airports/statistics
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant AirportController
+participant GenerateStatisticsUseCase <<@UseCase>>
+participant AirportRepository
+participant RouteRepository
+participant GenerateStatisticsService <<Domain Service>>
+
+BO -> AirportController : GET /api/airports/statistics
+
+AirportController -> AirportController : extract username from JWT
+alt "User has authorization"
+    AirportController -> GenerateStatisticsUseCase : execute(iata)
+        GenerateStatisticsUseCase -> AirportRepository : findAll(iata)
+            AirportRepository --> GenerateStatisticsUseCase :
+        alt "Route exists"
+            loop "for each Route"
+            GenerateStatisticsUseCase -> RouteRepository : findByDeparture_IataAndDestination_Iata(iata)
+            return list_of_routes
+            end
+            GenerateStatisticsUseCase -> GenerateStatisticsService :generateStatistics(list_of_routes)
+            return statistics
+            return statistics
+        AirportController --> BO : 200 OK
+        else "Routes for an Airport are non-existent"
+            AirportController --> BO : 400 Bad Request
+        end
+else "User does not have authorization"
+    AirportController --> BO :403 Forbidden
+end
+
+@enduml

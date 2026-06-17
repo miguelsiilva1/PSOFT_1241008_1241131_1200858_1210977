@@ -1,0 +1,43 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title View Airports Grouped By Region or Country Architecture — Class Diagram
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<root>> {
+        - String name
+        - LocationIdentifier iata
+        - AirportType airport_type
+        - Coordinates coordinates
+        - AirportLocation airport_location
+        - TimeZone time_zone
+        - OperationalHours operational_hours
+        - List<RunwayInfo> runway_info
+        - AirportStatus status
+        - List<ContactInfo> contact_info
+        - List<AirportTerminal> terminals
+        - List<AirportGate> gates
+        - List<AirportService> services
+        - List<String> images
+        - Set<AircraftModel> certified_models
+        ---
+    }
+
+    interface AirportRepository {
+        + List<Airport> groupByRegion(String region)
+        + List<Airport> groupByCountry(String country)
+    }
+
+    class ViewGroupedAirportsService <<Domain Service>> {
+        + List<Airport> searchAirports(String region, String country)
+    }
+
+    class ViewGroupedAirportsUseCase <<@UseCase>> {
+        + List<Airport> execute(String region, String country)
+    }
+
+    ViewGroupedAirportsUseCase ..> ViewGroupedAirportsService : delegates to >
+    ViewGroupedAirportsService ..> AirportRepository : uses >
+}
+
+@enduml
