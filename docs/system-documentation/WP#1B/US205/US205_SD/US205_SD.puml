@@ -1,0 +1,28 @@
+@startuml
+title View Aircraft Status in Real Time — GET /aircraft-realtime-status
+
+autoactivate on
+
+actor ATCC
+participant AircraftRealtimeStatusController
+participant AircraftRealtimeStatusUseCase <<@UseCase>>
+participant AircraftRepository
+
+ATCC -> AircraftRealtimeStatusController : GET /aircraft-realtime-status\n\t{registration_number: ""}
+
+AircraftRealtimeStatusController -> AircraftRealtimeStatusController : extract username from JWT
+alt "User has authorization"
+    AircraftRealtimeStatusController -> AircraftRealtimeStatusUseCase : execute(registration_number)
+        AircraftRealtimeStatusUseCase -> AircraftRepository : findByRegistrationNumber(registration_number)
+        alt "Aircraft exists"
+        AircraftRepository --> AircraftRealtimeStatusUseCase : aircraft
+    AircraftRealtimeStatusUseCase --> AircraftRealtimeStatusController : aircraft
+AircraftRealtimeStatusController --> ATCC : 200 OK\n{ "registration_number: aircraft.obtainStatus()", _links.return }
+        else "The aircraft does not exist in the system"
+AircraftRealtimeStatusController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+else "User does not have authorization"
+AircraftRealtimeStatusController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

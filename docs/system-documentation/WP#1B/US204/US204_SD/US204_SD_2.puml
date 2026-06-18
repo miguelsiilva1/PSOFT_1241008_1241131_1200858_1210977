@@ -1,0 +1,24 @@
+@startuml
+title Search Top 5 Aircrafts by Total Flight Hours — GET /top-aircrafts-by-assignments
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant TopAircraftsByNAController
+participant TopAircraftsByNumberOfAssignmentsUseCase <<@UseCase>>
+participant AircraftRepository
+
+BO -> TopAircraftsByNAController : GET /top-aircrafts-by-assignments
+
+TopAircraftsByNAController -> TopAircraftsByNAController : extract username from JWT
+alt "User has authorization"
+    TopAircraftsByNAController -> TopAircraftsByNumberOfAssignmentsUseCase : execute()
+        TopAircraftsByNumberOfAssignmentsUseCase -> AircraftRepository : findTop5ByNumberOfAssignments()
+        AircraftRepository --> TopAircraftsByNumberOfAssignmentsUseCase : aircrafts
+    TopAircraftsByNumberOfAssignmentsUseCase --> TopAircraftsByNAController : aircrafts
+TopAircraftsByNAController --> BO : 200 OK\n{ list of the top five aircraft's registration numbers, _links.return }
+else "User does not have authorization"
+TopAircraftsByNAController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

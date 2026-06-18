@@ -1,0 +1,31 @@
+@startuml
+title Check for Compatible Routes for a Specific Aircraft — GET /aircraft-route
+
+autoactivate on
+
+actor ATCC
+participant AircraftRouteController
+participant AircraftCompatibleRoutesUseCase <<@UseCase>>
+participant AircraftRepository
+participant RouteRepository
+
+ATCC -> AircraftRouteController : GET /aircraft-route\n\t{registration_number: ""}
+
+AircraftRouteController -> AircraftRouteController : extract username from JWT
+alt "User has authorization"
+    AircraftRouteController -> AircraftCompatibleRoutesUseCase : execute(registration_number)
+        AircraftCompatibleRoutesUseCase -> AircraftRepository : findByRegistrationNumber(registration_number)
+        alt "Aircraft exists"
+        AircraftRepository --> AircraftCompatibleRoutesUseCase : aircraft
+        AircraftCompatibleRoutesUseCase -> RouteRepository: findByGreaterOrEqualRangeAndGreaterOrEqualCapacity(aircraft.obtainRange(), aircraft.obtainCapacity())
+        RouteRepository --> AircraftCompatibleRoutesUseCase: routes
+    AircraftCompatibleRoutesUseCase --> AircraftRouteController : routes
+AircraftRouteController --> ATCC : 200 OK\n{ list of route IDs, _links.return }
+        else "The aircraft does not exist in the system"
+AircraftRouteController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+else "User does not have authorization"
+AircraftRouteController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml
