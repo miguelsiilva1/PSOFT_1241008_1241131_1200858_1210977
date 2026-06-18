@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Search Top 5 Aircrafts by Total Flight Hours or Number of Assignments: Simplified Sequence Diagram
+
+actor "Backoffice Operator" as BO
+participant ":System" as S
+
+BO -> S: Asks to see the top five aircrafts according to the criteria
+S --> BO: Confirms the (in)sucess of the operation and shows the list
+
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title Get All Aircraft's Operational Hours: Domain Model
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - manufacturing_date: Date
+        - image: String
+        - last_maintenance: Date
+        - days_since_last_maintenance <<calculated>>: int
+        - max_flight_hours_until_maintenance: int
+        - max_days_until_maintenance: int
+    }
+}
+
+@enduml

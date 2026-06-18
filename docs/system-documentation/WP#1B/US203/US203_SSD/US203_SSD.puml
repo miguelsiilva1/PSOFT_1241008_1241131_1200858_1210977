@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Check for Compatible Routes for a Specific Aircraft: Simplified Sequence Diagram
+
+actor ATCC
+participant ":System" as S
+
+ATCC -> S: Types requested data to retrieve\nthe compatible routes for an aircraft\n(String registration_number)
+S --> ATCC: Confirms the (in)sucess of the operation
+
+@enduml
