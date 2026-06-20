@@ -1,8 +1,10 @@
 package com.marslps.AISafeFMS.application.controllers;
 
+import com.marslps.AISafeFMS.application.model.AlternativeRouteResponse;
 import com.marslps.AISafeFMS.application.model.CreateRouteRequest;
 import com.marslps.AISafeFMS.application.model.RouteHistoryResponse;
 import com.marslps.AISafeFMS.application.model.RouteResponse;
+import com.marslps.AISafeFMS.application.model.TotalRouteDistanceResponse;
 import com.marslps.AISafeFMS.application.model.UpdateRouteRequest;
 import com.marslps.AISafeFMS.application.use_cases.*;
 import com.marslps.AISafeFMS.model.entities.Route;
@@ -26,6 +28,9 @@ public class RouteController {
     private final ViewRouteDetailsUseCase viewRouteDetailsUseCase;
     private final ViewRoutesFromAirportUseCase viewRoutesFromAirportUseCase;
     private final SearchRoutesUseCase searchRoutesUseCase;
+    private final ListActiveRoutesUseCase listActiveRoutesUseCase;
+    private final CalculateTotalRouteDistanceUseCase calculateTotalRouteDistanceUseCase;
+    private final SearchAlternativeRoutesUseCase searchAlternativeRoutesUseCase;
 
     public RouteController(CreateRouteUseCase createRouteUseCase,
                            ViewRouteHistoryUseCase viewRouteHistoryUseCase,
@@ -33,7 +38,10 @@ public class RouteController {
                            DeactivateRouteUseCase deactivateRouteUseCase,
                            ViewRouteDetailsUseCase viewRouteDetailsUseCase,
                            ViewRoutesFromAirportUseCase viewRoutesFromAirportUseCase,
-                           SearchRoutesUseCase searchRoutesUseCase) {
+                           SearchRoutesUseCase searchRoutesUseCase,
+                           ListActiveRoutesUseCase listActiveRoutesUseCase,
+                           CalculateTotalRouteDistanceUseCase calculateTotalRouteDistanceUseCase,
+                           SearchAlternativeRoutesUseCase searchAlternativeRoutesUseCase) {
         this.createRouteUseCase = createRouteUseCase;
         this.viewRouteHistoryUseCase = viewRouteHistoryUseCase;
         this.updateRouteUseCase = updateRouteUseCase;
@@ -41,6 +49,9 @@ public class RouteController {
         this.viewRouteDetailsUseCase = viewRouteDetailsUseCase;
         this.viewRoutesFromAirportUseCase = viewRoutesFromAirportUseCase;
         this.searchRoutesUseCase = searchRoutesUseCase;
+        this.listActiveRoutesUseCase = listActiveRoutesUseCase;
+        this.calculateTotalRouteDistanceUseCase = calculateTotalRouteDistanceUseCase;
+        this.searchAlternativeRoutesUseCase = searchAlternativeRoutesUseCase;
     }
 
     @PostMapping
@@ -106,6 +117,33 @@ public class RouteController {
                 .map(RouteResponse::from)
                 .toList();
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/active")
+    @PreAuthorize("hasAuthority('ATCC')")
+    public ResponseEntity<List<RouteResponse>> listActiveRoutes(@RequestParam(defaultValue = "distance") String sortBy) {
+        List<Route> routes = listActiveRoutesUseCase.execute(sortBy);
+
+        List<RouteResponse> response = routes.stream()
+                .map(RouteResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/total-distance")
+    @PreAuthorize("hasAuthority('ATCC')")
+    public ResponseEntity<TotalRouteDistanceResponse> calculateTotalRouteDistance() {
+        double totalDistance = calculateTotalRouteDistanceUseCase.execute();
+        return ResponseEntity.ok(new TotalRouteDistanceResponse(totalDistance));
+    }
+
+    @GetMapping("/alternatives")
+    @PreAuthorize("hasAuthority('ATCC')")
+    public ResponseEntity<List<AlternativeRouteResponse>> searchAlternativeRoutes(@RequestParam String origin,
+                                                                                  @RequestParam String destination) {
+        List<AlternativeRouteResponse> response = searchAlternativeRoutesUseCase.execute(origin, destination);
         return ResponseEntity.ok(response);
     }
 

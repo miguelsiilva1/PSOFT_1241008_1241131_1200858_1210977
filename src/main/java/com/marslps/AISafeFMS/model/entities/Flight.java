@@ -4,7 +4,7 @@ import com.marslps.AISafeFMS.model.enums.FlightStatus;
 import com.marslps.AISafeFMS.model.vo.FlightID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.Date;
 import java.util.Objects;
@@ -19,15 +19,15 @@ public class Flight {
     private Route route;
     @ManyToOne
     private Aircraft aircraft;
-    @Temporal(TemporalType.DATE) @NotNull
+    @Temporal(TemporalType.TIMESTAMP) @NotNull
     private Date scheduled_departure;
-    @Positive
+    @PositiveOrZero
     private double delayed_hours;
     @Transient
     private Date effective_departure;
     @Transient
     private Date scheduled_arrival;
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date effective_arrival;
     @Enumerated
     private FlightStatus status;
@@ -37,7 +37,7 @@ public class Flight {
                   Route route,
                   Aircraft aircraft,
                   @NotNull Date scheduled_departure,
-                  @Positive double delayed_hours,
+                  @PositiveOrZero double delayed_hours,
                   FlightStatus status) {
         this.id = id;
         this.route = route;
@@ -48,6 +48,29 @@ public class Flight {
         this.scheduled_arrival = route.calculateScheduledArrival(scheduled_departure);
         this.effective_arrival = new Date(this.scheduled_arrival.getTime() + ((long) delayed_hours * 60 * 60 * 1000));
         this.status = status;
+    }
+    public FlightID obtainFlightID() {
+        return this.id;
+    }
+
+    public Route obtainRoute() {
+        return this.route;
+    }
+
+    public Aircraft obtainAircraft() {
+        return this.aircraft;
+    }
+
+    public Date obtainScheduledDeparture() {
+        return this.scheduled_departure;
+    }
+
+    public Date obtainScheduledArrival() {
+        return this.scheduled_arrival;
+    }
+
+    public FlightStatus obtainStatus() {
+        return this.status;
     }
 
     @Override
