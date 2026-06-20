@@ -1,0 +1,67 @@
+openapi: "3.1.0"
+info:
+  title: "US201 - Update an Aircraft Model"
+  description: "As a Backoffice Operator, I want to update an aircraft model's specifications."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/aircraft-model:
+    put:
+      summary: "PUT api/aircraft-model"
+      operationId: "updateAircraftModel"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAircraftModelRequest"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    UpdateAircraftModelRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          nullable: true
+        seating_capacity:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        max_range:
+          type: "number"
+          format: "double"
+          nullable: true
+        fuel_capacity:
+          type: "number"
+          format: "double"
+          nullable: true
+        cruising_speed:
+          type: "number"
+          format: "double"
+          nullable: true
+        manufacturer_name:
+          type: "string"
+          nullable: true
+        new_seating_capacity:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        new_max_range:
+          type: "number"
+          format: "double"
+          nullable: true
+        new_fuel_capacity:
+          type: "number"
+          format: "double"
+          nullable: true
+        new_cruising_speed:
+          type: "number"
+          format: "double"
+          nullable: true

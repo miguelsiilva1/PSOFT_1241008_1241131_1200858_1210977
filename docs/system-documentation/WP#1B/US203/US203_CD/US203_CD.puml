@@ -43,7 +43,7 @@ package "Route Aggregate" <<rectangle>> {
         - Long version
     }
     interface RouteRepository {
-        + List<Route> findByGreaterOrEqualRangeAndGreaterOrEqualCapacity(range, capacity)
+        + List<Route> findValidRoutesForAircraft(range, capacity)
     }
 }
 

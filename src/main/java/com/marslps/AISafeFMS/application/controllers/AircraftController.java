@@ -59,6 +59,8 @@ public class AircraftController {
             Aircraft aircraft = register_aircraft.execute(request.registration_number(),
                     request.model_name(),
                     request.manufacturing_date(),
+                    request.operational_hours(),
+                    request.total_flight_hours(),
                     request.last_maintenance(),
                     request.max_flight_hours_until_maintenance(),
                     request.max_days_until_maintenance(),
@@ -66,7 +68,8 @@ public class AircraftController {
                     request.premium_economy_seats(),
                     request.business_seats(),
                     request.first_seats(),
-                    request.status());
+                    request.status(),
+                    request.image());
 
             Map<String, Object> data = new HashMap<>();
             data.put("registration_number", aircraft.obtainRegistrationNumber());
@@ -83,7 +86,7 @@ public class AircraftController {
             return ResponseEntity.status(HttpStatus.CREATED).body(resource);
         } catch (IllegalArgumentException e) {
             Map<String, String> error = new HashMap<>();
-            error.put("message", "The request's data is malformed");
+            error.put("message", e.getMessage());
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }

@@ -24,18 +24,23 @@ public class RegisterAircraftServiceImpl implements RegisterAircraftService {
     public Aircraft register(AircraftRegistration aircraft_registration,
                              AircraftModel aircraft_model,
                              Date manufacturing_date,
+                             double operational_hours,
+                             double total_flight_hours,
                              Date last_maintenance,
                              int max_flight_hours_until_maintenance,
                              int max_days_until_maintenance,
                              SeatingConfiguration seating_configuration,
-                             AircraftStatus aircraft_status) {
+                             AircraftStatus aircraft_status,
+                             String image) {
         if(!aircraft_repo.alreadyExists(aircraft_registration.registration_number())) {
             return new Aircraft(aircraft_registration,
                                 aircraft_model,
                                 seating_configuration,
                                 manufacturing_date,
                                 last_maintenance,
-                                "",
+                                image,
+                                operational_hours,
+                                total_flight_hours,
                                 max_flight_hours_until_maintenance,
                                 max_days_until_maintenance,
                                 aircraft_status);

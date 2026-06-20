@@ -1,0 +1,25 @@
+openapi: "3.1.0"
+info:
+  title: "US203 - Check for Compatible Routes for a Specific Aircraft"
+  description: "As an ATCC, I want to view which routes are compatible with a specific aircraft based on its range and capacity. The same airplane model can have different seat configuration, and therefore different capacities."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/aircraft-route:
+    get:
+      summary: "GET api/aircraft-route"
+      operationId: "checkCompatibleRoutes"
+      parameters:
+        - name: "registration_number"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

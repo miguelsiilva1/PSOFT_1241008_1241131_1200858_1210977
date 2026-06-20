@@ -9,7 +9,7 @@ participant AircraftCompatibleRoutesUseCase <<@UseCase>>
 participant AircraftRepository
 participant RouteRepository
 
-ATCC -> AircraftRouteController : GET /aircraft-route\n\t{registration_number: ""}
+ATCC -> AircraftRouteController : GET /aircraft-route\n\t{registration_number: "N737UA"}
 
 AircraftRouteController -> AircraftRouteController : extract username from JWT
 alt "User has authorization"
@@ -17,7 +17,7 @@ alt "User has authorization"
         AircraftCompatibleRoutesUseCase -> AircraftRepository : findByRegistrationNumber(registration_number)
         alt "Aircraft exists"
         AircraftRepository --> AircraftCompatibleRoutesUseCase : aircraft
-        AircraftCompatibleRoutesUseCase -> RouteRepository: findByGreaterOrEqualRangeAndGreaterOrEqualCapacity(aircraft.obtainRange(), aircraft.obtainCapacity())
+        AircraftCompatibleRoutesUseCase -> RouteRepository: findValidRoutesForAircraft(aircraft.obtainRange(), aircraft.obtainCapacity())
         RouteRepository --> AircraftCompatibleRoutesUseCase: routes
     AircraftCompatibleRoutesUseCase --> AircraftRouteController : routes
 AircraftRouteController --> ATCC : 200 OK\n{ list of route IDs, _links.return }

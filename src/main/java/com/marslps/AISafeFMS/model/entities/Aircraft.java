@@ -5,6 +5,8 @@ import com.marslps.AISafeFMS.model.vo.AircraftRegistration;
 import com.marslps.AISafeFMS.model.vo.SeatingConfiguration;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
+import lombok.Setter;
+
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
@@ -15,7 +17,8 @@ public class Aircraft {
     private Long db_id;
     @Embedded @Column(unique = true)
     private AircraftRegistration registration_number;
-    @JoinColumn @ManyToOne
+    @Setter
+    @JoinColumn @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private AircraftModel model;
     @Embedded
     private SeatingConfiguration seating_configuration;
@@ -23,6 +26,10 @@ public class Aircraft {
     private Date manufactoring_date;
     @Column
     private String image;
+    @Column
+    private double operational_hours;
+    @Column
+    private double total_flight_hours;
     @Temporal(TemporalType.DATE)
     private Date last_maintenance;
     @Transient
@@ -44,6 +51,8 @@ public class Aircraft {
                     Date manufacturing_date,
                     Date last_maintenance,
                     String image,
+                    double operational_hours,
+                    double total_flight_hours,
                     @Positive int max_flight_hours_until_maintenance,
                     @Positive int max_days_until_maintenance,
                     AircraftStatus status) {
@@ -60,6 +69,8 @@ public class Aircraft {
         this.seating_configuration = seating_configuration;
         this.manufactoring_date = manufacturing_date;
         this.image = image;
+        this.operational_hours = operational_hours;
+        this.total_flight_hours = total_flight_hours;
         this.last_maintenance = last_maintenance;
         this.days_since_last_maintenance = max_days_until_maintenance;
         this.max_flight_hours_until_maintenance = max_flight_hours_until_maintenance;
@@ -99,4 +110,17 @@ public class Aircraft {
     public void changeStatus(AircraftStatus newStatus) {
         this.status = newStatus;
     }
+
+    public double obtainRange() {
+        return model.obtainRange();
+    }
+
+    public int obtainCapacity() {
+        return model.obtainCapacity();
+    }
+
+    public double obtainOperationalHours() {return this.operational_hours;}
+    public double obtainFlightHours() {return this.total_flight_hours;}
+    public AircraftModel obtainModel() {return this.model;}
+
 }

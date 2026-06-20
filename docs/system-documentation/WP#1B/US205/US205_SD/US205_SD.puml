@@ -8,7 +8,7 @@ participant AircraftRealtimeStatusController
 participant AircraftRealtimeStatusUseCase <<@UseCase>>
 participant AircraftRepository
 
-ATCC -> AircraftRealtimeStatusController : GET /aircraft-realtime-status\n\t{registration_number: ""}
+ATCC -> AircraftRealtimeStatusController : GET /aircraft-realtime-status\n\t{registration_number: "N737UA"}
 
 AircraftRealtimeStatusController -> AircraftRealtimeStatusController : extract username from JWT
 alt "User has authorization"

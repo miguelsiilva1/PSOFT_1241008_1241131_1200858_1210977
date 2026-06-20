@@ -1,0 +1,19 @@
+openapi: "3.1.0"
+info:
+  title: "US206 - Get All Aircraft's Operational Hours"
+  description: "As an ATCC, I want to calculate the total operational hours for each aircraft in my fleet."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/aircraft-op-hours:
+    get:
+      summary: "GET api/aircraft-op-hours"
+      operationId: "getAll"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

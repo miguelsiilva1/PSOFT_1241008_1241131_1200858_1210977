@@ -1,5 +1,5 @@
 @startuml
-title Search Top 5 Aircrafts by Total Flight Hours — GET /top-aircrafts-by-assignments
+title Search Top 5 Aircrafts by Number of Assignments — GET /top-aircrafts-by-assignments
 
 autoactivate on
 

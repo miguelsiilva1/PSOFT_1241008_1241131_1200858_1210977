@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface AircraftRepository extends CrudRepository<Aircraft, Long>  {
@@ -32,4 +33,18 @@ public interface AircraftRepository extends CrudRepository<Aircraft, Long>  {
     @Modifying(clearAutomatically = true)
     @Transactional
     int updateAircraftStatus(@Param("reg_num") String registration_number, @Param("status") AircraftStatus status);
+
+    @Query("""
+        SELECT a FROM Aircraft a
+        ORDER BY a.total_flight_hours DESC
+    """)
+    List<Aircraft> findTop5ByFlightHours(Pageable pageable);
+
+    @Query("""
+        SELECT a FROM Aircraft a
+        LEFT JOIN Flight f ON f.aircraft = a
+        GROUP BY a
+        ORDER BY COUNT(f) DESC
+    """)
+    List<Aircraft> findTop5ByNumberOfAssignments(Pageable pageable);
 }

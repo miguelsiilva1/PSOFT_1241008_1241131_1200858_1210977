@@ -12,9 +12,12 @@ public interface RegisterAircraftService {
     Aircraft register(AircraftRegistration aircraft_registration,
                       AircraftModel aircraft_model,
                       Date manufacturing_date,
+                      double operational_hours,
+                      double total_flight_hours,
                       Date last_maintenance,
                       int max_flight_hours_until_maintenance,
                       int max_days_until_maintenance,
                       SeatingConfiguration seating_configuration,
-                      AircraftStatus aircraft_status);
+                      AircraftStatus aircraft_status,
+                      String image);
 }
