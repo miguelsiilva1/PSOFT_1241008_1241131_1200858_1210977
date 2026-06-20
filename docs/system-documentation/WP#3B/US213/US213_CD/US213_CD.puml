@@ -1,0 +1,50 @@
+@startuml
+title View Scheduled Flights for Aircraft: Architecture — Class Diagram
+
+package "Flight Aggregate" <<rectangle>> {
+    class Flight <<Aggregate Root>> {
+        - FlightID id
+        - Route route
+        - Aircraft aircraft
+        - LocalDateTime scheduled_departure
+        - FlightStatus status
+    }
+
+    interface FlightRepository {
+        + List<Flight> findByAircraft(Aircraft aircraft)
+    }
+
+    class ViewAircraftFlightsUseCase <<@UseCase>> {
+        + List<Flight> execute(AircraftRegistration aircraft_registration)
+    }
+
+    ViewAircraftFlightsUseCase ..> FlightRepository : findByAircraft()
+}
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - AircraftModel model
+        - AircraftStatus status
+    }
+
+    interface AircraftRepository {
+        + Optional<Aircraft> findByRegistrationNumber(AircraftRegistration registration_number)
+    }
+}
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<Aggregate Root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_distance
+    }
+}
+
+ViewAircraftFlightsUseCase ..> AircraftRepository : findByRegistrationNumber()
+ViewAircraftFlightsUseCase ..> Aircraft : validates aircraft >
+Flight --> Aircraft
+Flight --> Route
+
+@enduml

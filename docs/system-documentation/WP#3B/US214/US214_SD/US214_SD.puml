@@ -1,0 +1,40 @@
+@startuml
+title List Active Routes — GET /api/routes/active?sortBy={sort_by}
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant RouteController
+participant ListActiveRoutesUseCase <<@UseCase>>
+participant RouteRepository
+participant FlightRepository
+
+ATCC -> RouteController : GET /api/routes/active?sortBy={sort_by}
+
+RouteController -> RouteController : extract username from JWT
+
+alt "User has authorization"
+    RouteController -> ListActiveRoutesUseCase : execute(sort_by)
+
+    alt "Sort by distance"
+        ListActiveRoutesUseCase -> RouteRepository : findActiveRoutesOrderByDistance()
+        RouteRepository --> ListActiveRoutesUseCase : active_routes
+
+    else "Sort by popularity"
+        ListActiveRoutesUseCase -> RouteRepository : findByActiveTrue()
+        RouteRepository --> ListActiveRoutesUseCase : active_routes
+
+        ListActiveRoutesUseCase -> FlightRepository : calculate usage count by route
+        FlightRepository --> ListActiveRoutesUseCase : route_popularity
+
+        ListActiveRoutesUseCase -> ListActiveRoutesUseCase : sort routes by popularity
+    end
+
+    ListActiveRoutesUseCase --> RouteController : active_routes
+    RouteController --> ATCC : 200 OK
+
+else "User does not have authorization"
+    RouteController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

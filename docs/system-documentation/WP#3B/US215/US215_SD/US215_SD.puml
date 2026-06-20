@@ -1,0 +1,30 @@
+@startuml
+title Calculate Total Route Network Distance — GET /api/routes/total-distance
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant RouteController
+participant CalculateTotalRouteDistanceUseCase <<@UseCase>>
+participant RouteRepository
+
+ATCC -> RouteController : GET /api/routes/total-distance
+
+RouteController -> RouteController : extract username from JWT
+
+alt "User has authorization"
+    RouteController -> CalculateTotalRouteDistanceUseCase : execute()
+
+    CalculateTotalRouteDistanceUseCase -> RouteRepository : findByActiveTrue()
+    RouteRepository --> CalculateTotalRouteDistanceUseCase : active_routes
+
+    CalculateTotalRouteDistanceUseCase -> CalculateTotalRouteDistanceUseCase : calculate total distance
+
+    CalculateTotalRouteDistanceUseCase --> RouteController : total_distance
+    RouteController --> ATCC : 200 OK\n{ total_distance }
+
+else "User does not have authorization"
+    RouteController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

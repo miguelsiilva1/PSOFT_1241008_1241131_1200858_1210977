@@ -1,0 +1,58 @@
+@startuml
+title Assign Aircraft to Route — POST /api/flights
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant FlightController
+participant ScheduleFlightUseCase <<@UseCase>>
+participant ScheduleFlightService <<Domain Service>>
+participant RouteRepository
+participant AircraftRepository
+participant FlightRepository
+
+ATCC -> FlightController : POST /api/flights\n{ route_id, aircraft_registration, scheduled_departure }
+
+FlightController -> FlightController : extract username from JWT
+
+alt "User has authorization"
+    FlightController -> ScheduleFlightUseCase : execute(route_id, aircraft_registration, scheduled_departure)
+
+    ScheduleFlightUseCase -> RouteRepository : findByRouteId(route_id)
+
+    alt "The route exists"
+        RouteRepository --> ScheduleFlightUseCase : route
+
+        ScheduleFlightUseCase -> AircraftRepository : findByRegistrationNumber(aircraft_registration)
+
+        alt "The aircraft exists"
+            AircraftRepository --> ScheduleFlightUseCase : aircraft
+
+            ScheduleFlightUseCase -> ScheduleFlightService : schedule(route, aircraft, scheduled_departure)
+
+            alt "Route, aircraft and airports are available"
+                ScheduleFlightService --> ScheduleFlightUseCase : scheduled_flight (unsaved)
+
+                ScheduleFlightUseCase -> FlightRepository : save(scheduled_flight)
+                FlightRepository --> ScheduleFlightUseCase : scheduled_flight (persisted)
+
+                ScheduleFlightUseCase --> FlightController : scheduled_flight
+                FlightController --> ATCC : 201 Created
+
+            else "Route requirements or availability are not satisfied"
+                FlightController --> ATCC : 409 Conflict\n{ message: "The flight cannot be scheduled" }
+            end
+
+        else "The aircraft does not exist"
+            FlightController --> ATCC : 404 Not Found\n{ message: "Aircraft not found" }
+        end
+
+    else "The route does not exist"
+        FlightController --> ATCC : 404 Not Found\n{ message: "Route not found" }
+    end
+
+else "User does not have authorization"
+    FlightController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

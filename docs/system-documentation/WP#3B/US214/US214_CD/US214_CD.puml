@@ -1,0 +1,57 @@
+@startuml
+title List Active Routes: Architecture — Class Diagram
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<Aggregate Root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_distance
+        - boolean active
+        ---
+        + boolean isActive()
+        + double obtainFlightDistance()
+    }
+
+    interface RouteRepository {
+        + List<Route> findByActiveTrue()
+        + List<Route> findActiveRoutesOrderByDistance()
+    }
+
+    class ListActiveRoutesUseCase <<@UseCase>> {
+        + List<Route> execute(String sort_by)
+    }
+
+    ListActiveRoutesUseCase ..> RouteRepository : findByActiveTrue()
+    ListActiveRoutesUseCase ..> RouteRepository : findActiveRoutesOrderByDistance()
+}
+
+package "Flight Aggregate" <<rectangle>> {
+    class Flight <<Aggregate Root>> {
+        - FlightID id
+        - Route route
+        - Aircraft aircraft
+        - LocalDateTime scheduled_departure
+        - FlightStatus status
+    }
+
+    interface FlightRepository {
+        + long countByRoute(Route route)
+    }
+}
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<Aggregate Root>> {
+        - LocationIdentifier iata
+        - AirportStatus status
+    }
+}
+
+ListActiveRoutesUseCase ..> FlightRepository : countByRoute()
+ListActiveRoutesUseCase ..> Route : filters active routes >
+
+Route --> Airport : departure
+Route --> Airport : destination
+Flight --> Route
+
+@enduml

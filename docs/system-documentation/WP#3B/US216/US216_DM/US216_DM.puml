@@ -1,0 +1,27 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title Search Alternative Routes: Domain Model
+
+package "Route Aggregate" {
+    class Route <<entity>> <<root>> {
+        - id: RouteID
+        - flight_distance: double
+        - active: boolean
+    }
+}
+
+package "Airport Aggregate" {
+    class Airport <<entity>> <<root>> {
+        - iata: LocationIdentifier
+        - status: AirportStatus
+    }
+}
+
+Route --> Airport : departure
+Route --> Airport : destination
+
+@enduml

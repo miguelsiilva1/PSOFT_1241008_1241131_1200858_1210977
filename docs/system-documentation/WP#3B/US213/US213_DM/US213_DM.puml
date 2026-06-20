@@ -1,0 +1,35 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title View Scheduled Flights for Aircraft: Domain Model
+
+package "Flight Aggregate" {
+    class Flight <<entity>> <<root>> {
+        - id: FlightID
+        - scheduled_departure: LocalDateTime
+        - status: FlightStatus
+    }
+}
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - registration_number: AircraftRegistration
+        - status: AircraftStatus
+    }
+}
+
+package "Route Aggregate" {
+    class Route <<entity>> <<root>> {
+        - id: RouteID
+        - flight_distance: double
+        - active: boolean
+    }
+}
+
+Flight --> Aircraft
+Flight --> Route
+
+@enduml

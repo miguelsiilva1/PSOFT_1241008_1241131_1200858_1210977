@@ -1,0 +1,46 @@
+@startuml
+title Search Alternative Routes: Architecture — Class Diagram
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<Aggregate Root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_distance
+        - boolean active
+        ---
+        + boolean isActive()
+    }
+
+    interface RouteRepository {
+        + List<Route> findByDeparture_Iata(LocationIdentifier origin)
+        + List<Route> findByDestination_Iata(LocationIdentifier destination)
+        + List<Route> findByDeparture_IataAndDestination_Iata(LocationIdentifier origin, LocationIdentifier destination)
+    }
+
+    class SearchAlternativeRoutesUseCase <<@UseCase>> {
+        + List<Route> execute(LocationIdentifier origin, LocationIdentifier destination)
+    }
+
+    SearchAlternativeRoutesUseCase ..> RouteRepository : findByDeparture_Iata()
+    SearchAlternativeRoutesUseCase ..> RouteRepository : findByDestination_Iata()
+    SearchAlternativeRoutesUseCase ..> RouteRepository : findByDeparture_IataAndDestination_Iata()
+    SearchAlternativeRoutesUseCase ..> Route : filters active routes >
+}
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<Aggregate Root>> {
+        - LocationIdentifier iata
+        - AirportStatus status
+    }
+
+    interface AirportRepository {
+        + Optional<Airport> findByIata(LocationIdentifier iata)
+    }
+}
+
+SearchAlternativeRoutesUseCase ..> AirportRepository : findByIata()
+Route --> Airport : departure
+Route --> Airport : destination
+
+@enduml

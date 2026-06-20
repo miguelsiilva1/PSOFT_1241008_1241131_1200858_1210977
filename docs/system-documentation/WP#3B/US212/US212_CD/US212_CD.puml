@@ -1,0 +1,72 @@
+@startuml
+title Assign Aircraft to Route: Architecture — Class Diagram
+
+package "Flight Aggregate" <<rectangle>> {
+    class Flight <<Aggregate Root>> {
+        - FlightID id
+        - Route route
+        - Aircraft aircraft
+        - LocalDateTime scheduled_departure
+        - FlightStatus status
+        ---
+        + void cancel()
+        + void complete()
+    }
+
+    interface FlightRepository {
+        + Flight save(Flight flight)
+        + boolean existsByAircraftAndScheduledDeparture(Aircraft aircraft, LocalDateTime scheduled_departure)
+    }
+
+    class ScheduleFlightUseCase <<@UseCase>> {
+        + Flight execute(RouteID route_id, AircraftRegistration aircraft_registration, LocalDateTime scheduled_departure)
+    }
+
+    ScheduleFlightUseCase ..> FlightRepository : save()
+}
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<Aggregate Root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+    }
+
+    interface RouteRepository {
+        + Optional<Route> findByRouteId(RouteID route_id)
+    }
+}
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - AircraftModel model
+        - AircraftStatus status
+        ---
+        + double obtainRange()
+        + int obtainCapacity()
+    }
+
+    interface AircraftRepository {
+        + Optional<Aircraft> findByRegistrationNumber(AircraftRegistration registration_number)
+    }
+}
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<Aggregate Root>> {
+        - LocationIdentifier iata
+        - AirportStatus status
+    }
+}
+
+ScheduleFlightUseCase ..> RouteRepository : findByRouteId()
+ScheduleFlightUseCase ..> AircraftRepository : findByRegistrationNumber()
+ScheduleFlightUseCase ..> Route : validates route requirements >
+ScheduleFlightUseCase ..> Aircraft : validates aircraft availability >
+ScheduleFlightUseCase ..> Airport : validates airport availability >
+ScheduleFlightUseCase ..> Flight : creates >
+
+@enduml
