@@ -126,4 +126,23 @@ public class Airport {
         }
         this.status = status;
     }
+
+    public void update(String name, Coordinates coordinates, AirportLocation airport_location,
+                       AirportType airport_type, TimeZone time_zone, OperationalHours operational_hours,
+                       List<RunwayInfo> runway_info, List<ContactInfo> contact_info,
+                       List<AirportTerminal> terminals, List<AirportGate> gates,
+                       List<AirportService> services, List<String> images) {
+        this.name = name;
+        this.coordinates = coordinates;
+        this.airport_location = airport_location;
+        this.airport_type = airport_type;
+        this.time_zone = time_zone;
+        this.operational_hours = operational_hours;
+        this.runway_info = new ArrayList<>(runway_info);
+        this.contact_info = new ArrayList<>(contact_info);
+        this.terminals = new ArrayList<>(terminals);
+        this.gates = new ArrayList<>(gates);
+        this.services = new ArrayList<>(services);
+        this.images = new ArrayList<>(images);
+    }
 }

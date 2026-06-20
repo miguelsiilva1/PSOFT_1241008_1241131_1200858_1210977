@@ -4,10 +4,6 @@
 title Generate Statistics on the Busiest Airport Architecture — Class Diagram
 
 package "Airport Aggregate" <<rectangle>> {
-    interface AirportRepository {
-        + Optional<Airport> findAll(LocationIdentifier iata)
-    }
-
     class GenerateStatisticsService <<Domain Service>> {
         + Airport generateStatistics(Airport)
     }
@@ -16,7 +12,6 @@ package "Airport Aggregate" <<rectangle>> {
         + List<Route> execute(String iata)
     }
 
-    GenerateStatisticsUseCase ..> AirportRepository : findAll() >
     GenerateStatisticsUseCase ..> GenerateStatisticsService : delegates to >
 }
 
@@ -24,7 +19,7 @@ package "Route Aggregate" <<rectangle>> {
     class Route <<Aggregate Root>> {
     }
     interface RouteRepository {
-        + List<Route> findByDeparture_IataAndDestination_Iata(LocationIdentifier iata)
+        + List<Route> findAll(LocationIdentifier iata)
     }
 }
 

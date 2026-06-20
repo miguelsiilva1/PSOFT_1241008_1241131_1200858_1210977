@@ -27,4 +27,17 @@ public interface AirportRepository extends CrudRepository<Airport, Long> {
      """)
     List<Airport> findByCountry(@Param("country") String country);
 
+    @Query("""
+         SELECT a FROM Airport a 
+         WHERE a.airport_location.region = :region 
+         ORDER BY a.airport_location.country, a.name
+     """)
+    List<Airport> groupByRegion(@Param("region") String region);
+
+    @Query("""
+         SELECT a FROM Airport a 
+         WHERE a.airport_location.country = :country 
+         ORDER BY a.airport_location.region, a.name
+     """)
+    List<Airport> groupByCountry(@Param("country") String country);
 }

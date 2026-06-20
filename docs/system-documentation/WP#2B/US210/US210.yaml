@@ -1,0 +1,18 @@
+openapi: "3.1.0"
+info:
+  title: "US210 - Generate Airport Statistics"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/airports/statistics:
+    get:
+      summary: "GET api/airports/statistics"
+      operationId: "getAirportStatistics"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

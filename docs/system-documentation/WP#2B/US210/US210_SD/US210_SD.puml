@@ -6,7 +6,6 @@ autoactivate on
 actor "Backoffice Operator" as BO
 participant AirportController
 participant GenerateStatisticsUseCase <<@UseCase>>
-participant AirportRepository
 participant RouteRepository
 participant GenerateStatisticsService <<Domain Service>>
 
@@ -15,13 +14,9 @@ BO -> AirportController : GET /api/airports/statistics
 AirportController -> AirportController : extract username from JWT
 alt "User has authorization"
     AirportController -> GenerateStatisticsUseCase : execute(iata)
-        GenerateStatisticsUseCase -> AirportRepository : findAll(iata)
-            AirportRepository --> GenerateStatisticsUseCase :
+        GenerateStatisticsUseCase -> RouteRepository : findAll(iata)
+            RouteRepository --> GenerateStatisticsUseCase : list_of_routes
         alt "Route exists"
-            loop "for each Route"
-            GenerateStatisticsUseCase -> RouteRepository : findByDeparture_IataAndDestination_Iata(iata)
-            return list_of_routes
-            end
             GenerateStatisticsUseCase -> GenerateStatisticsService :generateStatistics(list_of_routes)
             return statistics
             return statistics

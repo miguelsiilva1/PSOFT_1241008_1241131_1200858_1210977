@@ -9,7 +9,7 @@ actor "Backoffice Operator" as BO
 participant ":System" as S
 
 BO -> S: Asks to update an Airport's details
-S --> BO: Requests Iata Code and New Details
+S --> BO: Requests new details
 
 BO -> S: Types requested data
 S --> BO: Updates the airport details

@@ -1,0 +1,104 @@
+openapi: "3.1.0"
+info:
+  title: "US208 - Update Airport Details"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/airports/{iata}:
+    put:
+      summary: "PUT api/airports/{iata}"
+      operationId: "updateAirportDetails"
+      parameters:
+        - name: "iata"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAirportRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    Coordinates:
+      type: "object"
+      properties:
+        longitude: { type: "number", format: "double" }
+        longitude_direction: { type: "string" }
+        latitude: { type: "number", format: "double" }
+        latitude_direction: { type: "string" }
+    AirportLocation:
+      type: "object"
+      properties:
+        city: { type: "string" }
+        country: { type: "string" }
+        region: { type: "string" }
+    OperationalHours:
+      type: "object"
+      properties:
+        opening_hours: { type: "integer" }
+        closing_hours: { type: "integer" }
+    RunwayInfo:
+      type: "object"
+      properties:
+        name: { type: "string" }
+        length: { type: "number", format: "double" }
+        orientation:
+          type: "object"
+          properties:
+            orientation: { type: "string" }
+    ContactInfo:
+      type: "object"
+      properties:
+        type: { type: "string" }
+        contact: { type: "string" }
+        description: { type: "string" }
+    AirportTerminal:
+      type: "object"
+      properties:
+        terminal: { type: "string" }
+    AirportGate:
+      type: "object"
+      properties:
+        gate: { type: "string" }
+    AirportService:
+      type: "object"
+      properties:
+        service: { type: "string" }
+    UpdateAirportRequest:
+      type: "object"
+      properties:
+        name: { type: "string" }
+        coordinates: { $ref: "#/components/schemas/Coordinates" }
+        airport_location: { $ref: "#/components/schemas/AirportLocation" }
+        airport_type: { type: "string" }
+        time_zone: { type: "string" }
+        operational_hours: { $ref: "#/components/schemas/OperationalHours" }
+        runway_info:
+          type: "array"
+          items: { $ref: "#/components/schemas/RunwayInfo" }
+        contact_info:
+          type: "array"
+          items: { $ref: "#/components/schemas/ContactInfo" }
+        terminals:
+          type: "array"
+          items: { $ref: "#/components/schemas/AirportTerminal" }
+        gates:
+          type: "array"
+          items: { $ref: "#/components/schemas/AirportGate" }
+        services:
+          type: "array"
+          items: { $ref: "#/components/schemas/AirportService" }
+        images:
+          type: "array"
+          items: { type: "string" }

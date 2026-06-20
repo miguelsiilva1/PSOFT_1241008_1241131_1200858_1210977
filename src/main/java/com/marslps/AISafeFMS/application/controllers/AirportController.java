@@ -1,12 +1,15 @@
 package com.marslps.AISafeFMS.application.controllers;
 
 import com.marslps.AISafeFMS.application.model.CertifyAircraftModelRequest;
+import com.marslps.AISafeFMS.application.model.UpdateAirportRequest;
 import com.marslps.AISafeFMS.application.model.UpdateAirportStatusRequest;
 import com.marslps.AISafeFMS.application.use_cases.*;
 import com.marslps.AISafeFMS.application.assemblers.AirportAssembler;
+import com.marslps.AISafeFMS.application.dto.AirportStatisticsDTO;
 import com.marslps.AISafeFMS.application.dto.AirportDTO;
 import com.marslps.AISafeFMS.application.model.RegisterAirportRequest;
 import com.marslps.AISafeFMS.model.entities.Airport;
+import com.marslps.AISafeFMS.model.entities.Route;
 import com.marslps.AISafeFMS.model.enums.AirportStatus;
 import com.marslps.AISafeFMS.model.vo.*;
 
@@ -36,15 +39,23 @@ public class AirportController {
     private final ViewAirportDetailsUseCase view_airport_details;
     private final SearchAirportsUseCase search_airports;
     private final UpdateAirportStatusUseCase update_airport_status;
+    private final UpdateAirportUseCase update_airport;
+    private final ViewGroupedAirportsUseCase view_grouped_airports;
+    private final ViewAirportRoutesUseCase view_airport_routes;
+    private final GenerateStatisticsUseCase generate_statistics;
     private final AirportRepository airport_repository;
     private final AirportAssembler airport_assembler;
 
-    public AirportController(RegisterAirportUseCase register_airport, CertifyAircraftUseCase certify_aircraft, ViewAirportDetailsUseCase view_airport_details, SearchAirportsUseCase search_airports, UpdateAirportStatusUseCase update_airport_status, AirportRepository airport_repository, AirportAssembler airport_assembler) {
+    public AirportController(RegisterAirportUseCase register_airport, CertifyAircraftUseCase certify_aircraft, ViewAirportDetailsUseCase view_airport_details, SearchAirportsUseCase search_airports, UpdateAirportStatusUseCase update_airport_status, UpdateAirportUseCase update_airport, ViewGroupedAirportsUseCase view_grouped_airports, ViewAirportRoutesUseCase view_airport_routes, GenerateStatisticsUseCase generate_statistics, AirportRepository airport_repository, AirportAssembler airport_assembler) {
         this.register_airport = register_airport;
         this.certify_aircraft = certify_aircraft;
         this.view_airport_details = view_airport_details;
         this.search_airports = search_airports;
         this.update_airport_status = update_airport_status;
+        this.update_airport = update_airport;
+        this.view_grouped_airports = view_grouped_airports;
+        this.view_airport_routes = view_airport_routes;
+        this.generate_statistics = generate_statistics;
         this.airport_repository = airport_repository;
         this.airport_assembler = airport_assembler;
     }
@@ -194,6 +205,89 @@ public class AirportController {
 
             return ResponseEntity.ok(resource);
         } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @PutMapping("/{iata}")
+    @PreAuthorize("hasAuthority('BACKOFFICE_OP')")
+    public ResponseEntity<?> updateAirportDetails(@PathVariable String iata, @Valid @RequestBody UpdateAirportRequest request) {
+        try {
+            LocationIdentifier iata_code = new LocationIdentifier(iata);
+            Airport updated_airport = update_airport.execute(iata_code, request);
+            AirportDTO resource = airport_assembler.toModel(updated_airport);
+            
+            Link self_link = linkTo(methodOn(AirportController.class).getAirportByIata(iata)).withSelfRel();
+            resource.add(self_link);
+            
+            return ResponseEntity.ok(resource);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @GetMapping("/grouped")
+    @PreAuthorize("hasAuthority('ATCC')")
+    public ResponseEntity<?> viewGroupedAirports(
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) String country) {
+
+        try {
+            List<Airport> airports = view_grouped_airports.execute(region, country);
+
+            List<AirportDTO> airport_resources = new ArrayList<>();
+            for (Airport airport : airports) {
+                AirportDTO airport_model = airport_assembler.toModel(airport);
+                Link airport_link = linkTo(methodOn(AirportController.class)
+                        .getAirportByIata(airport.obtainIata().iata())).withSelfRel();
+                airport_model.add(airport_link);
+                airport_resources.add(airport_model);
+            }
+
+            Link self_link = linkTo(methodOn(AirportController.class)
+                    .viewGroupedAirports(region, country)).withSelfRel();
+            CollectionModel<AirportDTO> resource = CollectionModel.of(airport_resources, self_link);
+
+            return ResponseEntity.ok(resource);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @GetMapping("/{iata}/routes")
+    @PreAuthorize("hasAuthority('ATCC')")
+    public ResponseEntity<?> getAirportRoutes(@PathVariable String iata) {
+        try {
+            LocationIdentifier iata_code = new LocationIdentifier(iata);
+            List<Route> routes = view_airport_routes.execute(iata_code);
+
+            Link self_link = linkTo(methodOn(AirportController.class).getAirportRoutes(iata)).withSelfRel();
+            CollectionModel<Route> resource = CollectionModel.of(routes, self_link);
+
+            return ResponseEntity.ok(resource);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @GetMapping("/statistics")
+    @PreAuthorize("hasAuthority('BACKOFFICE_OP')")
+    public ResponseEntity<?> getAirportStatistics() {
+        try {
+            List<AirportStatisticsDTO> stats = generate_statistics.execute();
+            Link self_link = linkTo(methodOn(AirportController.class).getAirportStatistics()).withSelfRel();
+            CollectionModel<AirportStatisticsDTO> resource = CollectionModel.of(stats, self_link);
+            
+            return ResponseEntity.ok(resource);
+        } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
