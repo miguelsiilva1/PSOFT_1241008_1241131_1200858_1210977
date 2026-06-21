@@ -8,6 +8,8 @@ package "Aircraft Aggregate" {
     class Aircraft <<entity>> <<root>> {
         - manufacturing_date: Date
         - image: String
+        - operational_hours: double,
+        - total_flight_hours: double,
         - last_maintenance: Date
         - days_since_last_maintenance <<calculated>>: int
         - max_flight_hours_until_maintenance: int

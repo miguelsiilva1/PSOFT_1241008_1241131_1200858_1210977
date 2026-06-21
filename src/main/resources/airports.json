@@ -1,0 +1,565 @@
+[
+  {
+    "name": "Aeroporto Francisco Sá Carneiro",
+    "iata": {
+      "iata": "OPO"
+    },
+    "coordinates": {
+      "longitude": 8.9,
+      "longitude_direction": "W",
+      "latitude": 38.7,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Porto",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "GMT",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 6,
+      "closing_hours": 23
+    },
+    "runway_info": [
+      {
+        "name": "03/21",
+        "length": 3805.0,
+        "orientation": {
+          "orientation": "NE"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "EMAIL",
+        "contact": "geral@aeroporto.pt",
+        "description": "Contacto Geral"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G42"
+      }
+    ],
+    "services": [
+      {
+        "service": "Free Wi-Fi"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto Humberto Delgado",
+    "iata": {
+      "iata": "LIS"
+    },
+    "coordinates": {
+      "longitude": 9.13,
+      "longitude_direction": "W",
+      "latitude": 38.77,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Lisboa",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "WET",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 4,
+      "closing_hours": 24
+    },
+    "runway_info": [
+      {
+        "name": "03/21",
+        "length": 3805.0,
+        "orientation": {
+          "orientation": "NE"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "EMAIL",
+        "contact": "lisbon@airport.pt",
+        "description": "Geral"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      }
+    ],
+    "services": [
+      {
+        "service": "Wi-Fi"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto de Faro",
+    "iata": {
+      "iata": "FAO"
+    },
+    "coordinates": {
+      "longitude": 7.96,
+      "longitude_direction": "W",
+      "latitude": 37.01,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Faro",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "WET",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 4,
+      "closing_hours": 24
+    },
+    "runway_info": [
+      {
+        "name": "10/28",
+        "length": 2490.0,
+        "orientation": {
+          "orientation": "E"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "EMAIL",
+        "contact": "faro@aeroporto.pt",
+        "description": "Contacto Faro"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      },
+      {
+        "gate": "G2"
+      }
+    ],
+    "services": [
+      {
+        "service": "Lounge VIP"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto Cristiano Ronaldo",
+    "iata": {
+      "iata": "FNC"
+    },
+    "coordinates": {
+      "longitude": 16.77,
+      "longitude_direction": "W",
+      "latitude": 32.69,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Funchal",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "WET",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 0,
+      "closing_hours": 24
+    },
+    "runway_info": [
+      {
+        "name": "05/23",
+        "length": 2781.0,
+        "orientation": {
+          "orientation": "NE"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "EMAIL",
+        "contact": "funchal@aeroporto.pt",
+        "description": "Contacto Funchal"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G10"
+      }
+    ],
+    "services": [
+      {
+        "service": "Free Wi-Fi"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto João Paulo II",
+    "iata": {
+      "iata": "PDL"
+    },
+    "coordinates": {
+      "longitude": 25.69,
+      "longitude_direction": "W",
+      "latitude": 37.74,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Ponta Delgada",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "AZOST",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 5,
+      "closing_hours": 24
+    },
+    "runway_info": [
+      {
+        "name": "12/30",
+        "length": 2497.0,
+        "orientation": {
+          "orientation": "SE"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "PHONE_NUMBER",
+        "contact": "+351296205400",
+        "description": "Apoio ao Cliente"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      }
+    ],
+    "services": [
+      {
+        "service": "Duty Free"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto de Beja",
+    "iata": {
+      "iata": "BJA"
+    },
+    "coordinates": {
+      "longitude": 7.93,
+      "longitude_direction": "W",
+      "latitude": 38.07,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Beja",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "WET",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 8,
+      "closing_hours": 20
+    },
+    "runway_info": [
+      {
+        "name": "01L/19R",
+        "length": 3450.0,
+        "orientation": {
+          "orientation": "N"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "WEBSITE",
+        "contact": "www.ana.pt/beja",
+        "description": "Website Oficial"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      }
+    ],
+    "services": [
+      {
+        "service": "Rent-a-Car"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto de Santa Maria",
+    "iata": {
+      "iata": "SMA"
+    },
+    "coordinates": {
+      "longitude": 25.17,
+      "longitude_direction": "W",
+      "latitude": 36.97,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Vila do Porto",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "AZOST",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 6,
+      "closing_hours": 22
+    },
+    "runway_info": [
+      {
+        "name": "18/36",
+        "length": 3048.0,
+        "orientation": {
+          "orientation": "S"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "PHONE_NUMBER",
+        "contact": "+351296820024",
+        "description": "Informações"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      }
+    ],
+    "services": [
+      {
+        "service": "Cafetaria"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto da Horta",
+    "iata": {
+      "iata": "HOR"
+    },
+    "coordinates": {
+      "longitude": 28.71,
+      "longitude_direction": "W",
+      "latitude": 38.52,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Horta",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "AZOST",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 7,
+      "closing_hours": 21
+    },
+    "runway_info": [
+      {
+        "name": "10/28",
+        "length": 1532.0,
+        "orientation": {
+          "orientation": "E"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "EMAIL",
+        "contact": "horta@aeroporto.pt",
+        "description": "Apoio ao Cliente"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      }
+    ],
+    "services": [
+      {
+        "service": "Rent-a-Car"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto do Porto Santo",
+    "iata": {
+      "iata": "PXO"
+    },
+    "coordinates": {
+      "longitude": 16.35,
+      "longitude_direction": "W",
+      "latitude": 33.07,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Porto Santo",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "WET",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 8,
+      "closing_hours": 22
+    },
+    "runway_info": [
+      {
+        "name": "18/36",
+        "length": 3000.0,
+        "orientation": {
+          "orientation": "S"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "WEBSITE",
+        "contact": "www.ana.pt/portosanto",
+        "description": "Website Oficial"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      }
+    ],
+    "services": [
+      {
+        "service": "Duty Free"
+      }
+    ],
+    "images": []
+  },
+  {
+    "name": "Aeroporto das Flores",
+    "iata": {
+      "iata": "FLW"
+    },
+    "coordinates": {
+      "longitude": 31.13,
+      "longitude_direction": "W",
+      "latitude": 39.45,
+      "latitude_direction": "N"
+    },
+    "airport_location": {
+      "city": "Santa Cruz das Flores",
+      "country": "Portugal",
+      "region": "Europa"
+    },
+    "airport_type": "Civil",
+    "time_zone": "AZOST",
+    "status": "OPERATIONAL",
+    "operational_hours": {
+      "opening_hours": 8,
+      "closing_hours": 18
+    },
+    "runway_info": [
+      {
+        "name": "16/34",
+        "length": 1400.0,
+        "orientation": {
+          "orientation": "S"
+        }
+      }
+    ],
+    "contact_info": [
+      {
+        "type": "PHONE_NUMBER",
+        "contact": "+351292592212",
+        "description": "Geral"
+      }
+    ],
+    "terminals": [
+      {
+        "terminal": "T1"
+      }
+    ],
+    "gates": [
+      {
+        "gate": "G1"
+      }
+    ],
+    "services": [
+      {
+        "service": "Cafetaria"
+      }
+    ],
+    "images": []
+  }
+]

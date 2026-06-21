@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Register an Aircraft (with image): Simplified Sequence Diagram
+
+actor "Backoffice Operator" as BO
+participant ":System" as S
+
+BO -> S: Types requested data \n(String registration_number, String model_name,\nDate manufacturing_date, Date last_maintenance,\nint max_flight_hours_until_maintenance,\nint max_days_until_maintenance,\nint economy_seats, int premium_economy_seats,\nint business_seats, int first_seats, String status, String image)
+S --> BO: Confirms the (in)sucess of the operation
+
+@enduml

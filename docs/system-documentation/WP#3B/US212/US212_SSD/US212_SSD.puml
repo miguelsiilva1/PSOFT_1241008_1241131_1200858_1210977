@@ -1,0 +1,27 @@
+@startuml
+title Assign Aircraft to Route — System Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant "System" as System
+
+ATCC -> System : POST /api/flights\n{ route_id, aircraft_registration, scheduled_departure }
+
+alt "Flight can be scheduled"
+    System --> ATCC : 201 Created\n{ flight_id, route_id, aircraft_registration, scheduled_departure, status }
+
+else "Route does not exist"
+    System --> ATCC : 404 Not Found\n{ message: "Route not found" }
+
+else "Aircraft does not exist"
+    System --> ATCC : 404 Not Found\n{ message: "Aircraft not found" }
+
+else "Route requirements or availability are not satisfied"
+    System --> ATCC : 409 Conflict\n{ message: "The flight cannot be scheduled" }
+
+else "User does not have authorization"
+    System --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

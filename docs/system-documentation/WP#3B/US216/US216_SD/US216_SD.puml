@@ -1,0 +1,48 @@
+@startuml
+title Search Alternative Routes — GET /api/routes/alternatives?origin={origin}&destination={destination}
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant RouteController
+participant SearchAlternativeRoutesUseCase <<@UseCase>>
+participant AirportRepository
+participant RouteRepository
+
+ATCC -> RouteController : GET /api/routes/alternatives?origin={origin}&destination={destination}
+
+RouteController -> RouteController : extract username from JWT
+
+alt "User has authorization"
+    RouteController -> SearchAlternativeRoutesUseCase : execute(origin, destination)
+
+    SearchAlternativeRoutesUseCase -> AirportRepository : findByIata(origin)
+    AirportRepository --> SearchAlternativeRoutesUseCase : origin_airport
+
+    SearchAlternativeRoutesUseCase -> AirportRepository : findByIata(destination)
+    AirportRepository --> SearchAlternativeRoutesUseCase : destination_airport
+
+    alt "Both airports exist"
+        SearchAlternativeRoutesUseCase -> RouteRepository : findByDeparture_IataAndDestination_Iata(origin, destination)
+        RouteRepository --> SearchAlternativeRoutesUseCase : direct_routes
+
+        SearchAlternativeRoutesUseCase -> RouteRepository : findByDeparture_Iata(origin)
+        RouteRepository --> SearchAlternativeRoutesUseCase : routes_from_origin
+
+        SearchAlternativeRoutesUseCase -> RouteRepository : findByDestination_Iata(destination)
+        RouteRepository --> SearchAlternativeRoutesUseCase : routes_to_destination
+
+        SearchAlternativeRoutesUseCase -> SearchAlternativeRoutesUseCase : calculate alternative routes
+
+        SearchAlternativeRoutesUseCase --> RouteController : alternative_routes
+        RouteController --> ATCC : 200 OK
+
+    else "At least one airport does not exist"
+        RouteController --> ATCC : 404 Not Found\n{ message: "Airport not found" }
+    end
+
+else "User does not have authorization"
+    RouteController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

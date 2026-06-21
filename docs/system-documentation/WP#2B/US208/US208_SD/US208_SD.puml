@@ -1,0 +1,34 @@
+@startuml
+title Update an Airport — PUT /api/airports/{iata}
+
+autoactivate on
+
+actor "Backoffice Operator" as BO
+participant AirportController
+participant UpdateAirportUseCase <<@UseCase>>
+participant UpdateAirportService <<Domain Service>>
+participant AirportRepository
+
+BO -> AirportController : PUT /api/airports/{iata}\n
+
+AirportController -> AirportController : extract username from JWT
+alt "User has authorization"
+    AirportController -> UpdateAirportUseCase : execute(iata, name, coordinates, airport_location, airport_type, time_zone, operational_hours, runway_info, contact_info, terminals, gates, services, images)
+        UpdateAirportUseCase -> UpdateAirportService : update(iata, name, coordinates, airport_location, airport_type, time_zone, operational_hours, runway_info, contact_info, terminals, gates, services, images)
+            UpdateAirportService -> AirportRepository : findByIata(iata)
+        alt "The airport exists"
+            AirportRepository --> UpdateAirportService : old_airport
+            return updated_airport (unsaved)
+
+        
+        UpdateAirportUseCase -> AirportRepository : save(updated_airport)
+        AirportRepository --> UpdateAirportUseCase : updated_airport (persisted)
+    UpdateAirportUseCase --> AirportController : updated_airport
+    AirportController --> BO : 200 OK
+        else "The airport does not exist"
+        AirportController --> BO : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+else "User does not have authorization"
+AirportController --> BO : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+@enduml

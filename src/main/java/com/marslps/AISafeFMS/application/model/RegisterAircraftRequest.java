@@ -9,6 +9,8 @@ import java.util.Date;
 public record RegisterAircraftRequest(@NotBlank String registration_number,
                                       @NotBlank String model_name,
                                       Date manufacturing_date,
+                                      @PositiveOrZero double operational_hours,
+                                      @PositiveOrZero double total_flight_hours,
                                       Date last_maintenance,
                                       @Positive int max_flight_hours_until_maintenance,
                                       @Positive int max_days_until_maintenance,
@@ -16,4 +18,5 @@ public record RegisterAircraftRequest(@NotBlank String registration_number,
                                       @PositiveOrZero int premium_economy_seats,
                                       @PositiveOrZero int business_seats,
                                       @PositiveOrZero int first_seats,
-                                      @NotBlank String status) {}
+                                      @NotBlank String status,
+                                      String image) {}

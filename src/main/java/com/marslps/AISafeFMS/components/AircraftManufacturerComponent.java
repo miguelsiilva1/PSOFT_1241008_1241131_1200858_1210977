@@ -4,6 +4,7 @@ import com.marslps.AISafeFMS.model.entities.AircraftManufacturer;
 import com.marslps.AISafeFMS.repository.AircraftManufacturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import tools.jackson.core.type.TypeReference;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @Component
+@Order(1)
 public class AircraftManufacturerComponent implements CommandLineRunner {
     @Autowired
     private AircraftManufacturerRepository aircraft_manu_repo;

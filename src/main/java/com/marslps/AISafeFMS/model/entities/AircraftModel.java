@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
+import lombok.Setter;
 
 import java.util.Set;
 
@@ -19,23 +20,24 @@ public class AircraftModel {
     @Positive private double max_range;
     @Positive private double fuel_capacity;
     @Positive private double cruising_speed;
-    @ManyToOne
+    @Setter
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private AircraftManufacturer manufacturer;
     @Column
     private Set<String> features;
 
     public AircraftModel() {}
 
-    public AircraftModel(@NotEmpty String model,
+    public AircraftModel(@NotEmpty String name,
                          @Positive int seating_capacity,
-                         @Positive double range,
+                         @Positive double max_range,
                          @Positive double fuel_capacity,
                          @Positive double cruising_speed,
                          AircraftManufacturer manufacturer,
                          Set<String> features) {
-        this.name = model;
+        this.name = name;
         this.seating_capacity = seating_capacity;
-        this.max_range = range;
+        this.max_range = max_range;
         this.fuel_capacity = fuel_capacity;
         this.cruising_speed = cruising_speed;
         this.manufacturer = manufacturer;
@@ -46,4 +48,11 @@ public class AircraftModel {
         return this.name;
     }
     public AircraftManufacturer obtainManufacturer() {return this.manufacturer;}
+    public double obtainRange() {return this.max_range;}
+    public int obtainCapacity() {return this.seating_capacity;}
+
+    public double obtainFuel() {
+        return this.fuel_capacity;
+    }
+    public double obtainSpeed() {return this.cruising_speed;}
 }

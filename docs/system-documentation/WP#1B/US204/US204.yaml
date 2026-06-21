@@ -1,0 +1,31 @@
+openapi: "3.1.0"
+info:
+  title: "US204 - Search Top 5 Aircrafts by Total Flight Hours and Number of Assignments"
+  description: "As a Backoffice Operator, I want to see the Top 5 most utilized aircraft models based on total flight hours or
+number of assignments."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/top-aircrafts-by-flight-hours:
+    get:
+      summary: "GET api/top-aircrafts-by-flight-hours"
+      operationId: "getTopFive"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/top-aircrafts-by-assignments:
+    get:
+      summary: "GET api/top-aircrafts-by-assignments"
+      operationId: "getTopFive"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

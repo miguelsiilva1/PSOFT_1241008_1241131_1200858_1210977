@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Update an Aircraft Model: Simplified Sequence Diagram
+
+actor "Backoffice Operator" as BO
+participant ":System" as S
+
+BO -> S: Types requested data \n(String name, double seating_capacity,\ndouble max_range, double fuel_capacity\ndouble cruising_speed, String manufacturer_name,\n double new_seating_capacity, double new_max_range,\ndouble new_fuel_capacity, double new_cruising_speed)
+S --> BO: Confirms the (in)sucess of the operation
+
+@enduml

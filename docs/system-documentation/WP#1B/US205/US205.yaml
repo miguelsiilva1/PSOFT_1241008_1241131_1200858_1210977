@@ -1,0 +1,25 @@
+openapi: "3.1.0"
+info:
+  title: "US205 - View Aircraft Status in Real Time"
+  description: "As an ATCC, I want to view real-time aircraft availability status (available, in-flight, under maintenance, inactive)."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/aircraft-realtime-status:
+    get:
+      summary: "GET api/aircraft-realtime-status"
+      operationId: "checkAircraftStatus"
+      parameters:
+        - name: "registration_number"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

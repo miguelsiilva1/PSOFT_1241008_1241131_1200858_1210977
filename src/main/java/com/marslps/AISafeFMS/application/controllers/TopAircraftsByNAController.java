@@ -1,0 +1,50 @@
+package com.marslps.AISafeFMS.application.controllers;
+
+import com.marslps.AISafeFMS.application.use_cases.TopAircraftsByNumberOfAssignmentsUseCase;
+import com.marslps.AISafeFMS.model.entities.Aircraft;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@RestController
+@RequestMapping("/api/top-aircrafts-by-assignments")
+public class TopAircraftsByNAController {
+    private TopAircraftsByNumberOfAssignmentsUseCase tanoa_use_case;
+
+    public TopAircraftsByNAController(TopAircraftsByNumberOfAssignmentsUseCase tanoa_use_case) {
+        this.tanoa_use_case = tanoa_use_case;
+    }
+
+    @GetMapping()
+    @PreAuthorize("hasAuthority('BACKOFFICE_OP')")
+    public ResponseEntity<?> getTopFive() {
+        try {
+            List<Aircraft> aircrafts = tanoa_use_case.execute();
+
+            List<EntityModel<Map<String, Object>>> resources = aircrafts.stream().map(a -> {
+                Map<String, Object> data = new HashMap<>();
+                data.put("registration_number", a.obtainRegistrationNumber());
+                return EntityModel.of(data)
+                        .add(linkTo(methodOn(AircraftController.class).getAllAircrafts()).withRel("return"));
+            }).toList();
+            return ResponseEntity.ok(resources);
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "The request's data is malformed");
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+}

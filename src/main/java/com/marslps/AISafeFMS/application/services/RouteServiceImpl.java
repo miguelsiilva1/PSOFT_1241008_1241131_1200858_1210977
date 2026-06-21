@@ -43,18 +43,20 @@ public class RouteServiceImpl implements RouteService {
         Airport destination = airportRepository.findByIata(destinationIata)
                 .orElseThrow(() -> new IllegalArgumentException("Destination airport not found."));
 
-        if (departure.getStatus() != AirportStatus.OPERATIONAL || destination.getStatus() != AirportStatus.OPERATIONAL) {
+        if (departure.obtainStatus() != AirportStatus.OPERATIONAL ||
+                destination.obtainStatus() != AirportStatus.OPERATIONAL) {
             throw new IllegalArgumentException("Both airports must be operational.");
         }
 
         String routeIdValue = departure.obtainIata().iata() + "-" + destination.obtainIata().iata();
+        RouteID routeId = new RouteID(routeIdValue);
 
-        if (routeRepository.existsById_Id(routeIdValue)) {
+        if (routeRepository.existsByRouteId(routeId)) {
             throw new IllegalArgumentException("Route already exists.");
         }
 
         Route route = new Route(
-                new RouteID(routeIdValue),
+                routeId,
                 departure,
                 destination,
                 request.estimated_flight_time(),
@@ -72,17 +74,19 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public List<RouteHistory> getRouteHistory(String routeId) {
-        if (!routeRepository.existsById_Id(routeId)) {
+        RouteID id = new RouteID(routeId);
+
+        if (!routeRepository.existsByRouteId(id)) {
             throw new IllegalArgumentException("Route not found.");
         }
 
-        return routeHistoryRepository.findByRoute_Id_Id(routeId);
+        return routeHistoryRepository.findByRouteId(id);
     }
 
     @Override
     @Transactional
     public Route updateRoute(String routeId, UpdateRouteRequest request) {
-        Route route = routeRepository.findById_Id(routeId)
+        Route route = routeRepository.findByRouteId(new RouteID(routeId))
                 .orElseThrow(() -> new IllegalArgumentException("Route not found."));
 
         route.updateRoute(
@@ -101,7 +105,7 @@ public class RouteServiceImpl implements RouteService {
     @Override
     @Transactional
     public Route deactivateRoute(String routeId) {
-        Route route = routeRepository.findById_Id(routeId)
+        Route route = routeRepository.findByRouteId(new RouteID(routeId))
                 .orElseThrow(() -> new IllegalArgumentException("Route not found."));
 
         route.deactivate();
@@ -114,7 +118,7 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public Route getRouteById(String routeId) {
-        return routeRepository.findById_Id(routeId)
+        return routeRepository.findByRouteId(new RouteID(routeId))
                 .orElseThrow(() -> new IllegalArgumentException("Route not found."));
     }
 

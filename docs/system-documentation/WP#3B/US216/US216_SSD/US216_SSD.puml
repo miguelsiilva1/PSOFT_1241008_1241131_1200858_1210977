@@ -1,0 +1,21 @@
+@startuml
+title Search Alternative Routes — System Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant "System" as System
+
+ATCC -> System : GET /api/routes/alternatives?origin={origin}&destination={destination}
+
+alt "Airports exist"
+    System --> ATCC : 200 OK\n{ alternative_routes }
+
+else "At least one airport does not exist"
+    System --> ATCC : 404 Not Found\n{ message: "Airport not found" }
+
+else "User does not have authorization"
+    System --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

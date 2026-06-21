@@ -1,0 +1,38 @@
+@startuml
+title Calculate Total Route Network Distance: Architecture — Class Diagram
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<Aggregate Root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_distance
+        - boolean active
+        ---
+        + double obtainFlightDistance()
+        + boolean isActive()
+    }
+
+    interface RouteRepository {
+        + List<Route> findByActiveTrue()
+    }
+
+    class CalculateTotalRouteDistanceUseCase <<@UseCase>> {
+        + double execute()
+    }
+
+    CalculateTotalRouteDistanceUseCase ..> RouteRepository : findByActiveTrue()
+    CalculateTotalRouteDistanceUseCase ..> Route : obtains distance >
+}
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<Aggregate Root>> {
+        - LocationIdentifier iata
+        - AirportStatus status
+    }
+}
+
+Route --> Airport : departure
+Route --> Airport : destination
+
+@enduml

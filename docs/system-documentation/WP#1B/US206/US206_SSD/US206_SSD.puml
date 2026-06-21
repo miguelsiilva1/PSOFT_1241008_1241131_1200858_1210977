@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+title Get All Aircraft's Operational Hours: Simplified Sequence Diagram
+
+actor ATCC
+participant ":System" as S
+
+ATCC -> S: Asks to see all aircraft's operational hours
+S --> ATCC: Confirms the (in)sucess of the operation and shows the information
+
+@enduml

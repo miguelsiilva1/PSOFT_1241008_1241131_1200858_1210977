@@ -1,0 +1,21 @@
+@startuml
+title View Scheduled Flights for Aircraft — System Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant "System" as System
+
+ATCC -> System : GET /api/aircraft/{registration}/flights
+
+alt "Aircraft exists"
+    System --> ATCC : 200 OK\n{ scheduled_flights }
+
+else "Aircraft does not exist"
+    System --> ATCC : 404 Not Found\n{ message: "Aircraft not found" }
+
+else "User does not have authorization"
+    System --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

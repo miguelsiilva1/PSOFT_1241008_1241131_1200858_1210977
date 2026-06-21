@@ -1,0 +1,33 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Get All Aircrafts Operational Hours: Architecture — Class Diagram
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
+        ---
+        + AircraftStatus obtainOperationalHours()
+    }
+    interface AircraftRepository {
+        + List<Aircraft> findAll()
+    }
+    class AircraftOperationalHoursUseCase <<@UseCase>> {
+        + Aircraft execute()
+    }
+
+    RegisterAircraftUseCase ..> AircraftRepository : findAll()
+    RegisterAircraftUseCase ..> Aircraft : finds >
+}
+
+@enduml

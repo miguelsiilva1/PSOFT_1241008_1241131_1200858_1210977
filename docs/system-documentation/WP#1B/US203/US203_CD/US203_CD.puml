@@ -1,0 +1,52 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Check for Compatible Routes for a Specific Aircraft: Architecture — Class Diagram
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
+        ---
+        + double obtainRange()
+        + double obtainCapacity()
+    }
+    interface AircraftRepository {
+        + Aircraft findByRegistrationNumber(aircraft_registration.registration_number)
+    }
+    class AircraftCompatibleRoutesUseCase <<@UseCase>> {
+        + Aircraft execute(registration_number)
+    }
+
+    AircraftCompatibleRoutesUseCase ..> AircraftRepository : findByRegistrationNumber()
+    AircraftCompatibleRoutesUseCase ..> Aircraft : finds >
+}
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<root>> {
+        - RouteID id
+        - Airport departure
+        - Airport destination
+        - double flight_time
+        - double min_aircraft_range
+        - int min_aircraft_capacity
+        - boolean active
+        - Long version
+    }
+    interface RouteRepository {
+        + List<Route> findValidRoutesForAircraft(range, capacity)
+    }
+}
+
+AircraftCompatibleRoutesUseCase ..> RouteRepository : findByGreaterOrEqualRangeAndGreaterOrEqualCapacity()
+
+@enduml

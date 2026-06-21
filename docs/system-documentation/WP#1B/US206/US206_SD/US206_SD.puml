@@ -1,0 +1,28 @@
+@startuml
+title Get All Aircraft's Operational Hours — GET /aircraft-op-hours
+
+autoactivate on
+
+actor ATCC
+participant AircraftOperationalHoursController
+participant AircraftOperationalHoursUseCase <<@UseCase>>
+participant AircraftRepository
+
+ATCC -> AircraftOperationalHoursController : GET /aircraft-op-hours\n
+
+AircraftOperationalHoursController -> AircraftOperationalHoursController : extract username from JWT
+alt "User has authorization"
+    AircraftOperationalHoursController -> AircraftOperationalHoursUseCase : execute()
+        AircraftOperationalHoursUseCase -> AircraftRepository : findAll()
+        alt "Aircrafts exists"
+        AircraftRepository --> AircraftOperationalHoursUseCase : aircrafts
+    AircraftOperationalHoursUseCase --> AircraftOperationalHoursController : aircrafts
+AircraftOperationalHoursController --> ATCC : 200 OK\n{ list of all aircrafts in the format\n"[registration number]: [number of operational hours]", _links.return }
+        else "The aircraft does not exist in the system"
+AircraftOperationalHoursController --> ATCC : 400 Bad Request\n{ message: "The request's data is malformed" }
+        end
+else "User does not have authorization"
+AircraftOperationalHoursController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

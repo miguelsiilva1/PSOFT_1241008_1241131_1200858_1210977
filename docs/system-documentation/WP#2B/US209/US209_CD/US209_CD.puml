@@ -1,0 +1,25 @@
+@startuml
+title View Airport Routes: Architecture — Class Diagram
+
+package "Airport Aggregate" <<rectangle>> {
+    interface AirportRepository {
+        + Optional<Airport> findByIata(LocationIdentifier iata)
+    }
+    class ViewAirportRoutesUseCase <<@UseCase>> {
+            + List<Route> execute(String iata)
+        }
+}
+
+package "Route Aggregate" <<rectangle>> {
+    class Route <<Aggregate Root>> {
+    }
+    interface RouteRepository {
+        + List<Route> findByDeparture_Iata(LocationIdentifier iata)
+        + List<Route> findByDestination_Iata(LocationIdentifier iata)
+    }
+}
+
+ViewAirportRoutesUseCase ..> AirportRepository : uses >
+ViewAirportRoutesUseCase ..> RouteRepository : uses >
+RouteRepository ..> Route : returns >
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title Update an Airport: Architecture — Class Diagram
+
+package "Airport Aggregate" <<rectangle>> {
+    class Airport <<Aggregate Root>> {
+        - LocationIdentifier iata
+        ---
+        + void update(String name, Coordinates coordinates, AirportLocation airport_location, AirportType airport_type, TimeZone time_zone, OperationalHours operational_hours, List<RunwayInfo> runway_info, List<ContactInfo> contact_info, List<AirportTerminal> terminals, List<AirportGate> gates, List<AirportService> services, List<String> images)
+    }
+    interface AirportRepository {
+        + Optional<Airport> findByIata(LocationIdentifier iata)
+        + Airport save(Airport airport)
+    }
+    class UpdateAirportService <<Domain Service>> {
+        + Airport update(LocationIdentifier iata, String name, Coordinates coordinates, AirportLocation airport_location, AirportType airport_type, TimeZone time_zone, OperationalHours operational_hours, List<RunwayInfo> runway_info, List<ContactInfo> contact_info, List<AirportTerminal> terminals, List<AirportGate> gates, List<AirportService> services, List<String> images)
+    }
+    class UpdateAirportUseCase <<@UseCase>> {
+        + Airport execute(LocationIdentifier iata, String name, Coordinates coordinates, AirportLocation airport_location, AirportType airport_type, TimeZone time_zone, OperationalHours operational_hours, List<RunwayInfo> runway_info, List<ContactInfo> contact_info, List<AirportTerminal> terminals, List<AirportGate> gates, List<AirportService> services, List<String> images)
+    }
+
+    UpdateAirportUseCase ..> AirportRepository : findByIata()\nsave()
+    UpdateAirportUseCase ..> UpdateAirportService : delegates to >
+    UpdateAirportService ..> Airport : updates >
+}
+
+@enduml

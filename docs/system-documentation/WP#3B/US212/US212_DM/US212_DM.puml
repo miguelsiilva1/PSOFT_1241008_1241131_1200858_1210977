@@ -1,0 +1,53 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title Assign Aircraft to Route: Domain Model
+
+package "Flight Aggregate" {
+    class Flight <<entity>> <<root>> {
+        - id: FlightID
+        - scheduled_departure: LocalDateTime
+        - status: FlightStatus
+    }
+}
+
+package "Route Aggregate" {
+    class Route <<entity>> <<root>> {
+        - id: RouteID
+        - min_aircraft_range: double
+        - min_aircraft_capacity: int
+        - active: boolean
+    }
+}
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - registration_number: AircraftRegistration
+        - status: AircraftStatus
+    }
+
+    class AircraftModel <<entity>> {
+        - max_range: double
+        - seating_capacity: int
+    }
+}
+
+package "Airport Aggregate" {
+    class Airport <<entity>> <<root>> {
+        - iata: LocationIdentifier
+        - status: AirportStatus
+    }
+}
+
+Flight --> Route
+Flight --> Aircraft
+
+Route --> Airport : departure
+Route --> Airport : destination
+
+Aircraft --> AircraftModel
+
+@enduml

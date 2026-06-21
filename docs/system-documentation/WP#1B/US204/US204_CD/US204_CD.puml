@@ -1,0 +1,47 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Search Top 5 Aircrafts by Total Flight Hours or Number Of Assignments: Architecture — Class Diagram
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
+    }
+    interface AircraftRepository {
+        + List<Aircraft> findTop5ByFlightHours()
+        + List<Aircraft> findTop5ByNumberOfAssignments()
+    }
+    class TopAircraftsByFlightHoursUseCase <<@UseCase>> {
+        + Aircraft execute()
+    }
+
+    TopAircraftsByFlightHoursUseCase ..> AircraftRepository : findTop5ByFlightHours()
+    TopAircraftsByFlightHoursUseCase ..> AircraftRepository : findTop5ByNumberOfAssignments()
+    TopAircraftsByFlightHoursUseCase ..> Aircraft : finds >
+}
+
+package "Flight Aggregate" <<rectangle>> {
+    class Flight <<root>> {
+        - FlightID id
+        - Route route
+        - Aircraft aircraft
+        - Date scheduled_departure
+        - double delayed_hours
+        - Date effective_departure
+        - Date scheduled_arrival
+        - Date effective_arrival
+        - FlightStatus status
+    }
+}
+
+@enduml

@@ -1,0 +1,29 @@
+openapi: "3.1.0"
+info:
+  title: "US211 - View Airports Grouped by Region or Country"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/airports/grouped:
+    get:
+      summary: "GET api/airports/grouped"
+      operationId: "viewGroupedAirports"
+      parameters:
+        - name: "region"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "country"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

@@ -1,0 +1,58 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Register an Aircraft (with image): Architecture — Class Diagram
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - AircraftManufacturer manufacturer
+        - AircraftModel model
+        - SeatingConfiguration seating_configuration
+        - Date manufactoring_date
+        - Date last_maintenance
+        - int days_since_last_maintenance
+        - int max_flight_hours_until_maintenance
+        - int max_days_until_maintenance
+        - AircraftStatus status
+        - String image
+        ---
+        + Aircraft(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status, image)
+    }
+    interface AircraftRepository {
+        + boolean alreadyExists(aircraft_registration.registration_number)
+        + Aircraft save(Aircraft)
+    }
+    class RegisterAircraftService <<Domain Service>> {
+        + Aircraft register(aircraft_registration, aircraft_model, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, seating_configuration, status, image)
+    }
+    class RegisterAircraftUseCase <<@UseCase>> {
+        + Aircraft execute(registration_number, model_name, manufacturing_date, last_maintenance, max_flight_hours_until_maintenance, max_days_until_maintenance, economy_seats, premium_economy_seats, business_seats, first_seats, status, image)
+    }
+
+    RegisterAircraftUseCase ..> AircraftRepository : alreadyExists()
+    RegisterAircraftUseCase ..> Aircraft : creates >
+    RegisterAircraftUseCase ..> RegisterAircraftService : delegates to >
+    RegisterAircraftUseCase ..> AircraftRepository : save()
+}
+
+package "Aircraft Model Aggregate" <<rectangle>> {
+    class AircraftModel <<Aggregate Root>> {
+        - String name
+        - int seating_capacity
+        - double max_range
+        - double fuel_capacity
+        - double cruising_speed
+        - Set<String> feature
+        - AircraftManufacturer manufacturer
+        ---
+        + String obtainName()
+    }
+    interface AircraftModelRepository {
+        + AircraftModel findByName(name)
+    }
+
+    RegisterAircraftUseCase .up.> AircraftModelRepository : findByName()
+}
+
+@enduml

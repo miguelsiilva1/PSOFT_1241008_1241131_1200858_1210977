@@ -1,0 +1,18 @@
+@startuml
+title Calculate Total Route Network Distance — System Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant "System" as System
+
+ATCC -> System : GET /api/routes/total-distance
+
+alt "User has authorization"
+    System --> ATCC : 200 OK\n{ total_distance }
+
+else "User does not have authorization"
+    System --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

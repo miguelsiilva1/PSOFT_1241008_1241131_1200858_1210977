@@ -1,0 +1,34 @@
+@startuml
+title View Airport Routes — GET /api/airports/{iata}/routes
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant AirportController
+participant ViewAirportRoutesUseCase <<@UseCase>>
+participant AirportRepository
+participant RouteRepository
+
+ATCC -> AirportController : GET /api/airports/{iata}/routes
+
+AirportController -> AirportController : extract username from JWT
+alt "User has authorization"
+    AirportController -> ViewAirportRoutesUseCase : execute(iata)
+        ViewAirportRoutesUseCase -> AirportRepository : findByIata(iata)
+        alt "Airport exists"
+            AirportRepository --> ViewAirportRoutesUseCase :
+            ViewAirportRoutesUseCase -> RouteRepository : findByDeparture_Iata(iata)
+            return departure_routes
+            ViewAirportRoutesUseCase -> RouteRepository : findByDestination_Iata(iata)
+            return arrival_routes
+            return list_of_routes
+        AirportController --> ATCC : 200 OK
+        else "Airport does not exist"
+            AirportController --> ATCC : 400 Bad Request
+        end
+
+else "User does not have authorization"
+    AirportController --> ATCC :403 Forbidden
+end
+
+@enduml
