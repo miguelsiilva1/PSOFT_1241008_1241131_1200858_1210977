@@ -1,5 +1,5 @@
 @startuml
-title View Scheduled Flights for Aircraft — GET /api/aircraft/{registration}/flights
+title View Scheduled Flights for Aircraft — GET /api/flights/aircraft/{registration}
 
 autoactivate on
 
@@ -9,7 +9,7 @@ participant ViewAircraftFlightsUseCase <<@UseCase>>
 participant AircraftRepository
 participant FlightRepository
 
-ATCC -> FlightController : GET /api/aircraft/{registration}/flights
+ATCC -> FlightController : GET /api/flights/aircraft/{registration}
 
 FlightController -> FlightController : extract username from JWT
 
@@ -21,14 +21,14 @@ alt "User has authorization"
     alt "The aircraft exists"
         AircraftRepository --> ViewAircraftFlightsUseCase : aircraft
 
-        ViewAircraftFlightsUseCase -> FlightRepository : findByAircraft(aircraft)
+        ViewAircraftFlightsUseCase -> FlightRepository : findByAircraftOrderByScheduledDepartureAsc(aircraft)
         FlightRepository --> ViewAircraftFlightsUseCase : scheduled_flights
 
         ViewAircraftFlightsUseCase --> FlightController : scheduled_flights
         FlightController --> ATCC : 200 OK
 
     else "The aircraft does not exist"
-        FlightController --> ATCC : 404 Not Found\n{ message: "Aircraft not found" }
+        FlightController --> ATCC : 404 Not Found\n{ message: "Aircraft not found." }
     end
 
 else "User does not have authorization"

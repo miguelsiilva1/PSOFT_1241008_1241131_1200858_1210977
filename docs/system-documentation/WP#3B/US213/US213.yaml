@@ -1,0 +1,30 @@
+openapi: "3.1.0"
+info:
+  title: "US213 - View Scheduled Flights for Aircraft"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/flights/aircraft/{registration}:
+    get:
+      summary: "GET api/flights/aircraft/{registration}"
+      operationId: "viewAircraftFlights"
+      parameters:
+        - name: "registration"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "object"

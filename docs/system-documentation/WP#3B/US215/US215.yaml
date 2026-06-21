@@ -1,0 +1,18 @@
+openapi: "3.1.0"
+info:
+  title: "US215 - Calculate Total Route Distance"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/routes/total-distance:
+    get:
+      summary: "GET api/routes/total-distance"
+      operationId: "calculateTotalRouteDistance"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"

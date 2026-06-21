@@ -1,0 +1,30 @@
+openapi: "3.1.0"
+info:
+  title: "US214 - List Active Routes"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/routes/active:
+    get:
+      summary: "GET api/routes/active"
+      operationId: "listActiveRoutes"
+      parameters:
+        - name: "sortBy"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
