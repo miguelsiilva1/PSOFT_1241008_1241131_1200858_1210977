@@ -1,0 +1,37 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title US218 - Search Maintenance Records: Domain Model
+
+package "Maintenance Aggregate" {
+    class MaintenanceRecord <<entity>> <<root>> {
+        - id: MaintenanceRecordID
+        - description: String
+        - start_date: Date
+        - end_date: Date
+        - component: MaintenanceComponent
+        - completed: boolean
+    }
+
+    enum MaintenanceComponent {
+        ENGINE
+        AIRFRAME
+        AVIONICS
+        INTERIOR
+        EXTERIOR
+    }
+}
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - registration_number: AircraftRegistration
+        - status: AircraftStatus
+    }
+}
+
+MaintenanceRecord --> MaintenanceComponent
+MaintenanceRecord --> Aircraft : filtered by
+
+@enduml

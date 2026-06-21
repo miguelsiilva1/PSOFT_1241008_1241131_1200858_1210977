@@ -1,0 +1,28 @@
+@startuml
+title Search Maintenance Records — GET /api/maintenance/records
+
+autoactivate on
+
+actor "Maintenance Technician" as Tech
+participant MaintenanceController
+participant SearchMaintenanceRecordsUseCase <<@UseCase>>
+participant MaintenanceRecordRepository
+
+Tech -> MaintenanceController : GET /api/maintenance/records\n?aircraft={registration}&startDate={start}&endDate={end}&component={component}
+
+MaintenanceController -> MaintenanceController : extract username from JWT
+
+alt "User has authorization"
+    MaintenanceController -> SearchMaintenanceRecordsUseCase : execute(registration, start, end, component)
+
+    SearchMaintenanceRecordsUseCase -> MaintenanceRecordRepository : searchRecords(registration, start, end, component)
+    MaintenanceRecordRepository --> SearchMaintenanceRecordsUseCase : records_list
+
+    SearchMaintenanceRecordsUseCase --> MaintenanceController : records_list
+    MaintenanceController --> Tech : 200 OK\n[ records_list ]
+
+else "User does not have authorization"
+    MaintenanceController --> Tech : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

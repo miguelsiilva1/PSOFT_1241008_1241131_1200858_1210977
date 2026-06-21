@@ -1,0 +1,42 @@
+@startuml
+title Search Maintenance Records: Architecture — Class Diagram
+
+package "Maintenance Aggregate" <<rectangle>> {
+    class MaintenanceRecord <<Aggregate Root>> {
+        - MaintenanceRecordID id
+        - AircraftRegistration aircraft_registration
+        - String description
+        - Date start_date
+        - MaintenanceComponent component
+        - boolean completed
+    }
+
+    enum MaintenanceComponent <<enum>> {
+        ENGINE
+        AIRFRAME
+        AVIONICS
+        INTERIOR
+        EXTERIOR
+    }
+
+    interface MaintenanceRecordRepository {
+        + List<MaintenanceRecord> searchRecords(AircraftRegistration reg, Date start, Date end, MaintenanceComponent comp)
+    }
+
+    class SearchMaintenanceRecordsUseCase <<@UseCase>> {
+        + List<MaintenanceRecord> execute(String registration, Date start, Date end, String component)
+    }
+
+    SearchMaintenanceRecordsUseCase ..> MaintenanceRecordRepository : searchRecords()
+    SearchMaintenanceRecordsUseCase ..> MaintenanceRecord : returns List >
+    MaintenanceRecord --> MaintenanceComponent : filtered by >
+}
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+    }
+}
+
+SearchMaintenanceRecordsUseCase ..> Aircraft : validates filters >
+@endif

@@ -1,0 +1,76 @@
+openapi: "3.1.0"
+info:
+  title: "US218 - Search Maintenance Records"
+  description: "As a Maintenance Technician, I want to search maintenance records by aircraft, date range, or maintenance component."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/maintenance/records:
+    get:
+      summary: "GET api/maintenance/records"
+      operationId: "searchMaintenanceRecords"
+      parameters:
+        - name: "aircraft"
+          in: "query"
+          required: false
+          description: "Aircraft registration number to filter by"
+          schema:
+            type: "string"
+            nullable: true
+        - name: "startDate"
+          in: "query"
+          required: false
+          description: "Start of the maintenance date range"
+          schema:
+            type: "string"
+            format: "date"
+            nullable: true
+        - name: "endDate"
+          in: "query"
+          required: false
+          description: "End of the maintenance date range"
+          schema:
+            type: "string"
+            format: "date"
+            nullable: true
+        - name: "component"
+          in: "query"
+          required: false
+          description: "Maintenance component type to filter by"
+          schema:
+            type: "string"
+            enum: ["ENGINE", "AIRFRAME", "AVIONICS", "INTERIOR", "EXTERIOR"]
+            nullable: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/MaintenanceRecordResponse"
+components:
+  schemas:
+    MaintenanceRecordResponse:
+      type: "object"
+      properties:
+        record_id:
+          type: "integer"
+          format: "int32"
+        aircraft_registration:
+          type: "string"
+        description:
+          type: "string"
+        start_date:
+          type: "string"
+          format: "date"
+        end_date:
+          type: "string"
+          format: "date"
+        completed:
+          type: "boolean"
+        component:
+          type: "string"
+          nullable: true

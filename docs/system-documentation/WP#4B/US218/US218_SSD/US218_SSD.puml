@@ -1,0 +1,18 @@
+@startuml
+title Search Maintenance Records — System Sequence Diagram
+
+autoactivate on
+
+actor "Maintenance Technician" as Tech
+participant "System" as System
+
+Tech -> System : GET /api/maintenance/records\n?aircraft={registration}&startDate={start}&endDate={end}&component={component}
+
+alt "Maintenance records successfully retrieved"
+    System --> Tech : 200 OK\n[ { id, description, start_date, component, completed }, ... ]
+
+else "User does not have authorization"
+    System --> Tech : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml
