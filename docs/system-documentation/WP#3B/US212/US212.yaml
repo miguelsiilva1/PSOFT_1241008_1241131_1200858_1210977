@@ -1,0 +1,42 @@
+openapi: "3.1.0"
+info:
+  title: "US212 - Schedule Flight"
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/flights:
+    post:
+      summary: "POST api/flights"
+      operationId: "scheduleFlight"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleFlightRequest"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    ScheduleFlightRequest:
+      type: "object"
+      properties:
+        route_id:
+          type: "string"
+        aircraft_registration:
+          type: "string"
+        scheduled_departure:
+          type: "string"
+          format: "date-time"

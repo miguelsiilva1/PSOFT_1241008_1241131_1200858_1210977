@@ -14,6 +14,7 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AircraftTest {
+
     @Test
     void ensureAircraftCannotBeCreatedWithNegativeMaintenanceHours() {
         AircraftRegistration registration = new AircraftRegistration("CS-TBA");
@@ -21,10 +22,21 @@ class AircraftTest {
         SeatingConfiguration seats = new SeatingConfiguration(100, 0, 0, 0);
         Date manufacturing_date = new Date();
 
-        assertThrows(IllegalArgumentException.class, () -> new Aircraft(registration, model, seats, manufacturing_date, manufacturing_date, "",
+        assertThrows(IllegalArgumentException.class, () -> new Aircraft(
+                registration,
+                model,
+                seats,
+                manufacturing_date,
+                manufacturing_date,
+                "",
+                1000.0,
+                5000.0,
                 -50,
-                150, AircraftStatus.AVAILABLE));
+                150,
+                AircraftStatus.AVAILABLE
+        ));
     }
+
     @Test
     void ensureAircraftCannotBeCreatedWithNegativeMaintenanceDays() {
         AircraftRegistration registration = new AircraftRegistration("CS-TBA");
@@ -32,8 +44,18 @@ class AircraftTest {
         SeatingConfiguration seats = new SeatingConfiguration(100, 0, 0, 0);
         Date manufacturing_date = new Date();
 
-        assertThrows(IllegalArgumentException.class, () -> new Aircraft(registration, model, seats, manufacturing_date, manufacturing_date, "",
+        assertThrows(IllegalArgumentException.class, () -> new Aircraft(
+                registration,
+                model,
+                seats,
+                manufacturing_date,
+                manufacturing_date,
+                "",
+                1000.0,
+                5000.0,
                 50,
-                -150, AircraftStatus.AVAILABLE));
+                -150,
+                AircraftStatus.AVAILABLE
+        ));
     }
 }

@@ -10,23 +10,38 @@ import java.util.Set;
 
 @Entity
 public class AircraftModel {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column
-    @NotBlank private String name;
+    @NotBlank
+    private String name;
+
     @Column
-    @Positive private int seating_capacity;
+    @Positive
+    private int seating_capacity;
+
     @Column
-    @Positive private double max_range;
-    @Positive private double fuel_capacity;
-    @Positive private double cruising_speed;
+    @Positive
+    private double max_range;
+
+    @Positive
+    private double fuel_capacity;
+
+    @Positive
+    private double cruising_speed;
+
     @Setter
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private AircraftManufacturer manufacturer;
+
     @Column
     private Set<String> features;
 
-    public AircraftModel() {}
+    public AircraftModel() {
+    }
 
     public AircraftModel(@NotEmpty String name,
                          @Positive int seating_capacity,
@@ -35,6 +50,22 @@ public class AircraftModel {
                          @Positive double cruising_speed,
                          AircraftManufacturer manufacturer,
                          Set<String> features) {
+        if (seating_capacity <= 0) {
+            throw new IllegalArgumentException("Seating capacity must be strictly positive");
+        }
+
+        if (max_range <= 0) {
+            throw new IllegalArgumentException("Max range must be strictly positive");
+        }
+
+        if (fuel_capacity <= 0) {
+            throw new IllegalArgumentException("Fuel capacity must be strictly positive");
+        }
+
+        if (cruising_speed <= 0) {
+            throw new IllegalArgumentException("Cruising speed must be strictly positive");
+        }
+
         this.name = name;
         this.seating_capacity = seating_capacity;
         this.max_range = max_range;
@@ -47,12 +78,24 @@ public class AircraftModel {
     public String obtainName() {
         return this.name;
     }
-    public AircraftManufacturer obtainManufacturer() {return this.manufacturer;}
-    public double obtainRange() {return this.max_range;}
-    public int obtainCapacity() {return this.seating_capacity;}
+
+    public AircraftManufacturer obtainManufacturer() {
+        return this.manufacturer;
+    }
+
+    public double obtainRange() {
+        return this.max_range;
+    }
+
+    public int obtainCapacity() {
+        return this.seating_capacity;
+    }
 
     public double obtainFuel() {
         return this.fuel_capacity;
     }
-    public double obtainSpeed() {return this.cruising_speed;}
+
+    public double obtainSpeed() {
+        return this.cruising_speed;
+    }
 }
