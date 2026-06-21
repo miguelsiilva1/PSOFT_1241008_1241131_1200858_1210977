@@ -1,0 +1,28 @@
+@startuml
+title Complete Maintenance Record: Architecture — Class Diagram
+
+package "Maintenance Aggregate" <<rectangle>> {
+    class MaintenanceRecord <<Aggregate Root>> {
+        - MaintenanceRecordID id
+        - String description
+        - Date start_date
+        - Date end_date
+        - MaintenanceComponent component
+        - boolean completed
+        - String completion_notes
+        + void complete(Date endDate, String notes)
+    }
+
+    interface MaintenanceRecordRepository {
+        + Optional<MaintenanceRecord> findById(int id)
+        + MaintenanceRecord save(MaintenanceRecord record)
+    }
+
+    class CompleteMaintenanceRecordUseCase <<@UseCase>> {
+        + MaintenanceRecord execute(int recordId, Date endDate, String notes)
+    }
+
+    CompleteMaintenanceRecordUseCase ..> MaintenanceRecordRepository : uses
+    CompleteMaintenanceRecordUseCase ..> MaintenanceRecord : invokes >
+}
+@enduml

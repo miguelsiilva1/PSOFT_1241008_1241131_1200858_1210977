@@ -1,0 +1,21 @@
+@startuml
+title Complete Maintenance Record — System Sequence Diagram
+
+autoactivate on
+
+actor "Maintenance Technician" as Tech
+participant "System" as System
+
+Tech -> System : PUT /api/maintenance/records/{recordId}/complete\n{ end_date, completion_notes }
+
+alt "Maintenance record successfully completed"
+    System --> Tech : 200 OK\n{ id, description, start_date, end_date, component, completed, completion_notes }
+
+else "Maintenance record does not exist"
+    System --> Tech : 404 Not Found\n{ message: "Maintenance record not found" }
+
+else "User does not have authorization"
+    System --> Tech : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

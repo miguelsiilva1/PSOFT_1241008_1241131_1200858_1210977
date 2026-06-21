@@ -1,0 +1,44 @@
+openapi: "3.1.0"
+info:
+  title: "US219 - Complete a Maintenance Record"
+  description: "As a Maintenance Technician, I want to complete a maintenance record by adding the end date and completion notes."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/maintenance/records/{recordId}/complete:
+    put:
+      summary: "PUT api/maintenance/records/{recordId}/complete"
+      operationId: "completeMaintenanceRecord"
+      parameters:
+        - name: "recordId"
+          in: "path"
+          required: true
+          description: "The ID of the maintenance record to complete"
+          schema:
+            type: "integer"
+            format: "int32"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompleteMaintenanceRecordRequest"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+components:
+  schemas:
+    CompleteMaintenanceRecordRequest:
+      type: "object"
+      properties:
+        end_date:
+          type: "string"
+          format: "date"
+          nullable: true
+        completion_notes:
+          type: "string"
+          nullable: true

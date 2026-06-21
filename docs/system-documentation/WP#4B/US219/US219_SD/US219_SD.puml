@@ -1,0 +1,41 @@
+@startuml
+title Complete Maintenance Record — PUT /api/maintenance/records/{recordId}/complete
+
+autoactivate on
+
+actor "Maintenance Technician" as Tech
+participant MaintenanceController
+participant CompleteMaintenanceRecordUseCase <<@UseCase>>
+participant MaintenanceRecordRepository
+participant "maintenance_record : MaintenanceRecord" as Record
+
+Tech -> MaintenanceController : PUT /api/maintenance/records/{recordId}/complete\n{ end_date, completion_notes }
+
+MaintenanceController -> MaintenanceController : extract username from JWT
+
+alt "User has authorization"
+    MaintenanceController -> CompleteMaintenanceRecordUseCase : execute(recordId, end_date, completion_notes)
+
+    CompleteMaintenanceRecordUseCase -> MaintenanceRecordRepository : findById(recordId)
+
+    alt "The maintenance record exists"
+        MaintenanceRecordRepository --> CompleteMaintenanceRecordUseCase : maintenance_record
+
+        CompleteMaintenanceRecordUseCase -> Record : complete(end_date, completion_notes)
+        Record --> CompleteMaintenanceRecordUseCase
+
+        CompleteMaintenanceRecordUseCase -> MaintenanceRecordRepository : save(maintenance_record)
+        MaintenanceRecordRepository --> CompleteMaintenanceRecordUseCase : updated_record
+
+        CompleteMaintenanceRecordUseCase --> MaintenanceController : updated_record
+        MaintenanceController --> Tech : 200 OK
+
+    else "The maintenance record does not exist"
+        MaintenanceController --> Tech : 404 Not Found\n{ message: "Maintenance record not found" }
+    end
+
+else "User does not have authorization"
+    MaintenanceController --> Tech : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

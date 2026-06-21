@@ -1,0 +1,19 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title US219 - Complete Maintenance Record: Domain Model
+
+package "Maintenance Aggregate" {
+    class MaintenanceRecord <<entity>> <<root>> {
+        - id: MaintenanceRecordID
+        - description: String
+        - start_date: Date
+        - end_date: Date
+        - component: MaintenanceComponent
+        - completed: boolean
+        - completion_notes: String
+    }
+}
+@enduml
