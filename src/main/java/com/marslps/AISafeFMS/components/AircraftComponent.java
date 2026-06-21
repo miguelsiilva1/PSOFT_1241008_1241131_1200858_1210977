@@ -38,7 +38,7 @@ public class AircraftComponent implements CommandLineRunner {
             try {
                 AircraftModel model = aircraft.obtainModel();
                 if(!am_repo.alreadyExists(model.obtainName(), model.obtainCapacity(), model.obtainRange(), model.obtainFuel(), model.obtainSpeed())) {
-                    am_repo.save(model);
+                    register_model.execute(model.obtainName(), model.obtainCapacity(), model.obtainRange(), model.obtainFuel(), model.obtainSpeed(), model.obtainManufacturer().obtainName());
                 }
                 register_aircraft.execute(aircraft.obtainRegistrationNumber(),
                         aircraft.obtainModelName(),
