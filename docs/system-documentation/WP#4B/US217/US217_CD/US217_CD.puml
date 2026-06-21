@@ -1,0 +1,49 @@
+@startuml
+title Categorize Maintenance Record: Architecture — Class Diagram
+
+package "Maintenance Aggregate" <<rectangle>> {
+    class MaintenanceRecord <<Aggregate Root>> {
+        - MaintenanceRecordID id
+        - AircraftRegistration aircraft_registration
+        - MaintenanceTemplate template
+        - String description
+        - Date start_date
+        - MaintenanceComponent component
+        - boolean completed
+        ---
+        + void categorize(MaintenanceComponent component)
+        + void complete(String completion_notes)
+    }
+
+    enum MaintenanceComponent <<enum>> {
+        ENGINE
+        AIRFRAME
+        AVIONICS
+        INTERIOR
+        EXTERIOR
+    }
+
+    interface MaintenanceRecordRepository {
+        + Optional<MaintenanceRecord> findById(MaintenanceRecordID id)
+        + MaintenanceRecord save(MaintenanceRecord record)
+    }
+
+    class CategorizeMaintenanceRecordUseCase <<@UseCase>> {
+        + FlightID execute(MaintenanceRecordID record_id, MaintenanceComponent component)
+    }
+
+    MaintenanceRecord --> MaintenanceComponent : contains >
+    CategorizeMaintenanceRecordUseCase ..> MaintenanceRecordRepository : findById() / save()
+    CategorizeMaintenanceRecordUseCase ..> MaintenanceRecord : updates component >
+}
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+    }
+}
+
+' Ligação limpa entre Agregados seguindo as regras do DDD
+MaintenanceRecord ..> Aircraft : references by registration_number >
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+title Categorize Maintenance Record — PATCH /api/maintenance/records/{recordId}/category
+
+autoactivate on
+
+actor "Maintenance Technician" as Tech
+participant MaintenanceController
+participant CategorizeMaintenanceRecordUseCase <<@UseCase>>
+participant MaintenanceRecordRepository
+participant "maintenance_record : MaintenanceRecord" as Record
+
+Tech -> MaintenanceController : PATCH /api/maintenance/records/{recordId}/category\n{ component }
+
+MaintenanceController -> MaintenanceController : extract username from JWT
+
+alt "User has authorization"
+    MaintenanceController -> CategorizeMaintenanceRecordUseCase : execute(recordId, component)
+
+    CategorizeMaintenanceRecordUseCase -> MaintenanceRecordRepository : findById(recordId)
+
+    alt "The maintenance record exists"
+        MaintenanceRecordRepository --> CategorizeMaintenanceRecordUseCase : maintenance_record
+
+        CategorizeMaintenanceRecordUseCase -> Record : categorize(component)
+        Record --> CategorizeMaintenanceRecordUseCase
+
+        CategorizeMaintenanceRecordUseCase -> MaintenanceRecordRepository : save(maintenance_record)
+        MaintenanceRecordRepository --> CategorizeMaintenanceRecordUseCase : updated_record
+
+        CategorizeMaintenanceRecordUseCase --> MaintenanceController : updated_record
+        MaintenanceController --> Tech : 200 OK
+
+    else "The maintenance record does not exist"
+        MaintenanceController --> Tech : 404 Not Found\n{ message: "Maintenance record not found" }
+    end
+
+else "User does not have authorization"
+    MaintenanceController --> Tech : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

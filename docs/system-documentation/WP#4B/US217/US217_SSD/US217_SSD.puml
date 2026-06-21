@@ -1,0 +1,21 @@
+@startuml
+title Categorize Maintenance Record — System Sequence Diagram
+
+autoactivate on
+
+actor "Maintenance Technician" as Tech
+participant "System" as System
+
+Tech -> System : PATCH /api/maintenance/records/{recordId}/category\n{ component }
+
+alt "Maintenance record successfully categorized"
+    System --> Tech : 200 OK\n{ id, description, start_date, component, completed, completion_notes }
+
+else "Maintenance record does not exist"
+    System --> Tech : 404 Not Found\n{ message: "Maintenance record not found" }
+
+else "User does not have authorization"
+    System --> Tech : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

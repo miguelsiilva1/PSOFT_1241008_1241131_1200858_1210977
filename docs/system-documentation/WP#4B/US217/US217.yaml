@@ -1,0 +1,41 @@
+openapi: "3.1.0"
+info:
+  title: "US217 - Categorize Maintenance Records"
+  description: "As a Maintenance Technician, I want to categorize maintenance records by maintenance component (engine, airframe, avionics, interior, exterior)."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/maintenance/records/{recordId}/category:
+    patch:
+      summary: "PATCH api/maintenance/records/{recordId}/category"
+      operationId: "categorizeMaintenanceRecord"
+      parameters:
+        - name: "recordId"
+          in: "path"
+          required: true
+          description: "The ID of the maintenance record to update"
+          schema:
+            type: "integer"
+            format: "int32"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategorizeMaintenanceRecordRequest"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "object"
+components:
+  schemas:
+    CategorizeMaintenanceRecordRequest:
+      type: "object"
+      properties:
+        component:
+          type: "string"
+          enum: ["ENGINE", "AIRFRAME", "AVIONICS", "INTERIOR", "EXTERIOR"]
+          nullable: true
