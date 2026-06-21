@@ -105,4 +105,7 @@ public class MaintenanceRecord {
     public int hashCode() {
         return Objects.hash(this.record_id);
     }
+    public Aircraft getAircraft() {
+        return this.aircraft;
+    }
 }

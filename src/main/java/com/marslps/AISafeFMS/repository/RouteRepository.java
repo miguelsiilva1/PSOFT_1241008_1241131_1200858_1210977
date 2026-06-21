@@ -26,14 +26,11 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
                                                         LocationIdentifier destination);
 
     @Query("""
-            SELECT r
-            FROM Route r
-            WHERE r.min_aircraft_range <= :aircraftRange
-              AND r.min_aircraft_capacity <= :aircraftCapacity
-              AND r.active = true
-            """)
-    List<Route> findValidRoutesForAircraft(@Param("aircraftRange") double aircraftRange,
-                                           @Param("aircraftCapacity") int aircraftCapacity);
+        SELECT r FROM Route r
+        WHERE :range >= r.min_aircraft_range
+            AND :capacity >= r.min_aircraft_capacity
+    """)
+    List<Route> findValidRoutesForAircraft(@Param("range") double range, @Param("capacity") int capacity);
 
     @Query("SELECT r FROM Route r WHERE r.active = true")
     List<Route> findActiveRoutes();
