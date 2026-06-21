@@ -37,17 +37,20 @@ public class MaintenanceController {
     private final ViewMaintenanceRecordsUseCase viewMaintenanceRecordsUseCase;
     private final ViewMaintenanceHoursUseCase viewMaintenanceHoursUseCase;
     private final CompleteMaintenanceRecordUseCase completeMaintenanceRecordUseCase;
+    private final CategorizeMaintenanceRecordUseCase categorizeUseCase;
 
     public MaintenanceController(CreateMaintenanceTemplateUseCase createMaintenanceTemplateUseCase,
                                  CreateMaintenanceRecordUseCase createMaintenanceRecordUseCase,
                                  ViewMaintenanceRecordsUseCase viewMaintenanceRecordsUseCase,
                                  ViewMaintenanceHoursUseCase viewMaintenanceHoursUseCase,
-                                 CompleteMaintenanceRecordUseCase completeMaintenanceRecordUseCase) {
+                                 CompleteMaintenanceRecordUseCase completeMaintenanceRecordUseCase,
+                                 CategorizeMaintenanceRecordUseCase categorizeUseCase) {
         this.createMaintenanceTemplateUseCase = createMaintenanceTemplateUseCase;
         this.createMaintenanceRecordUseCase = createMaintenanceRecordUseCase;
         this.viewMaintenanceRecordsUseCase = viewMaintenanceRecordsUseCase;
         this.viewMaintenanceHoursUseCase = viewMaintenanceHoursUseCase;
         this.completeMaintenanceRecordUseCase = completeMaintenanceRecordUseCase;
+        this.categorizeUseCase = categorizeUseCase;
     }
 
     @Operation(summary = "Create a new maintenance template", description = "Allows a Maintenance Technician to create a reusable template with a checklist.")
@@ -189,6 +192,23 @@ public class MaintenanceController {
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+    @PatchMapping("/records/{recordId}/category")
+    @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
+    public ResponseEntity<?> categorizeRecord(
+            @PathVariable int recordId,
+            @RequestBody CategorizeMaintenanceRecordRequest request) {
+        try {
+
+            MaintenanceRecord updatedRecord = categorizeUseCase.execute(recordId, request.component());
+
+            MaintenanceRecordResponse response = MaintenanceRecordResponse.from(updatedRecord);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", e.getMessage()));
         }
     }
 }

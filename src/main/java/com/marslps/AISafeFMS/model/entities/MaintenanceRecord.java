@@ -1,5 +1,6 @@
 package com.marslps.AISafeFMS.model.entities;
 
+import com.marslps.AISafeFMS.model.enums.MaintenanceComponent;
 import com.marslps.AISafeFMS.model.vo.MaintenanceCompletionNotes;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -15,10 +16,10 @@ public class MaintenanceRecord {
     @Id
     @Column(name = "record_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int record_id; // CORRIGIDO: Agora é record_id e não template_id
+    private int record_id;
 
     @Version
-    private Long version; // CORRIGIDO: Adicionado para Optimistic Locking
+    private Long version;
 
     @ManyToOne
     @JoinColumn(name = "template_id")
@@ -45,6 +46,10 @@ public class MaintenanceRecord {
 
     @Embedded
     private MaintenanceCompletionNotes completion_notes;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "component")
+    private MaintenanceComponent component;
 
     protected MaintenanceRecord() {}
 
@@ -95,6 +100,12 @@ public class MaintenanceRecord {
         return this.record_id;
     }
 
+    public void categorize(MaintenanceComponent component) {
+        if (component == null) {
+            throw new IllegalArgumentException("The maintenance component category cannot be null.");
+        }
+        this.component = component;
+    }
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof MaintenanceRecord maintenance_record)) {return false;}
