@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,19 +40,27 @@ public class MaintenanceController {
     private final ViewMaintenanceHoursUseCase viewMaintenanceHoursUseCase;
     private final CompleteMaintenanceRecordUseCase completeMaintenanceRecordUseCase;
     private final CategorizeMaintenanceRecordUseCase categorizeUseCase;
+    private final SearchMaintenanceRecordsUseCase searchMaintenanceRecordsUseCase;
+
+    // INJETADO PARA A US220: Use Case para geração de relatórios de custos
+    private final GenerateMaintenanceCostReportUseCase generateMaintenanceCostReportUseCase;
 
     public MaintenanceController(CreateMaintenanceTemplateUseCase createMaintenanceTemplateUseCase,
                                  CreateMaintenanceRecordUseCase createMaintenanceRecordUseCase,
                                  ViewMaintenanceRecordsUseCase viewMaintenanceRecordsUseCase,
                                  ViewMaintenanceHoursUseCase viewMaintenanceHoursUseCase,
                                  CompleteMaintenanceRecordUseCase completeMaintenanceRecordUseCase,
-                                 CategorizeMaintenanceRecordUseCase categorizeUseCase) {
+                                 CategorizeMaintenanceRecordUseCase categorizeUseCase,
+                                 SearchMaintenanceRecordsUseCase searchMaintenanceRecordsUseCase,
+                                 GenerateMaintenanceCostReportUseCase generateMaintenanceCostReportUseCase) {
         this.createMaintenanceTemplateUseCase = createMaintenanceTemplateUseCase;
         this.createMaintenanceRecordUseCase = createMaintenanceRecordUseCase;
         this.viewMaintenanceRecordsUseCase = viewMaintenanceRecordsUseCase;
         this.viewMaintenanceHoursUseCase = viewMaintenanceHoursUseCase;
         this.completeMaintenanceRecordUseCase = completeMaintenanceRecordUseCase;
         this.categorizeUseCase = categorizeUseCase;
+        this.searchMaintenanceRecordsUseCase = searchMaintenanceRecordsUseCase;
+        this.generateMaintenanceCostReportUseCase = generateMaintenanceCostReportUseCase;
     }
 
     @Operation(summary = "Create a new maintenance template", description = "Allows a Maintenance Technician to create a reusable template with a checklist.")
@@ -194,21 +204,73 @@ public class MaintenanceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
     }
+
     @PatchMapping("/records/{recordId}/category")
     @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
     public ResponseEntity<?> categorizeRecord(
             @PathVariable int recordId,
             @RequestBody CategorizeMaintenanceRecordRequest request) {
         try {
-
             MaintenanceRecord updatedRecord = categorizeUseCase.execute(recordId, request.component());
-
             MaintenanceRecordResponse response = MaintenanceRecordResponse.from(updatedRecord);
             return ResponseEntity.ok(response);
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "Search maintenance records with filters", description = "Allows a Maintenance Technician to search records by aircraft registration, date range, or component affected.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Records filtered successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid parameters supplied", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
+    })
+    @GetMapping("/records")
+    @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
+    public ResponseEntity<?> searchMaintenanceRecords(
+            @RequestParam(required = false) String aircraft,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+            @RequestParam(required = false) String component) {
+        try {
+            List<MaintenanceRecord> records = searchMaintenanceRecordsUseCase.execute(aircraft, startDate, endDate, component);
+
+            List<EntityModel<MaintenanceRecordResponse>> resources = records.stream()
+                    .map(record -> {
+                        EntityModel<MaintenanceRecordResponse> resource = EntityModel.of(MaintenanceRecordResponse.from(record));
+                        resource.add(linkTo(methodOn(MaintenanceController.class)
+                                .viewMaintenanceRecordsForAircraft(record.getAircraft().obtainRegistrationNumber())).withRel("aircraft_records"));
+                        return resource;
+                    })
+                    .toList();
+
+            Link selfLink = linkTo(methodOn(MaintenanceController.class)
+                    .searchMaintenanceRecords(aircraft, startDate, endDate, component)).withSelfRel();
+
+            return ResponseEntity.ok(CollectionModel.of(resources, selfLink));
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+
+    @Operation(summary = "Generate maintenance cost reports", description = "Allows an ATCC to view total maintenance costs grouped by aircraft or aircraft model.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Report generated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid groupBy parameter supplied", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
+    })
+    @GetMapping("/reports/costs")
+    @PreAuthorize("hasAuthority('ATCC')")
+    public ResponseEntity<?> getMaintenanceCostReport(@RequestParam(required = false, defaultValue = "aircraft") String groupBy) {
+        try {
+            List<MaintenanceCostReportResponse> report = generateMaintenanceCostReportUseCase.execute(groupBy);
+            return ResponseEntity.ok(report);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 }
