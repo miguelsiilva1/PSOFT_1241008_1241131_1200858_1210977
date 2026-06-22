@@ -1,0 +1,24 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title US220 - Generate Maintenance Cost Report: Domain Model
+
+package "Maintenance Aggregate" {
+    class MaintenanceRecord <<entity>> <<root>> {
+        - id: MaintenanceRecordID
+        - cost: double
+        - completed: boolean
+    }
+}
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - registration_number: AircraftRegistration
+        - model_name: String
+    }
+}
+
+MaintenanceRecord --> Aircraft : evaluated for cost >
+@enduml

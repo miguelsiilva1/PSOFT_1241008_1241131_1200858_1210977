@@ -1,0 +1,39 @@
+@startuml
+title Scheduled Maintenance Alerts — GET /api/maintenance/alerts
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant MaintenanceController
+participant GetMaintenanceAlertsUseCase <<@UseCase>>
+participant AircraftRepository
+participant "aircraft : Aircraft" as Aircraft
+
+ATCC -> MaintenanceController : GET /api/maintenance/alerts
+
+MaintenanceController -> MaintenanceController : extract username from JWT
+
+alt "User has authorization"
+    MaintenanceController -> GetMaintenanceAlertsUseCase : execute()
+
+    GetMaintenanceAlertsUseCase -> AircraftRepository : findAllActive()
+    AircraftRepository --> GetMaintenanceAlertsUseCase : active_aircraft_list
+
+    loop for each aircraft in active_aircraft_list
+        GetMaintenanceAlertsUseCase -> Aircraft : isDueForMaintenance(500.0, 180)
+        Aircraft --> GetMaintenanceAlertsUseCase : isDue (true/false)
+
+        opt isDue == true
+            GetMaintenanceAlertsUseCase -> GetMaintenanceAlertsUseCase : createAlert(aircraft)
+            GetMaintenanceAlertsUseCase --> GetMaintenanceAlertsUseCase
+        end
+    end
+
+    GetMaintenanceAlertsUseCase --> MaintenanceController : alerts_list
+    MaintenanceController --> ATCC : 200 OK\n[ alerts_list ]
+
+else "User does not have authorization"
+    MaintenanceController --> Tech : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

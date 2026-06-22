@@ -1,0 +1,16 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title US222 - Scheduled Maintenance Alerts: Domain Model
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - registration_number: AircraftRegistration
+        - flight_hours: double
+        - last_maintenance_date: Date
+        - status: AircraftStatus
+    }
+}
+@enduml

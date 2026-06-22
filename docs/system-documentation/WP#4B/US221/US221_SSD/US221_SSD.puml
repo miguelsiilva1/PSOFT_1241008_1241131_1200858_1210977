@@ -1,0 +1,18 @@
+@startuml
+title Average Maintenance Turnaround Time — System Sequence Diagram
+
+autoactivate on
+
+actor "Maintenance Supervisor" as Supervisor
+participant "System" as System
+
+Supervisor -> System : GET /api/maintenance/reports/turnaround-time?aircraftType={type}
+
+alt "Average turnaround time successfully calculated"
+    System --> Supervisor : 200 OK\n{ aircraftType, averageDays, totalRecordsAnalyzed }
+
+else "User does not have authorization"
+    System --> Supervisor : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

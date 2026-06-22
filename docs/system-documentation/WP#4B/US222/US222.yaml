@@ -1,0 +1,35 @@
+openapi: "3.1.0"
+info:
+  title: "US222 - Scheduled Maintenance Alerts"
+  description: "As an ATCC, I want to receive alerts when aircraft are due for scheduled maintenance based on flight hours or calendar days."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/maintenance/alerts:
+    get:
+      summary: "GET api/maintenance/alerts"
+      operationId: "getMaintenanceAlerts"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/MaintenanceAlertResponse"
+components:
+  schemas:
+    MaintenanceAlertResponse:
+      type: "object"
+      properties:
+        aircraft_registration:
+          type: "string"
+          example: "CS-TJU"
+        alert_reason:
+          type: "string"
+          example: "Exceeded 500 flight hours threshold (Current: 524.5h)"
+        urgency_level:
+          type: "string"
+          example: "CRITICAL"

@@ -1,0 +1,34 @@
+@startuml
+title Scheduled Maintenance Alerts: Architecture — Class Diagram
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - double flightHours
+        - Date lastMaintenanceDate
+        + boolean isDueForMaintenance(double hoursThreshold, int daysThreshold)
+    }
+
+    interface AircraftRepository {
+        + List<Aircraft> findAllActive()
+    }
+}
+
+package "Maintenance Aggregate" <<rectangle>> {
+    class GetMaintenanceAlertsUseCase <<@UseCase>> {
+        - double HOURS_LIMIT = 500.0
+        - int DAYS_LIMIT = 180
+        + List<MaintenanceAlert> execute()
+    }
+
+    class MaintenanceAlert <<Value Object>> {
+        - String aircraftRegistration
+        - String alertReason
+        - String urgencyLevel
+    }
+
+    GetMaintenanceAlertsUseCase ..> AircraftRepository : uses
+    GetMaintenanceAlertsUseCase ..> Aircraft : evaluates >
+    GetMaintenanceAlertsUseCase ..> MaintenanceAlert : creates >
+}
+@enduml

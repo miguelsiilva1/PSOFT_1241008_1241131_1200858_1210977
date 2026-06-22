@@ -1,0 +1,41 @@
+@startuml
+title Average Maintenance Turnaround Time: Architecture — Class Diagram
+
+package "Maintenance Aggregate" <<rectangle>> {
+    class MaintenanceRecord <<Aggregate Root>> {
+        - MaintenanceRecordID id
+        - AircraftRegistration aircraft_registration
+        - Date start_date
+        - Date end_date
+        - boolean completed
+        + long getTurnaroundTimeInDays()
+    }
+
+    interface MaintenanceRecordRepository {
+        + List<MaintenanceRecord> findCompletedByAircraftType(String aircraftType)
+    }
+
+    class GetAvgTurnaroundTimeUseCase <<@UseCase>> {
+        + AvgTurnaroundTimeReport execute(String aircraftType)
+    }
+
+    class AvgTurnaroundTimeReport <<Value Object>> {
+        - String aircraftType
+        - double averageDays
+        - int totalRecordsAnalyzed
+    }
+
+    GetAvgTurnaroundTimeUseCase ..> MaintenanceRecordRepository : uses
+    GetAvgTurnaroundTimeUseCase ..> MaintenanceRecord : calculates via >
+    GetAvgTurnaroundTimeUseCase ..> AvgTurnaroundTimeReport : creates >
+}
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - String aircraftType
+    }
+}
+
+MaintenanceRecord --> Aircraft : references >
+@enduml

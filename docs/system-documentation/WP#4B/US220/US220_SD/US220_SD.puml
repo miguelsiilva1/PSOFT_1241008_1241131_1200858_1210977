@@ -1,0 +1,36 @@
+@startuml
+title Generate Maintenance Cost Report — GET /api/maintenance/reports/costs
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant MaintenanceController
+participant GenerateMaintenanceCostReportUseCase <<@UseCase>>
+participant MaintenanceRecordRepository
+
+ATCC -> MaintenanceController : GET /api/maintenance/reports/costs\n?aircraft={registration}&model={modelName}
+
+MaintenanceController -> MaintenanceController : extract username from JWT
+
+alt "User has authorization"
+    MaintenanceController -> GenerateMaintenanceCostReportUseCase : execute(registration, modelName)
+
+    alt "Filter by specific Aircraft"
+        GenerateMaintenanceCostReportUseCase -> MaintenanceRecordRepository : findByAircraftRegistration(registration)
+        MaintenanceRecordRepository --> GenerateMaintenanceCostReportUseCase : records_list
+    else "Filter by Aircraft Model"
+        GenerateMaintenanceCostReportUseCase -> MaintenanceRecordRepository : findByAircraftModel(modelName)
+        MaintenanceRecordRepository --> GenerateMaintenanceCostReportUseCase : records_list
+    end
+
+    GenerateMaintenanceCostReportUseCase -> GenerateMaintenanceCostReportUseCase : calculateTotalCosts(records_list)
+    GenerateMaintenanceCostReportUseCase --> GenerateMaintenanceCostReportUseCase : report
+
+    GenerateMaintenanceCostReportUseCase --> MaintenanceController : report
+    MaintenanceController --> ATCC : 200 OK\n{ report }
+
+else "User does not have authorization"
+    MaintenanceController --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

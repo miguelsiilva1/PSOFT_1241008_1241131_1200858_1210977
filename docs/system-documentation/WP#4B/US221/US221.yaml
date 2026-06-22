@@ -1,0 +1,42 @@
+openapi: "3.1.0"
+info:
+  title: "US221 - Average Maintenance Turnaround Time"
+  description: "As a Maintenance Supervisor, I want to view average maintenance turnaround time per aircraft type."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/maintenance/reports/turnaround-time:
+    get:
+      summary: "GET api/maintenance/reports/turnaround-time"
+      operationId: "getAvgMaintenanceTurnaroundTime"
+      parameters:
+        - name: "aircraftType"
+          in: "query"
+          required: true
+          description: "The aircraft type to calculate the average turnaround time"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AvgTurnaroundTimeReportResponse"
+components:
+  schemas:
+    AvgTurnaroundTimeReportResponse:
+      type: "object"
+      properties:
+        aircraft_type:
+          type: "string"
+          example: "Airbus A320"
+        average_days:
+          type: "number"
+          format: "double"
+          example: 4.25
+        total_records_analyzed:
+          type: "integer"
+          format: "int32"
+          example: 12

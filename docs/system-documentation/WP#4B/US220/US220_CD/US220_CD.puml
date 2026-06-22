@@ -1,0 +1,41 @@
+@startuml
+title Generate Maintenance Cost Report: Architecture — Class Diagram
+
+package "Maintenance Aggregate" <<rectangle>> {
+    class MaintenanceRecord <<Aggregate Root>> {
+        - MaintenanceRecordID id
+        - AircraftRegistration aircraft_registration
+        - double cost
+        - boolean completed
+    }
+
+    interface MaintenanceRecordRepository {
+        + List<MaintenanceRecord> findByAircraftRegistration(String reg)
+        + List<MaintenanceRecord> findByAircraftModel(String modelName)
+    }
+
+    class GenerateMaintenanceCostReportUseCase <<@UseCase>> {
+        + MaintenanceCostReport execute(String registration, String modelName)
+    }
+
+    class MaintenanceCostReport <<Value Object>> {
+        - String filterType
+        - String filterValue
+        - double totalCost
+        - int totalInterventions
+    }
+
+    GenerateMaintenanceCostReportUseCase ..> MaintenanceRecordRepository : uses
+    GenerateMaintenanceCostReportUseCase ..> MaintenanceRecord : reads cost >
+    GenerateMaintenanceCostReportUseCase ..> MaintenanceCostReport : creates >
+}
+
+package "Aircraft Aggregate" <<rectangle>> {
+    class Aircraft <<Aggregate Root>> {
+        - AircraftRegistration registration_number
+        - String modelName
+    }
+}
+
+MaintenanceRecord --> Aircraft : references >
+@enduml

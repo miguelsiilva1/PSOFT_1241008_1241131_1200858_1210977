@@ -1,0 +1,18 @@
+@startuml
+title Scheduled Maintenance Alerts — System Sequence Diagram
+
+autoactivate on
+
+actor "ATCC" as ATCC
+participant "System" as System
+
+ATCC -> System : GET /api/maintenance/alerts
+
+alt "Alerts list successfully retrieved"
+    System --> ATCC : 200 OK\n[ { aircraftRegistration, alertReason, urgencyLevel }, ... ]
+
+else "User does not have authorization"
+    System --> ATCC : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml

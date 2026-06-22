@@ -1,0 +1,53 @@
+openapi: "3.1.0"
+info:
+  title: "US220 - Generate Maintenance Cost Reports"
+  description: "As an ATCC, I want to generate reports on maintenance costs per aircraft or per aircraft model."
+  version: "1.0.0"
+servers:
+  - url: "https://localhost:8080"
+paths:
+  /api/maintenance/reports/costs:
+    get:
+      summary: "GET api/maintenance/reports/costs"
+      operationId: "generateMaintenanceCostReport"
+      parameters:
+        - name: "aircraft"
+          in: "query"
+          required: false
+          description: "Aircraft registration number to filter costs"
+          schema:
+            type: "string"
+            nullable: true
+        - name: "model"
+          in: "query"
+          required: false
+          description: "Aircraft model name to filter costs"
+          schema:
+            type: "string"
+            nullable: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceCostReportResponse"
+components:
+  schemas:
+    MaintenanceCostReportResponse:
+      type: "object"
+      properties:
+        filter_type:
+          type: "string"
+          example: "AIRCRAFT"
+        filter_value:
+          type: "string"
+          example: "CS-TJU"
+        total_cost:
+          type: "number"
+          format: "double"
+          example: 15450.50
+        total_interventions:
+          type: "integer"
+          format: "int32"
+          example: 4

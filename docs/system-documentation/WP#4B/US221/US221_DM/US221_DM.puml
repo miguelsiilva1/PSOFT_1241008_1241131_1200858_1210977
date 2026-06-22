@@ -1,0 +1,25 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+hide methods
+
+title US221 - Average Turnaround Time: Domain Model
+
+package "Maintenance Aggregate" {
+    class MaintenanceRecord <<entity>> <<root>> {
+        - id: MaintenanceRecordID
+        - start_date: Date
+        - end_date: Date
+        - completed: boolean
+    }
+}
+
+package "Aircraft Aggregate" {
+    class Aircraft <<entity>> <<root>> {
+        - registration_number: AircraftRegistration
+        - aircraft_type: String
+    }
+}
+
+MaintenanceRecord --> Aircraft : analyzed for duration >
+@enduml

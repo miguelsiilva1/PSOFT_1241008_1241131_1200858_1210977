@@ -1,0 +1,37 @@
+@startuml
+title Average Maintenance Turnaround Time — GET /api/maintenance/reports/turnaround-time
+
+autoactivate on
+
+actor "Maintenance Supervisor" as Supervisor
+participant MaintenanceController
+participant GetAvgTurnaroundTimeUseCase <<@UseCase>>
+participant MaintenanceRecordRepository
+participant "record : MaintenanceRecord" as Record
+
+Supervisor -> MaintenanceController : GET /api/maintenance/reports/turnaround-time?aircraftType={type}
+
+MaintenanceController -> MaintenanceController : extract username from JWT
+
+alt "User has authorization"
+    MaintenanceController -> GetAvgTurnaroundTimeUseCase : execute(aircraftType)
+
+    GetAvgTurnaroundTimeUseCase -> MaintenanceRecordRepository : findCompletedByAircraftType(aircraftType)
+    MaintenanceRecordRepository --> GetAvgTurnaroundTimeUseCase : completed_records_list
+
+    loop for each record in completed_records_list
+        GetAvgTurnaroundTimeUseCase -> Record : getTurnaroundTimeInDays()
+        Record --> GetAvgTurnaroundTimeUseCase : days
+    end
+
+    GetAvgTurnaroundTimeUseCase -> GetAvgTurnaroundTimeUseCase : calculateAverage(days_list)
+    GetAvgTurnaroundTimeUseCase --> GetAvgTurnaroundTimeUseCase : report
+
+    GetAvgTurnaroundTimeUseCase --> MaintenanceController : report
+    MaintenanceController --> Supervisor : 200 OK\n{ report }
+
+else "User does not have authorization"
+    MaintenanceController --> Supervisor : 401 Unauthorized\n{ message: "The user does not have valid credentials for this action" }
+end
+
+@enduml
