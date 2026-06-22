@@ -22,6 +22,10 @@ public interface AircraftRepository extends CrudRepository<Aircraft, Long>  {
     List<Aircraft> findByManufactoringYear(@Param("year") int year);
 
     List<Aircraft> findByStatus(AircraftStatus status);
+
+    @Query("SELECT a FROM Aircraft a")
+    List<Aircraft> getAllAircraft();
+
     @Query("""
         SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END 
         FROM Aircraft a 

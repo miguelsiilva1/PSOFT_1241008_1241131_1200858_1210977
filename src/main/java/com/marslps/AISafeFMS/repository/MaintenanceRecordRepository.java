@@ -45,4 +45,16 @@ public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRe
             "FROM MaintenanceRecord r " +
             "GROUP BY r.aircraft.model.name")
     List<Object[]> getCostReportPerModel();
+
+
+
+    @Query("SELECT r.aircraft.model.name, r.start_date, r.end_date FROM MaintenanceRecord r WHERE r.completed = true")
+    List<Object[]> findCompletedTurnaroundData();
+
+
+    List<MaintenanceRecord> findByCompletedFalse();
+
 }
+
+
+

@@ -41,9 +41,12 @@ public class MaintenanceController {
     private final CompleteMaintenanceRecordUseCase completeMaintenanceRecordUseCase;
     private final CategorizeMaintenanceRecordUseCase categorizeUseCase;
     private final SearchMaintenanceRecordsUseCase searchMaintenanceRecordsUseCase;
-
-    // INJETADO PARA A US220: Use Case para geração de relatórios de custos
     private final GenerateMaintenanceCostReportUseCase generateMaintenanceCostReportUseCase;
+    private final ViewAverageTurnaroundTimeUseCase viewAverageTurnaroundTimeUseCase;
+    private final GetMaintenanceAlertsUseCase getMaintenanceAlertsUseCase;
+
+    // INJETADO PARA A US219 CORRETA: Atividades em curso
+    private final ViewOngoingMaintenancesUseCase viewOngoingMaintenancesUseCase;
 
     public MaintenanceController(CreateMaintenanceTemplateUseCase createMaintenanceTemplateUseCase,
                                  CreateMaintenanceRecordUseCase createMaintenanceRecordUseCase,
@@ -52,7 +55,10 @@ public class MaintenanceController {
                                  CompleteMaintenanceRecordUseCase completeMaintenanceRecordUseCase,
                                  CategorizeMaintenanceRecordUseCase categorizeUseCase,
                                  SearchMaintenanceRecordsUseCase searchMaintenanceRecordsUseCase,
-                                 GenerateMaintenanceCostReportUseCase generateMaintenanceCostReportUseCase) {
+                                 GenerateMaintenanceCostReportUseCase generateMaintenanceCostReportUseCase,
+                                 ViewAverageTurnaroundTimeUseCase viewAverageTurnaroundTimeUseCase,
+                                 GetMaintenanceAlertsUseCase getMaintenanceAlertsUseCase,
+                                 ViewOngoingMaintenancesUseCase viewOngoingMaintenancesUseCase) {
         this.createMaintenanceTemplateUseCase = createMaintenanceTemplateUseCase;
         this.createMaintenanceRecordUseCase = createMaintenanceRecordUseCase;
         this.viewMaintenanceRecordsUseCase = viewMaintenanceRecordsUseCase;
@@ -61,171 +67,97 @@ public class MaintenanceController {
         this.categorizeUseCase = categorizeUseCase;
         this.searchMaintenanceRecordsUseCase = searchMaintenanceRecordsUseCase;
         this.generateMaintenanceCostReportUseCase = generateMaintenanceCostReportUseCase;
+        this.viewAverageTurnaroundTimeUseCase = viewAverageTurnaroundTimeUseCase;
+        this.getMaintenanceAlertsUseCase = getMaintenanceAlertsUseCase;
+        this.viewOngoingMaintenancesUseCase = viewOngoingMaintenancesUseCase;
     }
 
-    @Operation(summary = "Create a new maintenance template", description = "Allows a Maintenance Technician to create a reusable template with a checklist.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Template created successfully", content = @Content(schema = @Schema(implementation = MaintenanceTemplateResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
-    })
     @PostMapping("/templates")
     @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
     public ResponseEntity<?> createMaintenanceTemplate(@Valid @RequestBody CreateMaintenanceTemplateRequest request) {
         try {
             MaintenanceTemplate template = createMaintenanceTemplateUseCase.execute(request);
             MaintenanceTemplateResponse response = MaintenanceTemplateResponse.from(template);
-
             EntityModel<MaintenanceTemplateResponse> resource = EntityModel.of(response);
-            Link selfLink = linkTo(methodOn(MaintenanceController.class)
-                    .createMaintenanceTemplate(request)).withSelfRel();
-            resource.add(selfLink);
-
+            resource.add(linkTo(methodOn(MaintenanceController.class).createMaintenanceTemplate(request)).withSelfRel());
             return ResponseEntity.status(HttpStatus.CREATED).body(resource);
         } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 
-    @Operation(summary = "Create a new maintenance record", description = "Creates a maintenance record for a specific aircraft and updates its status to 'Under Maintenance'.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Record created successfully", content = @Content(schema = @Schema(implementation = MaintenanceRecordResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input or aircraft/template not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
-    })
     @PostMapping("/records")
     @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
     public ResponseEntity<?> createMaintenanceRecord(@Valid @RequestBody CreateMaintenanceRecordRequest request) {
         try {
             MaintenanceRecord record = createMaintenanceRecordUseCase.execute(request);
             MaintenanceRecordResponse response = MaintenanceRecordResponse.from(record);
-
             EntityModel<MaintenanceRecordResponse> resource = EntityModel.of(response);
-            Link selfLink = linkTo(methodOn(MaintenanceController.class)
-                    .viewMaintenanceRecordsForAircraft(record.getAircraft().obtainRegistrationNumber())).withRel("aircraft_records");
-            resource.add(selfLink);
-            Link completeLink = linkTo(methodOn(MaintenanceController.class)
-                    .completeMaintenanceRecord(record.obtainRecordId(), null)).withRel("complete");
-            resource.add(completeLink);
+            resource.add(linkTo(methodOn(MaintenanceController.class).viewMaintenanceRecordsForAircraft(record.getAircraft().obtainRegistrationNumber())).withRel("aircraft_records"));
 
+            // noinspection ConstantConditions
+            resource.add(linkTo(methodOn(MaintenanceController.class).completeMaintenanceRecord(record.obtainRecordId(), null)).withRel("complete"));
             return ResponseEntity.status(HttpStatus.CREATED).body(resource);
         } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 
-    @Operation(summary = "View maintenance records for an aircraft", description = "Retrieves the full maintenance history for a given aircraft registration number.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Records retrieved successfully"),
-            @ApiResponse(responseCode = "400", description = "Aircraft not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
-    })
     @GetMapping("/aircraft/{registrationNumber}/records")
     @PreAuthorize("hasAnyAuthority('MAINTENANCE_TECH', 'ATCC')")
-    public ResponseEntity<?> viewMaintenanceRecordsForAircraft(
-            @Parameter(description = "Aircraft Registration Number", required = true) @PathVariable String registrationNumber) {
+    public ResponseEntity<?> viewMaintenanceRecordsForAircraft(@PathVariable String registrationNumber) {
         try {
             List<MaintenanceRecord> records = viewMaintenanceRecordsUseCase.execute(registrationNumber);
             List<EntityModel<MaintenanceRecordResponse>> resources = records.stream()
                     .map(record -> {
                         EntityModel<MaintenanceRecordResponse> resource = EntityModel.of(MaintenanceRecordResponse.from(record));
-                        resource.add(linkTo(methodOn(MaintenanceController.class)
-                                .viewMaintenanceRecordsForAircraft(registrationNumber)).withRel("aircraft_records"));
+                        resource.add(linkTo(methodOn(MaintenanceController.class).viewMaintenanceRecordsForAircraft(registrationNumber)).withRel("aircraft_records"));
                         return resource;
-                    })
-                    .toList();
-
-            Link selfLink = linkTo(methodOn(MaintenanceController.class)
-                    .viewMaintenanceRecordsForAircraft(registrationNumber)).withSelfRel();
-
-            return ResponseEntity.ok(CollectionModel.of(resources, selfLink));
+                    }).toList();
+            return ResponseEntity.ok(CollectionModel.of(resources, linkTo(methodOn(MaintenanceController.class).viewMaintenanceRecordsForAircraft(registrationNumber)).withSelfRel()));
         } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 
-    @Operation(summary = "View total maintenance hours", description = "Calculates the total expected maintenance duration for a specific aircraft.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Hours calculated successfully", content = @Content(schema = @Schema(implementation = MaintenanceHoursResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Aircraft not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
-    })
     @GetMapping("/aircraft/{registrationNumber}/hours")
     @PreAuthorize("hasAuthority('ATCC')")
-    public ResponseEntity<?> viewTotalMaintenanceHours(
-            @Parameter(description = "Aircraft Registration Number", required = true) @PathVariable String registrationNumber) {
+    public ResponseEntity<?> viewTotalMaintenanceHours(@PathVariable String registrationNumber) {
         try {
             double totalHours = viewMaintenanceHoursUseCase.execute(registrationNumber);
             MaintenanceHoursResponse response = new MaintenanceHoursResponse(registrationNumber, totalHours);
-
             EntityModel<MaintenanceHoursResponse> resource = EntityModel.of(response);
-            resource.add(linkTo(methodOn(MaintenanceController.class)
-                    .viewTotalMaintenanceHours(registrationNumber)).withSelfRel());
-            resource.add(linkTo(methodOn(MaintenanceController.class)
-                    .viewMaintenanceRecordsForAircraft(registrationNumber)).withRel("records"));
-
+            resource.add(linkTo(methodOn(MaintenanceController.class).viewTotalMaintenanceHours(registrationNumber)).withSelfRel());
             return ResponseEntity.ok(resource);
         } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 
-    @Operation(summary = "Complete a maintenance record", description = "Marks an ongoing maintenance record as completed, adds notes, and sets the aircraft status back to Available.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Record completed successfully", content = @Content(schema = @Schema(implementation = MaintenanceRecordResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input or record already completed", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
-    })
     @PatchMapping("/records/{recordId}/complete")
     @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
-    public ResponseEntity<?> completeMaintenanceRecord(
-            @Parameter(description = "Maintenance Record ID", required = true) @PathVariable int recordId,
-            @Valid @RequestBody CompleteMaintenanceRecordRequest request) {
+    public ResponseEntity<?> completeMaintenanceRecord(@PathVariable int recordId, @Valid @RequestBody CompleteMaintenanceRecordRequest request) {
         try {
             MaintenanceRecord record = completeMaintenanceRecordUseCase.execute(recordId, request.completion_notes());
-            MaintenanceRecordResponse response = MaintenanceRecordResponse.from(record);
-
-            EntityModel<MaintenanceRecordResponse> resource = EntityModel.of(response);
-            resource.add(linkTo(methodOn(MaintenanceController.class)
-                    .viewMaintenanceRecordsForAircraft(record.getAircraft().obtainRegistrationNumber())).withRel("aircraft_records"));
-
-            return ResponseEntity.ok(resource);
+            return ResponseEntity.ok(EntityModel.of(MaintenanceRecordResponse.from(record)));
         } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 
     @PatchMapping("/records/{recordId}/category")
     @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
-    public ResponseEntity<?> categorizeRecord(
-            @PathVariable int recordId,
-            @RequestBody CategorizeMaintenanceRecordRequest request) {
+    public ResponseEntity<?> categorizeRecord(@PathVariable int recordId, @RequestBody CategorizeMaintenanceRecordRequest request) {
         try {
             MaintenanceRecord updatedRecord = categorizeUseCase.execute(recordId, request.component());
-            MaintenanceRecordResponse response = MaintenanceRecordResponse.from(updatedRecord);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(MaintenanceRecordResponse.from(updatedRecord));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("message", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
         }
     }
 
-    @Operation(summary = "Search maintenance records with filters", description = "Allows a Maintenance Technician to search records by aircraft registration, date range, or component affected.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Records filtered successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid parameters supplied", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
-    })
     @GetMapping("/records")
     @PreAuthorize("hasAuthority('MAINTENANCE_TECH')")
     public ResponseEntity<?> searchMaintenanceRecords(
@@ -235,34 +167,14 @@ public class MaintenanceController {
             @RequestParam(required = false) String component) {
         try {
             List<MaintenanceRecord> records = searchMaintenanceRecordsUseCase.execute(aircraft, startDate, endDate, component);
-
             List<EntityModel<MaintenanceRecordResponse>> resources = records.stream()
-                    .map(record -> {
-                        EntityModel<MaintenanceRecordResponse> resource = EntityModel.of(MaintenanceRecordResponse.from(record));
-                        resource.add(linkTo(methodOn(MaintenanceController.class)
-                                .viewMaintenanceRecordsForAircraft(record.getAircraft().obtainRegistrationNumber())).withRel("aircraft_records"));
-                        return resource;
-                    })
-                    .toList();
-
-            Link selfLink = linkTo(methodOn(MaintenanceController.class)
-                    .searchMaintenanceRecords(aircraft, startDate, endDate, component)).withSelfRel();
-
-            return ResponseEntity.ok(CollectionModel.of(resources, selfLink));
+                    .map(record -> EntityModel.of(MaintenanceRecordResponse.from(record))).toList();
+            return ResponseEntity.ok(CollectionModel.of(resources));
         } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
 
-
-    @Operation(summary = "Generate maintenance cost reports", description = "Allows an ATCC to view total maintenance costs grouped by aircraft or aircraft model.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Report generated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid groupBy parameter supplied", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Unauthorized access", content = @Content)
-    })
     @GetMapping("/reports/costs")
     @PreAuthorize("hasAuthority('ATCC')")
     public ResponseEntity<?> getMaintenanceCostReport(@RequestParam(required = false, defaultValue = "aircraft") String groupBy) {
@@ -270,6 +182,48 @@ public class MaintenanceController {
             List<MaintenanceCostReportResponse> report = generateMaintenanceCostReportUseCase.execute(groupBy);
             return ResponseEntity.ok(report);
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/reports/turnaround")
+    @PreAuthorize("hasAuthority('MAINTENANCE_SUPERVISOR')")
+    public ResponseEntity<?> getAverageTurnaroundTime() {
+        try {
+            List<MaintenanceTurnaroundResponse> report = viewAverageTurnaroundTimeUseCase.execute();
+            return ResponseEntity.ok(report);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/alerts")
+    @PreAuthorize("hasAuthority('ATCC')")
+    public ResponseEntity<?> getMaintenanceAlerts() {
+        try {
+            List<AircraftMaintenanceAlertResponse> alerts = getMaintenanceAlertsUseCase.execute();
+            return ResponseEntity.ok(alerts);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    // =========================================================================
+    // ENDPOINT ADICIONADO E CORRIGIDO PARA A US219 (Listar Manutenções Ativas)
+    // =========================================================================
+    @Operation(summary = "View all ongoing maintenance activities", description = "Allows a Maintenance Supervisor to view all active maintenance actions across the fleet.")
+    @GetMapping("/ongoing")
+    @PreAuthorize("hasAuthority('MAINTENANCE_SUPERVISOR')")
+    public ResponseEntity<?> getOngoingMaintenances() {
+        try {
+            List<MaintenanceRecord> records = viewOngoingMaintenancesUseCase.execute();
+            List<EntityModel<MaintenanceRecordResponse>> resources = records.stream()
+                    .map(record -> EntityModel.of(MaintenanceRecordResponse.from(record)))
+                    .toList();
+
+            Link selfLink = linkTo(methodOn(MaintenanceController.class).getOngoingMaintenances()).withSelfRel();
+            return ResponseEntity.ok(CollectionModel.of(resources, selfLink));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
         }
     }
