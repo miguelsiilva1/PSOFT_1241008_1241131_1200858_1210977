@@ -44,8 +44,6 @@ public class MaintenanceController {
     private final GenerateMaintenanceCostReportUseCase generateMaintenanceCostReportUseCase;
     private final ViewAverageTurnaroundTimeUseCase viewAverageTurnaroundTimeUseCase;
     private final GetMaintenanceAlertsUseCase getMaintenanceAlertsUseCase;
-
-    // INJETADO PARA A US219 CORRETA: Atividades em curso
     private final ViewOngoingMaintenancesUseCase viewOngoingMaintenancesUseCase;
 
     public MaintenanceController(CreateMaintenanceTemplateUseCase createMaintenanceTemplateUseCase,
@@ -186,8 +184,9 @@ public class MaintenanceController {
         }
     }
 
+
     @GetMapping("/reports/turnaround")
-    @PreAuthorize("hasAuthority('MAINTENANCE_SUPERVISOR')")
+    @PreAuthorize("hasAuthority('MAINTENANCE_SUPER')")
     public ResponseEntity<?> getAverageTurnaroundTime() {
         try {
             List<MaintenanceTurnaroundResponse> report = viewAverageTurnaroundTimeUseCase.execute();
@@ -208,12 +207,10 @@ public class MaintenanceController {
         }
     }
 
-    // =========================================================================
-    // ENDPOINT ADICIONADO E CORRIGIDO PARA A US219 (Listar Manutenções Ativas)
-    // =========================================================================
+
     @Operation(summary = "View all ongoing maintenance activities", description = "Allows a Maintenance Supervisor to view all active maintenance actions across the fleet.")
     @GetMapping("/ongoing")
-    @PreAuthorize("hasAuthority('MAINTENANCE_SUPERVISOR')")
+    @PreAuthorize("hasAuthority('MAINTENANCE_SUPER')")
     public ResponseEntity<?> getOngoingMaintenances() {
         try {
             List<MaintenanceRecord> records = viewOngoingMaintenancesUseCase.execute();
